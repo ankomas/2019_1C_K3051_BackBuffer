@@ -25,10 +25,18 @@ namespace TGC.Group.Model.Scenes
         Callback onEscapeCallback = () => {};
 
         public GameScene(TgcD3dInput input, string mediaDir) : base(input)
-        { 
+        {
             backgroundColor = Color.FromArgb(1, 78, 129, 179);
             World = new World(new TGCVector3(0, 0, 0));
-            Camera = new Camera(new TGCVector3(30, 30, 200), input);
+            SetCamera(input);
+        }
+
+        private void SetCamera(TgcD3dInput input)
+        {
+            var position = new TGCVector3(30, 30, 200);
+            var rigidBody = new CapsuleFactory().Create(position, 60, 60);
+            AquaticPhysics.Instance.Add(rigidBody);
+            Camera = new Camera(position, input, rigidBody);
         }
 
         public override void Update(float elapsedTime)
