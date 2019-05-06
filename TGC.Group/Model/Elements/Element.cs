@@ -3,14 +3,16 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Mathematica;
 using BulletSharp;
 using BulletSharp.Math;
+using TGC.Core.Text;
+using System.Drawing;
 
 namespace TGC.Group.Model
 {
     public class Element : Collisionable
     {
+
         public TgcMesh Mesh { get; }
         public RigidBody PhysicsBody { get; set; }
-
 
         public Element(TgcMesh model, RigidBody rigidBody)
         {
@@ -18,17 +20,15 @@ namespace TGC.Group.Model
             this.PhysicsBody = rigidBody;
         }
 
-        public void Update()
+        public virtual void Update(Camera camera)
         {
-            Mesh.Position = new TGCVector3(PhysicsBody.CenterOfMassPosition.X, PhysicsBody.CenterOfMassPosition.Y, PhysicsBody.CenterOfMassPosition.Z);
+            Mesh.Position = new TGCVector3(PhysicsBody.CenterOfMassPosition);
             Mesh.Transform = 
                 TGCMatrix.Scaling(Mesh.Scale) *
                 new TGCMatrix(PhysicsBody.CenterOfMassTransform);
-
-            return;
         }
 
-        public void Render()
+        public virtual void Render()
         {
             Mesh.Render();
             return;

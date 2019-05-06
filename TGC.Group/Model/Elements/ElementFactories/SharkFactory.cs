@@ -36,7 +36,7 @@ namespace TGC.Group.Model.Elements.ElementFactories
             TGCVector3 scaled = new TGCVector3(10, 10, 10);
             rigidBody.CollisionShape.LocalScaling = new Vector3(scaled.X * 3f , scaled.Y, scaled.Z * 1.5f);
             mesh.Scale = scaled;
-            return new Fish(mesh, rigidBody);
+            return new Shark(mesh, rigidBody);
         }
     }
 }

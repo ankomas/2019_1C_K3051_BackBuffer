@@ -84,9 +84,9 @@ namespace TGC.Group.Model
             return GetChunksByRadius(cameraPosition, RenderRadius);
         }
 
-        public void Update(TGCVector3 cameraPosition)
+        public void Update(Camera camera)
         {
-            ToUpdate(cameraPosition).ForEach(chunk => chunk.Update());
+            ToUpdate(camera.Position).ForEach(chunk => chunk.Update(camera));
             this.entities.ForEach(entity => entity.Update());
         }
 

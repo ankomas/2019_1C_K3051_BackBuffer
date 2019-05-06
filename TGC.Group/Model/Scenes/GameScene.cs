@@ -46,7 +46,7 @@ namespace TGC.Group.Model.Scenes
 
             CollisionManager.CheckCollitions(this.World.GetCollisionables());
 
-            this.World.Update(this.Camera.Position);
+            this.World.Update((Camera)this.Camera);
 
             if (GameInput.Statistic.IsPressed(Input))
             {

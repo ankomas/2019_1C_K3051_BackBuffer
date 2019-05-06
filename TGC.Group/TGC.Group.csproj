@@ -111,6 +111,7 @@
     <Compile Include="Model\Elements\Character.cs" />
     <Compile Include="Model\Elements\ElementFactories\ElementFactory.cs" />
     <Compile Include="Model\Elements\ElementFactories\FishFactory.cs" />
+    <Compile Include="Model\Elements\Shark.cs" />
     <Compile Include="Model\Elements\ElementFactories\SharkFactory.cs" />
     <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\Coral.cs" />

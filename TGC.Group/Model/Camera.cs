@@ -70,7 +70,7 @@ namespace TGC.Group.Model
         {
             leftrightRot += Input.XposRelative * RotationSpeed;
             updownRot = FastMath.Clamp( updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
-
+                
             return TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
         }
 
