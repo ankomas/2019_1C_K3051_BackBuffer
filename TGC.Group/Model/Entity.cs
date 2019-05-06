@@ -1,5 +1,6 @@
 ﻿using System;
 using TGC.Core.BoundingVolumes;
+using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model
 {
@@ -20,7 +21,7 @@ namespace TGC.Group.Model
             return;
         }
 
-        public override TgcBoundingAxisAlignBox getCollisionVolume()
+        public override IRenderObject getCollisionVolume()
         {
             throw new NotImplementedException();
         }

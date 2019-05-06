@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BulletSharp;
+using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Elements

@@ -62,7 +62,7 @@ namespace TGC.Group.Model
         private TGCVector3 CalculateTranslation(float elapsedTime, TGCMatrix cameraRotation)
         {
             var normalizedTranslation =  TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, cameraRotation);
-            RigidBody.Translate(normalizedTranslation.ToBulletVector3());
+            RigidBody.CenterOfMassTransform *= TGCMatrix.Translation(normalizedTranslation).ToBsMatrix;
             return new TGCVector3(RigidBody.CenterOfMassPosition);
         }
 

@@ -34,7 +34,7 @@ namespace TGC.Group.Model.Scenes
         private void SetCamera(TgcD3dInput input)
         {
             var position = new TGCVector3(30, 30, 200);
-            var rigidBody = new CapsuleFactory().Create(position, 60, 60);
+            var rigidBody = new CapsuleFactory().Create(position, 100, 60);
             AquaticPhysics.Instance.Add(rigidBody);
             Camera = new Camera(position, input, rigidBody);
         }

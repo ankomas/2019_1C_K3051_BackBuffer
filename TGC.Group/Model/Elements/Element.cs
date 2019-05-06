@@ -2,6 +2,7 @@
 using TGC.Core.SceneLoader;
 using TGC.Core.Mathematica;
 using BulletSharp;
+using BulletSharp.Math;
 
 namespace TGC.Group.Model
 {
@@ -40,9 +41,11 @@ namespace TGC.Group.Model
             return;
         }
 
-        public override TgcBoundingAxisAlignBox getCollisionVolume()
+        public override IRenderObject getCollisionVolume()
         {
-            return Mesh.BoundingBox;
+            Vector3 aabbMin, aabbMax;
+            PhysicsBody.GetAabb(out aabbMin, out aabbMax);
+            return new TgcBoundingAxisAlignBox(new TGCVector3(aabbMin), new TGCVector3(aabbMax));
         }
     }
 }
