@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BulletSharp;
-using BulletSharp.Math;
+﻿using BulletSharp;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Items;
 
 namespace TGC.Group.Model.Elements
 {
@@ -17,6 +12,7 @@ namespace TGC.Group.Model.Elements
         {
         }
 
+        /*
         public override IRenderObject getCollisionVolume()
         {
             CapsuleShapeX capsule = (CapsuleShapeX) PhysicsBody.CollisionShape;
@@ -25,5 +21,8 @@ namespace TGC.Group.Model.Elements
 
             return new TgcBoundingElipsoid(new TGCVector3(PhysicsBody.CenterOfMassPosition), radius);
         }
+        */
+        public override IItem item { get; } = new Items.Fish();
+
     }
 }
