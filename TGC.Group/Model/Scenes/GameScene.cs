@@ -42,7 +42,7 @@ namespace TGC.Group.Model.Scenes
 
             this.World.Update(this.Camera);
 
-            var item = manageSelectableElement(this.World.SelectableElement); // Important: get this AFTER updating the world
+            var item = this.manageSelectableElement(this.World.SelectableElement); // Important: get this AFTER updating the world
             
             if(item != null)
                 this.character.GiveItem(item);
@@ -80,17 +80,13 @@ namespace TGC.Group.Model.Scenes
         private IItem manageSelectableElement(Element element)
         {
             if (element == null) return null;
-            IItem item = null;
-
+            
             element.Selectable = true;
             
-            if (GameInput.Enter.IsPressed(this.Input))
-            {
-                this.World.Remove(element);
-                item = element.item;
-            }
+            if (!GameInput.Enter.IsPressed(this.Input)) return null;
 
-            return item;
+            this.World.Remove(element);
+            return element.item;
         }
 
         public override void Render()
