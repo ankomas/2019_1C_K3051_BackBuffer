@@ -9,14 +9,15 @@ namespace TGC.Group.Model.Elements
 {
     public class WaterSurface
     {
-        private static readonly TgcTexture FloorTexture = 
+        private static readonly TgcTexture WaterTexture = 
             TgcTexture.createTexture(D3DDevice.Instance.Device, Game.Default.ResDirectory + Game.Default.TexturaAgua);
         
         private TgcPlane surface;
 
         public WaterSurface(TGCVector3 initialPoint)
         {
-            this.surface = new TgcPlane(initialPoint, Chunk.DefaultSize*World.RenderRadius, TgcPlane.Orientations.XZplane, FloorTexture);
+            var size = Chunk.DefaultSize * World.RenderRadius;
+            this.surface = new TgcPlane(initialPoint, size, TgcPlane.Orientations.XZplane, WaterTexture);
         }
 
         public void Update(TGCVector3 position)
@@ -26,7 +27,7 @@ namespace TGC.Group.Model.Elements
             var size = Chunk.DefaultSize * World.RenderRadius * 2;
             var surfacePosition = new TGCVector3(position.X - size.X/2, 0, position.Z - size.Z/2);
             
-            this.surface = new TgcPlane(surfacePosition, size, TgcPlane.Orientations.XZplane, FloorTexture);
+            this.surface = new TgcPlane(surfacePosition, size, TgcPlane.Orientations.XZplane, WaterTexture);
         }
 
         public void Render(TGCVector3 position)
