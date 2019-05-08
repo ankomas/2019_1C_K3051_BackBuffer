@@ -1,11 +1,12 @@
 ﻿using TGC.Core.BoundingVolumes;
+using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model
 {
-    abstract class Collisionable
+    public abstract class Collisionable
     {
         public bool CheckCollision { get; set; } = true;
 
-        public abstract TgcBoundingAxisAlignBox getCollisionVolume();
+        public abstract IRenderObject getCollisionVolume();
     }
 }
