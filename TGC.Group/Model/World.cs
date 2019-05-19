@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BulletSharp.Math;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TGC.Core.Camara;
@@ -8,7 +9,10 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Chunks;
 using TGC.Group.Model.Elements;
+using TGC.Group.Model.Elements.ElementFactories;
+using TGC.Group.Model.Elements.RigidBodyFactories;
 using TGC.Group.Model.Input;
+using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model
@@ -32,9 +36,22 @@ namespace TGC.Group.Model
 
             this.waterSurface = new WaterSurface(initialPoint);
             
-            this.AddChunk(initialPoint);
+            AddChunk(initialPoint);
+            AddShark();
         }
-        
+
+        protected void AddShark()
+        {
+            var mesh = SharkMesh.All()[0];
+            mesh.Position = new TGCVector3(30, 1000, -2000);
+            mesh.UpdateMeshTransform();
+            var rigidBody = new CapsuleFactory().CreateShark(mesh);
+            TGCVector3 scaled = new TGCVector3(10, 10, 10);
+            AquaticPhysics.Instance.Add(rigidBody);
+            var shark = new Shark(mesh, rigidBody);
+            this.entities.Add(shark);
+        }
+
         private Chunk AddChunk(TGCVector3 origin)
         {
             var chunk = Chunk.ByYAxis(origin);
@@ -89,7 +106,7 @@ namespace TGC.Group.Model
         
         private List<Chunk> ToUpdate(TGCVector3 cameraPosition)
         {
-            return this.GetChunksByRadius(cameraPosition, UpdateRadius);
+            return GetChunksByRadius(cameraPosition, UpdateRadius);
         }
 
         private List<Chunk> ToRender(TGCVector3 cameraPosition)
@@ -97,16 +114,12 @@ namespace TGC.Group.Model
             return GetChunksByRadius(cameraPosition, RenderRadius);
         }
 
-        public void Update(TgcCamera camera)
+        public void Update(Camera camera)
         {
             var toUpdate = ToUpdate(camera.Position);
-            toUpdate.ForEach(chunk => chunk.Update());
-
-            this.entities.ForEach(entity => entity.Update());
-
+            toUpdate.ForEach(chunk => chunk.Update(camera));
             this.SelectableElement = GetSelectableElement(camera, toUpdate);
-            
-            this.waterSurface.Update(camera.Position);
+            this.entities.ForEach(entity => entity.Update(camera));
         }
         
         public void Render(TgcCamera camera)

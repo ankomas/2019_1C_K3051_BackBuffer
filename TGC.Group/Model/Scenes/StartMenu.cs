@@ -24,11 +24,12 @@ namespace TGC.Group.Model.Scenes
         private Callback onGameStartCallback, onGameExitCallback;
         TgcText2D DrawTextBig, DrawTextSmall;
         Drawer2D drawer;
-        CustomSprite spriteSubnautica, spriteBlackRectangle, title;
+        CustomSprite spriteBlackRectangle, title;
         private double x;
-        private int yBase;
+        private int yStartWord, yOffset = 40;
         private Pointer pointer = Pointer.UP;
         private TgcSkyBox skyBox;
+        private Color[] colors = { Color.OrangeRed, Color.AliceBlue };
 
         private TGCVector3 viewDirectionStart = new TGCVector3(-1, 0.25f, 0);
 
@@ -37,31 +38,15 @@ namespace TGC.Group.Model.Scenes
         public StartMenu(TgcD3dInput Input) : base(Input)
         {
             onGameStartCallback = onGameExitCallback = () => {};
-            DrawTextBig = new TgcText2D();
-            DrawTextSmall = new TgcText2D();
-
-            DrawTextBig.changeFont(new System.Drawing.Font("Arial Black", 40f));
-            DrawTextSmall.changeFont(new System.Drawing.Font("Arial Black", 25f));
 
             drawer = new Drawer2D();
 
-            spriteSubnautica = BitmapRepository.CreateSpriteFromPath(BitmapRepository.SubnauticaPortrait);
-            spriteBlackRectangle = BitmapRepository.CreateSpriteFromPath(BitmapRepository.BlackRectangle);
-            title = BitmapRepository.CreateSpriteFromPath(BitmapRepository.Title);
-            title.Scaling = new TGCVector2(.15f, .25f);
-            title.Position = new TGCVector2(200, 250);
-            spriteBlackRectangle.Color = Color.FromArgb(188, 0, 0, 0);
-
-            Screen.FitSpriteToScreen(spriteSubnautica);
-            spriteBlackRectangle.Scaling = new TGCVector2(1, .1f);
-            Screen.CenterSprite(spriteBlackRectangle);
-            spriteBlackRectangle.Position = new TGCVector2(
-                spriteBlackRectangle.Position.X,
-                Screen.Height * (3f / 4)
-            );
+            InitFonts();
+            InitTitle();
+            InitBlackRectangle();
 
             x = spriteBlackRectangle.Position.X + 200;
-            yBase = (int)(spriteBlackRectangle.Position.Y + 10);
+            yStartWord = (int)(spriteBlackRectangle.Position.Y + 10);
 
             Screen.CenterSprite(title);
             title.Position = new TGCVector2(
@@ -81,14 +66,42 @@ namespace TGC.Group.Model.Scenes
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back , baseDir +  "skybox-back.jpg"  );
             skyBox.Init();
             Camera = new TgcCamera();
+
+            pressed[GameInput._Down] = () => pointer = Pointer.DOWN;
+            pressed[GameInput._Up] = () => pointer = Pointer.UP;
+            pressed[GameInput._Enter] = fireAction;
+        }
+
+        private void InitFonts()
+        {
+            DrawTextBig = new TgcText2D();
+            DrawTextSmall = new TgcText2D();
+            DrawTextBig.changeFont(new System.Drawing.Font("Arial Black", 40f));
+            DrawTextSmall.changeFont(new System.Drawing.Font("Arial Black", 25f));
+        }
+
+        private void InitTitle()
+        {
+            title = BitmapRepository.CreateSpriteFromPath(BitmapRepository.Title);
+            title.Scaling = new TGCVector2(.15f, .25f);
+            title.Position = new TGCVector2(200, 250);
+        }
+
+        private void InitBlackRectangle()
+        {
+            spriteBlackRectangle = BitmapRepository.CreateSpriteFromPath(BitmapRepository.BlackRectangle);
+            spriteBlackRectangle.Color = Color.FromArgb(188, 0, 0, 0);
+            spriteBlackRectangle.Scaling = new TGCVector2(1, .1f);
+            Screen.CenterSprite(spriteBlackRectangle);
+
+            spriteBlackRectangle.Position = new TGCVector2(
+                spriteBlackRectangle.Position.X,
+                Screen.Height * (3f / 4)
+            );
         }
 
         override public void Update(float elapsedTime)
         {
-            if (GameInput.Down.IsPressed(Input)) pointer = Pointer.DOWN;
-            if (GameInput.Up.IsPressed(Input)) pointer = Pointer.UP;
-            if (GameInput.Enter.IsPressed(Input)) fireAction();
-
             TGCVector3 lookAt  = skyBox.Center + TGCVector3.TransformNormal(viewDirectionStart, TGCMatrix.RotationY(rotation));
             rotation += .0001f;
             Camera.SetCamera(skyBox.Center, lookAt);
@@ -105,9 +118,9 @@ namespace TGC.Group.Model.Scenes
             drawer.DrawSprite(title);
             drawer.EndDrawSprite();
 
-            DrawTextSmall.drawText("Start", (int)x, yBase, pointer == Pointer.DOWN ? Color.AliceBlue : Color.OrangeRed);
-            DrawTextSmall.drawText("Exit", (int)x, yBase + 30, pointer == Pointer.DOWN ? Color.OrangeRed : Color.AliceBlue);
-            DrawTextSmall.drawText("->", (int)x - 40, yBase + (int)pointer * 30, Color.OrangeRed);
+            DrawTextSmall.drawText("Start", (int)x, yStartWord, colors[(int)pointer]);
+            DrawTextSmall.drawText("Exit", (int)x, yStartWord + yOffset, colors[(((int)pointer) + 1) % 2]);
+            DrawTextSmall.drawText("->", (int)x - 40, yStartWord + (int)pointer * yOffset, Color.OrangeRed);
         }
         private void fireAction()
         {

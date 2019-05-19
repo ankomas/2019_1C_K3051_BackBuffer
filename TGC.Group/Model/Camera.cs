@@ -1,4 +1,6 @@
-﻿using Microsoft.DirectX.DirectInput;
+﻿using BulletSharp;
+using Microsoft.DirectX.DirectInput;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using TGC.Core.Camara;
@@ -11,20 +13,26 @@ namespace TGC.Group.Model
 {
     public class Camera : TgcCamera
     {
+        public RigidBody RigidBody { get; }
+
         private readonly Point mouseCenter;
         private TGCMatrix cameraRotation;
         private TGCVector3 initialDirectionView;
         private float leftrightRot;
         private float updownRot;
 
+        delegate void CameraUpdateLogic(float elapsedTime);
+        CameraUpdateLogic currentUpdateLogic;
+
         private TgcD3dInput Input { get; }
         public float MovementSpeed { get; set; }
         public float RotationSpeed { get; set; }
 
-        public Camera(TGCVector3 position, TgcD3dInput input)
+        public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
             Input = input;
             Position = position;
+            RigidBody = rigidBody;
             mouseCenter = GetMouseCenter();
             RotationSpeed = 0.1f;
             MovementSpeed = 500f;
@@ -32,6 +40,7 @@ namespace TGC.Group.Model
             leftrightRot = 0;
             updownRot = 0;
             Cursor.Hide();
+            currentUpdateLogic = MoveNormally;
         }
 
         private static Point GetMouseCenter()
@@ -42,23 +51,21 @@ namespace TGC.Group.Model
 
         public override void UpdateCamera(float elapsedTime)
         {
-            cameraRotation = CalculateCameraRotation();
+            currentUpdateLogic(elapsedTime);
+        }
 
-            Position += TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, cameraRotation);
-
-            LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
-
-            UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
-
-            Cursor.Position = mouseCenter;
-            base.SetCamera(Position, LookAt, UpVector);
+        private TGCVector3 CalculateTranslation(float elapsedTime, TGCMatrix cameraRotation)
+        {
+            var normalizedTranslation =  TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, cameraRotation);
+            RigidBody.CenterOfMassTransform *= TGCMatrix.Translation(normalizedTranslation).ToBsMatrix;
+            return new TGCVector3(RigidBody.CenterOfMassPosition);
         }
 
         public TGCMatrix CalculateCameraRotation()
         {
             leftrightRot += Input.XposRelative * RotationSpeed;
             updownRot = FastMath.Clamp( updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
-
+                
             return TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
         }
 
@@ -93,6 +100,26 @@ namespace TGC.Group.Model
 
             return moveVector;
         }
+        void MoveNormally(float elapsedTime)
+        {
+            cameraRotation = CalculateCameraRotation();
 
+            Position = CalculateTranslation(elapsedTime, cameraRotation);
+
+            LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
+
+            UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
+
+            Cursor.Position = mouseCenter;
+            base.SetCamera(Position, LookAt, UpVector);
+        }
+        public void Freeze()
+        {
+            currentUpdateLogic = (elapsedTime) => {};
+        }
+        public void Unfreeze()
+        {
+            currentUpdateLogic = MoveNormally;
+        }
     }
 }
