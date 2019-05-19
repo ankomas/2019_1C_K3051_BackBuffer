@@ -7,7 +7,7 @@ namespace TGC.Group.Model.Items
 {
     public class Crafter
     {
-        public ICrafteable craftedItem;
+        public ICrafteable CraftedItem;
 
         public List<ICrafteable> Crafteables { get; } = new List<ICrafteable>
         {
@@ -25,7 +25,7 @@ namespace TGC.Group.Model.Items
             
             character.RemoveIngredients(crafteable.CrafteableRecipe.Ingredients);
 
-            this.craftedItem = crafteable;
+            this.CraftedItem = crafteable;
         }
     }
 }
