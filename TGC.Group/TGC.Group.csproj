@@ -144,6 +144,7 @@
     <Compile Include="Model\Scenes\ShipScene.cs" />
     <Compile Include="Model\Segment.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\IRigidBodyFactory.cs" />
+    <Compile Include="Model\UI\OxygenIndicator.cs" />
     <Compile Include="Model\Utils\Cube.cs" />
     <Compile Include="Model\Scenes\PauseMenu.cs" />
     <Compile Include="Model\Utils\Screen.cs" />
