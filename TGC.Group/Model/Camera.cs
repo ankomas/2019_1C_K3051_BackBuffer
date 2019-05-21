@@ -65,8 +65,11 @@ namespace TGC.Group.Model
 
         public TGCMatrix CalculateCameraRotation()
         {
-            leftrightRot += Input.XposRelative * RotationSpeed;
-            updownRot = FastMath.Clamp( updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
+            if(ConsideringInput)
+            {
+                leftrightRot += Input.XposRelative * RotationSpeed;
+                updownRot = FastMath.Clamp(updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
+            }
                 
             return TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
         }
@@ -90,7 +93,8 @@ namespace TGC.Group.Model
 
             UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
 
-            Cursor.Position = mouseCenter;
+            if(ConsideringInput) Cursor.Position = mouseCenter;
+
             base.SetCamera(Position, LookAt, UpVector);
         }
         public void Freeze()
