@@ -13,9 +13,11 @@ using TGC.Core.Collision;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
-using TGC.Group.Model.Elements;
+ using TGC.Group.Model.Chunks;
+ using TGC.Group.Model.Elements;
 using TGC.Group.Model.Elements.RigidBodyFactories;
-using TGC.Group.Model.Resources.Meshes;
+ using TGC.Group.Model.Player;
+ using TGC.Group.Model.Resources.Meshes;
 using Chunk = TGC.Group.Model.Chunks.Chunk;
 using Element = TGC.Group.Model.Elements.Element;
 
@@ -44,7 +46,7 @@ namespace TGC.Group.Model
 
             waterSurface = new WaterSurface(initialPoint);
             
-            AddChunk(initialPoint);
+            this.chunks.Add(new TGCVector3(initialPoint), new InitialChunk(initialPoint));
             AddShark();
 //            AddHeightMap();
             
@@ -117,7 +119,7 @@ namespace TGC.Group.Model
         protected void AddShark()
         {
             var mesh = SharkMesh.All()[0];
-            mesh.Position = new TGCVector3(30, 1000, -2000);
+            mesh.Position = new TGCVector3(30, 0, -2000);
             mesh.UpdateMeshTransform();
             
             var rigidBody = new CapsuleFactory().CreateShark(mesh); ;
@@ -189,12 +191,12 @@ namespace TGC.Group.Model
             return GetChunksByRadius(cameraPosition, RenderRadius);
         }
 
-        public void Update(Camera camera)
+        public void Update(Camera camera, Character character)
         {
             var toUpdate = ToUpdate(camera.Position);
             toUpdate.ForEach(chunk => chunk.Update(camera));
             SelectableElement = GetSelectableElement(camera, toUpdate);
-            entities.ForEach(entity => entity.Update(camera));
+            entities.ForEach(entity => entity.Update(camera, character));
         }
         
         public void Render(TgcCamera camera)
@@ -228,11 +230,11 @@ namespace TGC.Group.Model
                     .FindAll(element => element.isIntersectedBy(new TgcRay(camera.Position, direction)));
             
             intersectedElements.Sort((element1, element2) => 
-                (int) TGCVector3.LengthSq(camera.Position, element1.Mesh.Position) -
-                (int) TGCVector3.LengthSq(camera.Position, element2.Mesh.Position));
+                (int) TGCVector3.LengthSq(camera.Position, element1.getPosition()) -
+                (int) TGCVector3.LengthSq(camera.Position, element2.getPosition()));
 
             return intersectedElements.Find(element => 
-                Math.Abs(TGCVector3.LengthSq(camera.Position, element.Mesh.Position)) < InteractionRadius);
+                Math.Abs(TGCVector3.LengthSq(camera.Position, element.getPosition())) < InteractionRadius);
         }
         public void Remove(Element selectableElement)
         {

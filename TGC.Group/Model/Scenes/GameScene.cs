@@ -220,25 +220,33 @@ namespace TGC.Group.Model.Scenes
         }
         private IItem manageSelectableElement(Element element)
         {
+            dialogName = dialogDescription = "";
+
             if (element == null)
             {
                 cursor = aim;
-                dialogName = dialogDescription = "";
                 return null;
             }
+            
             cursor = hand;
             IItem item = null;
 
             element.Selectable = true;
 
-            dialogName = element.item.Name;
-            dialogDescription = element.item.Description;
-
             if (aimFired)
             {
-                this.World.Remove(element);
-                item = element.item;
-                aimFired = false;
+                if (element.GetType() == typeof(Ship))
+                {
+                    //change scene
+                }
+                else
+                {
+                    this.World.Remove(element);
+                    item = element.item;
+                    dialogName = item.Name;
+                    dialogDescription = item.Description;
+                    aimFired = false;   
+                }
             }
 
             return item;
@@ -249,9 +257,9 @@ namespace TGC.Group.Model.Scenes
 
             CollisionManager.CheckCollitions(this.World.GetCollisionables());
 
-            this.World.Update((Camera) this.Camera);
+            this.World.Update((Camera) this.Camera, this.character);
 
-            var item = manageSelectableElement(this.World.SelectableElement); // Important: get this AFTER updating the world
+            var item = manageSelectableElement(this.World.SelectableElement); // Imsportant: get this AFTER updating the world
             
             if(item != null)
                 this.character.GiveItem(item);

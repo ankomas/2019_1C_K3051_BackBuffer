@@ -13,13 +13,12 @@ namespace TGC.Group.Model.Elements
     public abstract class Element: Collisionable
     {
 
-        public TgcMesh Mesh { get; }
+        private TgcMesh Mesh { get; }
         public RigidBody PhysicsBody { get; set; }
         public bool Selectable { get; set; }
 
         public abstract IItem item { get; }
 
-        public Vector3 Position { get; protected set; }
         private Effect effect;
         public Effect Effect
         {
@@ -63,10 +62,15 @@ namespace TGC.Group.Model.Elements
                 getCollisionVolume().Render();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.Mesh.Dispose();
             this.PhysicsBody.Dispose();
+        }
+
+        public virtual TGCVector3 getPosition()
+        {
+            return this.Mesh.Position;
         }
 
         public override IRenderObject getCollisionVolume() 

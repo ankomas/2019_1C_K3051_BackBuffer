@@ -8,6 +8,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Text;
 using TGC.Group.Model.Entities;
+using TGC.Group.Model.Player;
 
 namespace TGC.Group.Model.Elements
 {
@@ -27,25 +28,28 @@ namespace TGC.Group.Model.Elements
         }
 
 
-        public override void Update(Camera camera)
+        public override void Update(Camera camera, Character character)
         {
             var difference = camera.Position.ToBulletVector3() - RigidBody.CenterOfMassPosition;
 
             var sharkBody = (CapsuleShapeX)RigidBody.CollisionShape;
             var cameraBody = (CapsuleShape)camera.RigidBody.CollisionShape;
 
-            VerifyCollision(difference, sharkBody, cameraBody);
+            if (VerifyCollision(difference, sharkBody, cameraBody))
+            {
+                character.hit(10);
+            }
 
             difference.Normalize();
            
             MovementToCamera.Move(Mesh, RigidBody, camera.Position, difference);
 
-            base.Update(camera);
+            base.Update(camera, character);
         }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-        private void VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
+        private bool VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
         {
-            dead =
+            return
                 FastMath.Pow2(difference.X) <=
                 FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) &&
                 FastMath.Pow2(difference.Y) <=
@@ -58,11 +62,10 @@ namespace TGC.Group.Model.Elements
         public override void Render()
         {
             base.Render();
-            //DrawText.drawText(a.ToString(), 50, 50, Color.Black);
             if (dead)
             {
                 var point = GetCenter();
-                DrawText.drawText("TE MORISTE WEEE xddxdxd", point.X, point.Y, Color.Red);
+                DrawText.drawText("Hit", point.X, point.Y, Color.Red);
             }
 
         }
