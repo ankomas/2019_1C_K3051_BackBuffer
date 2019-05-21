@@ -53,8 +53,8 @@ namespace TGC.Group.Model.Scenes
 
         RenderLogic stateDependentRenderLogic, newRenderLogic;
 
-        private OxygenIndicator oxygenIndicator = new OxygenIndicator();
-
+        private IndicatorContainer indicatorContainer = new IndicatorContainer(115, 550);
+        
         public GameScene(TgcD3dInput input, string mediaDir) : base(input)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
@@ -72,9 +72,9 @@ namespace TGC.Group.Model.Scenes
             InitAim();
             InitHand();
             InitDialogBox();
-            
-            this.oxygenIndicator.init();
 
+            this.indicatorContainer.init();
+            
             World = new World(new TGCVector3(0, 0, 0));
 
             cursor = aim;
@@ -91,7 +91,7 @@ namespace TGC.Group.Model.Scenes
 
             TurnExploreCommandsOn();
         }
-        
+
         private void TurnExploreCommandsOn()
         {
             pressed[Key.I] = OpenInventory;
@@ -301,7 +301,7 @@ namespace TGC.Group.Model.Scenes
             drawer.DrawSprite(mask);
             drawer.EndDrawSprite();
             
-            this.oxygenIndicator.render(this.character);
+            this.indicatorContainer.render(this.character);
         }
 
         public override void Dispose()

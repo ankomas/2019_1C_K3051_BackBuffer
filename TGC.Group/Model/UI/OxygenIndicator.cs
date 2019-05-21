@@ -1,97 +1,38 @@
 using System;
 using System.Drawing;
-using Microsoft.DirectX.Direct3D;
-using TGC.Core.Direct3D;
-using TGC.Core.Mathematica;
-using TGC.Core.Text;
 using TGC.Group.Model.Player;
-using TGC.Group.Model.Resources.Sprites;
-using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.UI
 {
-    public class OxygenIndicator
+    public class OxygenIndicator : CircularIndicator
     {
-        private Effect OxygenEffect;
-        
-        Drawer2D drawer = new Drawer2D();
-        
-        const int o2MeterSize = 145;
-        const int o2MeterX0 = 110;
-        const int o2MeterY0 = 475;
-
-        private CustomSprite blackCircle;
-        
-        CustomVertex.TransformedColored[] vertices;
-        
-        TgcText2D TextO2Big = new TgcText2D(), TextO2Small = new TgcText2D();
-
-        public OxygenIndicator()
+        public OxygenIndicator(int meterSize, int meterX0, int meterY0) : base(meterSize, meterX0, meterY0)
         {
-            blackCircle = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackCircle);
-            blackCircle.Scaling = new TGCVector2(.295f, .295f);
-            blackCircle.Position = new TGCVector2(o2MeterX0 - 3, o2MeterY0 - 3);
-            blackCircle.Color = Color.FromArgb(120, 0, 0, 0);
-            
-            TextO2Big.changeFont(new System.Drawing.Font("Arial Narrow Bold", 25f));
-            TextO2Small.changeFont(new System.Drawing.Font("Arial Narrow Bold", 15f));
         }
 
-        public void init()
+        protected override void renderEffect(Character character)
         {
-            string compilationErrors;
-            try
-            {
-                OxygenEffect = Effect.FromFile(D3DDevice.Instance.Device, "../../../Shaders/Oxygen.fx", null, null, ShaderFlags.None, null, out compilationErrors);
-            }
-            catch(Exception e)
-            {
-                throw new Exception("No pudo cargar el archivo csm");
-            }
-            if(OxygenEffect == null)
-            {
-                throw new Exception("Errores de compilación oxigen.fx: " + compilationErrors);
-            }
-
-            OxygenEffect.Technique = "OxygenTechnique";
-
-            vertices = new CustomVertex.TransformedColored[6];
-            vertices[0] = new CustomVertex.TransformedColored(o2MeterX0, o2MeterY0, 0, 1, 0x000000);
-            vertices[1] = new CustomVertex.TransformedColored(o2MeterX0 + o2MeterSize, o2MeterY0, 0, 1, 0xFF0000);
-            vertices[2] = new CustomVertex.TransformedColored(o2MeterX0, o2MeterY0 + o2MeterSize, 0, 1, 0x00FF00);
-            vertices[3] = new CustomVertex.TransformedColored(o2MeterX0, o2MeterY0 + o2MeterSize, 0, 1, 0x00FF00);
-            vertices[4] = new CustomVertex.TransformedColored(o2MeterX0 + o2MeterSize, o2MeterY0  , 0, 1, 0xFF0000);
-            vertices[5] = new CustomVertex.TransformedColored(o2MeterX0 + o2MeterSize, o2MeterY0 + o2MeterSize, 0, 1, 0xFFFF00);
+            renderEffect(character.ActualStats.Oxygen, character.MaxStats.Oxygen);
         }
 
-        public void render(Character character)
+        protected override void renderText(Character character)
         {
-            double o2Level = Math.Floor((float)character.ActualStats.Oxygen);
-            
-            this.TextO2Big.drawText("O", o2MeterX0 + 54, o2MeterY0 + 32, Color.Bisque);
-            this.TextO2Small.drawText("2", o2MeterX0 + 79, o2MeterY0 + 45, Color.Bisque);
-            this.TextO2Big.drawText("" + o2Level, o2Level >= 10 ? o2MeterX0 + 55 : o2MeterX0 + 65, o2MeterY0 + 74, Color.Bisque);
-            
-            /**********OXYGEN METER SHADER***********/
-            OxygenEffect.Begin(FX.None);
-            OxygenEffect.BeginPass(0);
-            OxygenEffect.SetValue("oxygen", (float)(character.ActualStats.Oxygen) / character.MaxStats.Oxygen);
-            D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
-            D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
-            D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, vertices.Length / 3, vertices);
-            OxygenEffect.EndPass();
-            OxygenEffect.BeginPass(1);
-            D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
-            D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
-            D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, vertices.Length / 3, vertices);
-            OxygenEffect.EndPass();
-            OxygenEffect.End();
-            /****************************************/
-            
-            drawer.BeginDrawSprite();
-            drawer.DrawSprite(blackCircle);
-            drawer.EndDrawSprite();
-        }
+            double o2Level = Math.Floor(character.ActualStats.Oxygen);
 
+            var oXPosition = this.meterX0 + toInt(Scale(this.meterSize, 54));
+            var oYPosition = this.meterY0 + toInt(Scale(this.meterSize, 32));
+
+            var twoXPosition = this.meterX0 + toInt(Scale(this.meterSize, 79));
+            var twoYPosition = this.meterY0 + toInt(Scale(this.meterSize, 45));
+
+            var o2LevelXPosition = o2Level >= 10
+                ? this.meterX0 + toInt(Scale(this.meterSize, 55))
+                : this.meterX0 + toInt(Scale(this.meterSize, 65));
+            var o2LevelYPosition = this.meterY0 + toInt(Scale(this.meterSize, 74));
+
+            this.textBig.drawText("O", oXPosition, oYPosition, Color.Bisque);
+            this.textSmall.drawText("2", twoXPosition, twoYPosition, Color.Bisque);
+            this.textBig.drawText("" + o2Level, o2LevelXPosition, o2LevelYPosition, Color.Bisque);
+        }
     }
 }
