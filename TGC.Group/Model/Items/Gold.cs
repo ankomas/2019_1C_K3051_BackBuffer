@@ -1,5 +1,6 @@
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Items.Type;
+using TGC.Group.Model.Player;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.TGCUtils;
 
@@ -12,6 +13,11 @@ namespace TGC.Group.Model.Items
         public ItemType type { get; } = ItemType.MATERIAL;
         public CustomSprite Icon { get; set; }
         public TGCVector2 DefaultScale { get; } = new TGCVector2(.05f, .05f);
+        public void Use(Character character)
+        {
+            //TODO something?
+        }
+
         public Gold()
         {
             CustomSprite icon = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Plant);

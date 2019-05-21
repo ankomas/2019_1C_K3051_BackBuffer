@@ -4,6 +4,7 @@ using System.Windows.Forms.VisualStyles;
 using BulletSharp;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
+using TGC.Group.Model.Items.Consumables;
 using TGC.Group.Model.Items.Equipment;
 using TGC.Group.Model.Items.Recipes;
 using Element = TGC.Group.Model.Elements.Element;
@@ -60,6 +61,12 @@ namespace TGC.Group.Model.Player
         public void hit(int quantity)
         {
             this.ActualStats.Update(new Stats(0, -quantity), this.MaxStats);
+        }
+
+        public void consume(IConsumable consumable)
+        {
+            this.ActualStats.Update(consumable.stats, MaxStats);
+            RemoveItem(consumable);
         }
     }
 }
