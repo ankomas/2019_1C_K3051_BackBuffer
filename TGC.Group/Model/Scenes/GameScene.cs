@@ -94,12 +94,12 @@ namespace TGC.Group.Model.Scenes
 
         private void TurnExploreCommandsOn()
         {
-            pressed[Key.I] = OpenInventory;
+            pressed[GameInput._Inventory] = OpenInventory;
             pressed[GameInput._Enter] = () => aimFired = true;
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[Key.I] = pressed[GameInput._Enter] = () => { };
+            pressed[GameInput._Inventory] = pressed[GameInput._Enter] = () => { };
         }
         private void OpenInventory()
         {
@@ -243,24 +243,10 @@ namespace TGC.Group.Model.Scenes
 
             this.World.Update((Camera) this.Camera);
 
-            var item = this.manageSelectableElement(this.World.SelectableElement); // Important: get this AFTER updating the world
+            var item = manageSelectableElement(this.World.SelectableElement); // Important: get this AFTER updating the world
             
             if(item != null)
                 this.character.GiveItem(item);
-
-            //TODO crafter logic, move to crafter when coded
-            if (OxygenTank.Recipe.CanCraft(this.character.Inventory.AsIngredients()) && !this.gaveOxygenTank)
-            {
-                this.character.RemoveIngredients(OxygenTank.Recipe.Ingredients);
-                var oxygenTank = new OxygenTank();
-                this.character.GiveItem(oxygenTank);
-
-                ///////TODO when UI is ready, the selected element will be equipped
-                this.character.Equip(oxygenTank);
-
-                this.gaveOxygenTank = true;
-            }
-            //***********************************************
 
             skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);

@@ -19,20 +19,20 @@ namespace TGC.Group.Model.UI
         {
             double o2Level = Math.Floor(character.ActualStats.Oxygen);
 
-            var oXPosition = this.meterX0 + toInt(Scale(this.meterSize, 54));
-            var oYPosition = this.meterY0 + toInt(Scale(this.meterSize, 32));
+            var oXPosition = this.MeterX0 + ToInt(Scale(this.MeterSize, 54));
+            var oYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 32));
 
-            var twoXPosition = this.meterX0 + toInt(Scale(this.meterSize, 79));
-            var twoYPosition = this.meterY0 + toInt(Scale(this.meterSize, 45));
+            var twoXPosition = this.MeterX0 + ToInt(Scale(this.MeterSize, 79));
+            var twoYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 45));
 
             var o2LevelXPosition = o2Level >= 10
-                ? this.meterX0 + toInt(Scale(this.meterSize, 55))
-                : this.meterX0 + toInt(Scale(this.meterSize, 65));
-            var o2LevelYPosition = this.meterY0 + toInt(Scale(this.meterSize, 74));
+                ? this.MeterX0 + ToInt(Scale(this.MeterSize, 55))
+                : this.MeterX0 + ToInt(Scale(this.MeterSize, 65));
+            var o2LevelYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 74));
 
-            this.textBig.drawText("O", oXPosition, oYPosition, Color.Bisque);
-            this.textSmall.drawText("2", twoXPosition, twoYPosition, Color.Bisque);
-            this.textBig.drawText("" + o2Level, o2LevelXPosition, o2LevelYPosition, Color.Bisque);
+            this.TextBig.drawText("O", oXPosition, oYPosition, Color.Bisque);
+            this.TextSmall.drawText("2", twoXPosition, twoYPosition, Color.Bisque);
+            this.TextBig.drawText("" + o2Level, o2LevelXPosition, o2LevelYPosition, Color.Bisque);
         }
     }
 }
