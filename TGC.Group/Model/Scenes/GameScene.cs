@@ -85,9 +85,11 @@ namespace TGC.Group.Model.Scenes
             pressed[Key.Escape] = () => {
                 onPauseCallback();
             };
-            pressed[Key.Q] = () => {
-                onGameOverCallback();
-            };
+
+            // Die with Q for debugging or god mode
+            //pressed[Key.Q] = () => {
+            //    onGameOverCallback();
+            //};
 
             pressed[Key.F] = () => {
                 this.BoundingBox = !this.BoundingBox;
