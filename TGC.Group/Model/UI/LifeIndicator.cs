@@ -17,7 +17,7 @@ namespace TGC.Group.Model.UI
 
         protected override void renderText(Character character)
         {
-            double lifeLevel = character.ActualStats.Life;
+            double lifeLevel = Math.Floor(character.ActualStats.Life);
 
             var oXPosition = this.MeterX0 + ToInt(Scale(this.MeterSize, 60));
             var oYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 32));

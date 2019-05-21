@@ -13,7 +13,7 @@ namespace TGC.Group.Model.Player
 {
     public class Character
     {
-        private static readonly Stats BaseStats = new Stats(35, 100);
+        private static readonly Stats BaseStats = new Stats(5, 100);
 
         public Stats MaxStats => BaseStats + this.equipment.ExtraStats();
 
@@ -29,12 +29,19 @@ namespace TGC.Group.Model.Player
 
         public void UpdateStats(Stats newStats)
         {
+            if (isAsphyxiating(newStats)) newStats.Life += newStats.Oxygen * 10;
+            
             this.ActualStats.Update(newStats, this.MaxStats);
+        }
+
+        private bool isAsphyxiating(Stats newStats)
+        {
+            return this.ActualStats.Oxygen <= 0 && newStats.Oxygen < 0;
         }
 
         public bool IsDead()
         {
-            return this.ActualStats.Life <= 0 || this.ActualStats.Oxygen <= 0;
+            return this.ActualStats.Life <= 0;
         }
 
         public void GiveItem(IItem item)
@@ -58,12 +65,12 @@ namespace TGC.Group.Model.Player
             this.Inventory.RemoveItem(item);
         }
 
-        public void hit(int quantity)
+        public void Hit(int quantity)
         {
             this.ActualStats.Update(new Stats(0, -quantity), this.MaxStats);
         }
 
-        public void consume(IConsumable consumable)
+        public void Consume(IConsumable consumable)
         {
             this.ActualStats.Update(consumable.stats, MaxStats);
             RemoveItem(consumable);

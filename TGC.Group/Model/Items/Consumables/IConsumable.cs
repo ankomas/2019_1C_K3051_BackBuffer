@@ -17,7 +17,7 @@ namespace TGC.Group.Model.Items.Consumables
 
         public void Use(Character character)
         {
-            character.consume(this);
+            character.Consume(this);
         }
     }
 }
