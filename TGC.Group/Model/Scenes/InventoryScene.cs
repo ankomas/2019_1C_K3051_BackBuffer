@@ -1,7 +1,11 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel.Design;
+using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.DirectX.DirectInput;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
+using TGC.Group.Model.Input;
+using TGC.Group.Model.Items;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Scenes
@@ -17,6 +21,8 @@ namespace TGC.Group.Model.Scenes
         private Color cursorDefaultColor;
         float PDAPositionX, finalPDAPositionX, PDAMoveCoefficient;
         int PDATransparency;
+
+        public IItem itemHighlighted { get; set; }
 
         private TGCVector2 GetScaleForSpriteByPixels(CustomSprite sprite, int xPixels, int yPixels)
         {
@@ -56,16 +62,12 @@ namespace TGC.Group.Model.Scenes
                     int y = i / maxItemsPerLine;
                     //text.drawText("-" + i++ + ": " + item.Name + " | " + item.Description + " | " + item.type.ToString(), 500, 300 + 30 * i, Color.White);
                     bubble.Position = baseVector + new TGCVector2(xOffset * x, yOffset * y);
-                    if(
-                        Cursor.Position.X >= bubble.Position.X &&
-                        Cursor.Position.X <= bubble.Position.X + bubble.Bitmap.Width * bubble.Scaling.X &&
-                        Cursor.Position.Y >= bubble.Position.Y &&
-                        Cursor.Position.Y <= bubble.Position.Y + bubble.Bitmap.Height * bubble.Scaling.Y
-                       )
+                    if(cursorOverBubble())
                     {
                         bubble.Scaling = bubbleDefaultScale + GetScaleForSpriteByPixels(bubble, 10, 10);
                         item.Icon.Scaling = item.DefaultScale + GetScaleForSpriteByPixels(item.Icon, 10, 10);
                         hovering = true;
+                        this.itemHighlighted = item;
                     }
                     else
                     {
@@ -97,6 +99,15 @@ namespace TGC.Group.Model.Scenes
             //}
 
         }
+
+        private bool cursorOverBubble()
+        {
+            return Cursor.Position.X >= this.bubble.Position.X &&
+                   Cursor.Position.X <= this.bubble.Position.X + this.bubble.Bitmap.Width * this.bubble.Scaling.X &&
+                   Cursor.Position.Y >= this.bubble.Position.Y &&
+                   Cursor.Position.Y <= this.bubble.Position.Y + this.bubble.Bitmap.Height * this.bubble.Scaling.Y;
+        }
+
         public void TakePDAIn(float elapsedTime)
         {
             PDAPositionX += PDAMoveCoefficient * elapsedTime;

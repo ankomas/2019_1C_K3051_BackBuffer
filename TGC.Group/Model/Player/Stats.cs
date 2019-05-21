@@ -6,9 +6,9 @@ namespace TGC.Group.Model.Player
     public class Stats
     {
         public float Oxygen { get; set; }
-        public int Life { get; set; }
+        public float Life { get; set; }
 
-        public Stats(float oxygen, int life)
+        public Stats(float oxygen, float life)
         {
             this.Oxygen = oxygen;
             this.Life = life;

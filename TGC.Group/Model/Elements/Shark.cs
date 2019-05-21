@@ -37,7 +37,7 @@ namespace TGC.Group.Model.Elements
 
             if (VerifyCollision(difference, sharkBody, cameraBody))
             {
-                character.hit(10);
+                character.Hit(10);
             }
 
             difference.Normalize();

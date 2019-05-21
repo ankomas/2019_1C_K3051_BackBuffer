@@ -50,6 +50,8 @@ namespace TGC.Group.Model.Scenes
             BindState(StateID.OUT, TakePDAOut, StateID.IN);
 
             SetState(StateID.IN);
+            
+            this.pressed[GameInput._Enter] = () => itemHighlighted?.Use(this.gameScene.Character);
         }
         private void SetState(StateID newStateID)
         {
