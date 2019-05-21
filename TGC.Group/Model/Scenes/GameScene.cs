@@ -53,13 +53,19 @@ namespace TGC.Group.Model.Scenes
 
         RenderLogic stateDependentRenderLogic, newRenderLogic;
 
-        private StatsIndicators statsIndicators = new StatsIndicators(115, 550);
+        private StatsIndicators statsIndicators;
         
         public GameScene(TgcD3dInput input, string mediaDir) : base(input)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
 
             this.World = new World(new TGCVector3(0, 0, 0));
+
+            Vector2 niceOffset = new Vector2(90f, 25f);
+            int baseX0 = (int)(niceOffset.X);
+            int baseY0 = (int)(Screen.Height - (StatsIndicators.OxygenMeterSize + niceOffset.Y));
+
+            statsIndicators = new StatsIndicators(baseX0, baseY0);
 
             SetCamera(input);
 
