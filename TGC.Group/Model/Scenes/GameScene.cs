@@ -177,8 +177,8 @@ namespace TGC.Group.Model.Scenes
             skyBoxUnderwater = new TgcSkyBox();
             skyBoxUnderwater.Color = backgroundColor;
             skyBoxUnderwater.SkyEpsilon = 30;
-            skyBoxUnderwater.Center = Camera.Position;
             skyBoxUnderwater.Size = new TGCVector3(30000, 8000, 30000);
+            skyBoxUnderwater.Center = new TGCVector3(0, -skyBoxUnderwater.Size.Y / 4, 0);
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Up   , baseDir + "underwater_skybox-up.jpg"    );
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Down , baseDir + "underwater_skybox-down.jpg"  );
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Left , baseDir + "underwater_skybox-left.jpg"  );
@@ -193,7 +193,7 @@ namespace TGC.Group.Model.Scenes
             skyBoxOutside.Size = new TGCVector3(30000, 8000, 30000);
             skyBoxOutside.Center = new TGCVector3(
                 skyBoxUnderwater.Center.X,
-                skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 30,
+                skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 10,
                 skyBoxUnderwater.Center.Z
                 );
             skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Up, baseDir +    "skybox-up.jpg");
