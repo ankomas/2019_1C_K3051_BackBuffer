@@ -231,6 +231,12 @@ namespace TGC.Group.Model.Scenes
             cursor = hand;
             IItem item = null;
 
+            if (element.item != null)
+            {
+                dialogName = element.item.Name;
+                dialogDescription = element.item.Description;
+            }
+
             element.Selectable = true;
 
             if (aimFired)
@@ -243,8 +249,6 @@ namespace TGC.Group.Model.Scenes
                 {
                     this.World.Remove(element);
                     item = element.item;
-                    dialogName = item.Name;
-                    dialogDescription = item.Description;
                     aimFired = false;   
                 }
             }
