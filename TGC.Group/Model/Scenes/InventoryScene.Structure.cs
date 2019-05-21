@@ -2,6 +2,7 @@
 using TGC.Core.Input;
 using System.Drawing;
 using TGC.Core.Mathematica;
+using TGC.Group.Model.Input;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.Utils;
 
@@ -56,7 +57,7 @@ namespace TGC.Group.Model.Scenes
 
             this.stateID = newStateID;
             this.updateLogic = newState.updateLogic;
-            pressed[Key.I] = () => SetNextState(newState.nextStateID);
+            pressed[GameInput._Inventory] = () => SetNextState(newState.nextStateID);
         }
         private void SetNextState(StateID newStateID)
         {
