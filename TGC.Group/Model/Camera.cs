@@ -79,7 +79,7 @@ namespace TGC.Group.Model
             var moveVector = TGCVector3.Empty;
 
             if(ConsideringInput)
-            ReactToInput(moveVector);
+                moveVector = GetInputTraslation(moveVector);
 
             return moveVector;
         }
@@ -105,7 +105,7 @@ namespace TGC.Group.Model
         {
             currentUpdateLogic = MoveNormally;
         }
-        private void ReactToInput(TGCVector3 moveVector)
+        private TGCVector3 GetInputTraslation(TGCVector3 moveVector)
         {
             if (GameInput.Up.IsDown(Input))
             {
@@ -131,6 +131,8 @@ namespace TGC.Group.Model
             {
                 moveVector += new TGCVector3(0, 1, 0) * MovementSpeed;
             }
+
+            return moveVector;
         }
         public void IgnoreInput()
         {
