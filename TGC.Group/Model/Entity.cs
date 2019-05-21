@@ -1,4 +1,5 @@
 ﻿using BulletSharp;
+using BulletSharp.Math;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -19,15 +20,15 @@ namespace TGC.Group.Model
 
         public virtual void Render()
         {
-            this.Mesh.Render();
+            Mesh.Render();
 
         }
         public virtual void Update(Camera camera)
         {
-            this.Mesh.Position = new TGCVector3(this.RigidBody.CenterOfMassPosition);
-            this.Mesh.Transform =
-                TGCMatrix.Scaling(this.Mesh.Scale) *
-                new TGCMatrix(this.RigidBody.CenterOfMassTransform);
+            Mesh.Position = new TGCVector3(RigidBody.CenterOfMassPosition);
+            Mesh.Transform =
+                TGCMatrix.Scaling(Mesh.Scale) *
+                new TGCMatrix(RigidBody.CenterOfMassTransform);
         }
         public abstract void Dispose();
         public override abstract IRenderObject getCollisionVolume();
