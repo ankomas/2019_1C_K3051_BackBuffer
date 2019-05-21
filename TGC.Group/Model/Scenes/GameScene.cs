@@ -53,7 +53,7 @@ namespace TGC.Group.Model.Scenes
 
         RenderLogic stateDependentRenderLogic, newRenderLogic;
 
-        private IndicatorContainer indicatorContainer = new IndicatorContainer(115, 550);
+        private StatsIndicators statsIndicators = new StatsIndicators(115, 550);
         
         public GameScene(TgcD3dInput input, string mediaDir) : base(input)
         {
@@ -73,7 +73,7 @@ namespace TGC.Group.Model.Scenes
             InitHand();
             InitDialogBox();
 
-            this.indicatorContainer.init();
+            this.statsIndicators.init();
             
             World = new World(new TGCVector3(0, 0, 0));
 
@@ -311,7 +311,7 @@ namespace TGC.Group.Model.Scenes
             drawer.DrawSprite(mask);
             drawer.EndDrawSprite();
             
-            this.indicatorContainer.render(this.character);
+            this.statsIndicators.render(this.character);
         }
 
         public override void Dispose()

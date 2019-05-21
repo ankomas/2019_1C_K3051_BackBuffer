@@ -4,12 +4,12 @@ using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.UI
 {
-    public class IndicatorContainer
+    public class StatsIndicators
     {
         private OxygenIndicator oxygenIndicator;
         private LifeIndicator lifeIndicator;
 
-        public IndicatorContainer(int baseX0, int baseY0)
+        public StatsIndicators(int baseX0, int baseY0)
         {
             var oxygenMeterSize = (int) Math.Floor(Screen.Height * 0.25f);
             var lifeMeterSize = (int) Math.Floor(Screen.Height * 0.1f);
