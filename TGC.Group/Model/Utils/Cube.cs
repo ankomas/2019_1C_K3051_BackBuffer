@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
 using TGC.Core.Mathematica;
 
@@ -57,6 +59,41 @@ namespace TGC.Group.Model.Utils
             };
 
             return !(tMin > tzMax) && !(tzMin > tMax);
+        }
+        
+        // false if fully outside, true if inside or intersects
+        bool boxInFrustum( TgcFrustum fru)
+        {
+            // check box outside/inside of frustum
+            for( int i=0; i<6; i++ )
+            {
+                int out_ = 0;
+                out_ += ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMin.X, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
+                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMin.X, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
+                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMax.Y, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
+                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMax.Y, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
+                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMin.X, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
+                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMin.X, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
+                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMax.Y, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
+                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMax.Y, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
+                if( out_==8 ) return false;
+            }
+
+            var points = new HashSet<TGCVector3>();
+            foreach (var fruFrustumPlane in fru.FrustumPlanes)
+            {
+                points.Add(fruFrustumPlane.);
+            }
+            // check frustum outside/inside box
+            int out2_;
+                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].x > this.PMax.X)?1:0); if( out2_==8 ) return false;
+                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].x < this.PMin.X)?1:0); if( out2_==8 ) return false;
+                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].y > this.PMax.Y)?1:0); if( out2_==8 ) return false;
+                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].y < this.PMin.X)?1:0); if( out2_==8 ) return false;
+                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].z > this.PMax.Z)?1:0); if( out2_==8 ) return false;
+                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].z < this.PMin.Z)?1:0); if( out2_==8 ) return false;
+
+            return true;
         } 
     }
 }
