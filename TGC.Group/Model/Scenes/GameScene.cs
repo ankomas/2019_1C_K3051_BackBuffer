@@ -166,7 +166,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void InitStatsIndicator()
         {
-            Vector2 niceOffset = new Vector2(90f, 25f);
+            Vector2 niceOffset = new Vector2(Screen.Width * 0.1f, Screen.Height * 0.05f);
             int baseX0 = (int)(niceOffset.X);
             int baseY0 = (int)(Screen.Height - (StatsIndicators.OxygenMeterSize + niceOffset.Y));
 
