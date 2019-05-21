@@ -30,7 +30,7 @@ namespace TGC.Group.Model.Scenes
         string baseDir = "../../../res/";
 
         public delegate void Callback();
-        Callback onPauseCallback = () => {};
+        Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {};
 
         Scene subScene;
         InventoryScene inventoryScene;
@@ -237,7 +237,7 @@ namespace TGC.Group.Model.Scenes
             {
                 if (element.GetType() == typeof(Ship))
                 {
-                    //change scene
+                    onGetIntoShipCallback();
                 }
                 else
                 {
@@ -324,6 +324,11 @@ namespace TGC.Group.Model.Scenes
         public GameScene OnPause(Callback onPauseCallback)
         {
             this.onPauseCallback = onPauseCallback;
+            return this;
+        }
+        public GameScene OnGetIntoShip(Callback onGetIntoShipCallback)
+        {
+            this.onGetIntoShipCallback = onGetIntoShipCallback;
             return this;
         }
         public void CloseInventory()

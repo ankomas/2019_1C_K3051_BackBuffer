@@ -129,7 +129,8 @@ namespace TGC.Group.Model
         private void ResetGame()
         {
             gameScene = new GameScene(Input, MediaDir)
-                    .OnPause(() => PauseScene(gameScene));
+                    .OnPause(() => PauseScene(gameScene))
+                    .OnGetIntoShip(() => SetNextScene(shipScene));
 
             shipScene = new ShipScene(Input)
                 .OnGoToWater(() => SetNextScene(gameScene))
