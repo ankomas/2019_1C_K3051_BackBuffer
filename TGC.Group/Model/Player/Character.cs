@@ -33,7 +33,7 @@ namespace TGC.Group.Model.Player
 
         public bool IsDead()
         {
-            return this.ActualStats.Life == 0 || this.ActualStats.Oxygen == 0;
+            return this.ActualStats.Life <= 0 || this.ActualStats.Oxygen <= 0;
         }
 
         public void GiveItem(IItem item)
@@ -55,6 +55,11 @@ namespace TGC.Group.Model.Player
         public void RemoveItem(IItem item)
         {
             this.Inventory.RemoveItem(item);
+        }
+
+        public void hit(int quantity)
+        {
+            this.ActualStats.Update(new Stats(0, -quantity), this.MaxStats);
         }
     }
 }
