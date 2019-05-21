@@ -164,7 +164,7 @@ namespace TGC.Group.Model.Scenes
             Screen.CenterSprite(dialogBox);
             dialogBox.Position = new TGCVector2(dialogBox.Position.X + 120, dialogBox.Position.Y + 80);
         }
-        private void InnitStatsIndicator()
+        private void InitStatsIndicator()
         {
             Vector2 niceOffset = new Vector2(90f, 25f);
             int baseX0 = (int)(niceOffset.X);
