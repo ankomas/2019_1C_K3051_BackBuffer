@@ -79,7 +79,7 @@ namespace TGC.Group.Model.Scenes
         public override void Update(float elapsedTime) {}
     }
 
-    class CommandList
+    public class CommandList
     {
         private static byte NumberOfKeys = 237, NumberOfMouseButtons = 3;
         public delegate void Command();

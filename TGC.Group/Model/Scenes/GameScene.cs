@@ -104,7 +104,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void OpenInventory()
         {
-            ((Camera)Camera).Freeze();
+            ((Camera)Camera).IgnoreInput();
             subScene = inventoryScene;
             Input.update();
             TurnExploreCommandsOff();
@@ -322,7 +322,7 @@ namespace TGC.Group.Model.Scenes
         {
             subScene = Scene.Empty;
             TurnExploreCommandsOn();
-            ((Camera)Camera).Unfreeze();
+            ((Camera)Camera).ConsiderInput();
         }
         public override void ReactToInput()
         {

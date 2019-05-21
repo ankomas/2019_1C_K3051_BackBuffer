@@ -28,6 +28,8 @@ namespace TGC.Group.Model
         public float MovementSpeed { get; set; }
         public float RotationSpeed { get; set; }
 
+        private bool ConsideringInput = true;
+
         public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
             Input = input;
@@ -73,30 +75,8 @@ namespace TGC.Group.Model
         {
             var moveVector = TGCVector3.Empty;
 
-            if (GameInput.Up.IsDown(Input))
-            {
-                moveVector += new TGCVector3(0, 0, -1) * MovementSpeed;
-            }
-
-            if (GameInput.Down.IsDown(Input))
-            {
-                moveVector += new TGCVector3(0, 0, 1) * MovementSpeed;
-            }
-
-            if (GameInput.Right.IsDown(Input))
-            {
-                moveVector += new TGCVector3(-1, 0, 0) * MovementSpeed;
-            }
-
-            if (GameInput.Left.IsDown(Input))
-            {
-                moveVector += new TGCVector3(1, 0, 0) * MovementSpeed;
-            }
-            
-            if (GameInput.Float.IsDown(Input))
-            {
-                moveVector += new TGCVector3(0, 1, 0) * MovementSpeed;
-            }
+            if(ConsideringInput)
+            ReactToInput(moveVector);
 
             return moveVector;
         }
@@ -120,6 +100,41 @@ namespace TGC.Group.Model
         public void Unfreeze()
         {
             currentUpdateLogic = MoveNormally;
+        }
+        private void ReactToInput(TGCVector3 moveVector)
+        {
+            if (GameInput.Up.IsDown(Input))
+            {
+                moveVector += new TGCVector3(0, 0, -1) * MovementSpeed;
+            }
+
+            if (GameInput.Down.IsDown(Input))
+            {
+                moveVector += new TGCVector3(0, 0, 1) * MovementSpeed;
+            }
+
+            if (GameInput.Right.IsDown(Input))
+            {
+                moveVector += new TGCVector3(-1, 0, 0) * MovementSpeed;
+            }
+
+            if (GameInput.Left.IsDown(Input))
+            {
+                moveVector += new TGCVector3(1, 0, 0) * MovementSpeed;
+            }
+
+            if (GameInput.Float.IsDown(Input))
+            {
+                moveVector += new TGCVector3(0, 1, 0) * MovementSpeed;
+            }
+        }
+        public void IgnoreInput()
+        {
+            ConsideringInput = false;
+        }
+        public void ConsiderInput()
+        {
+            ConsideringInput = true;
         }
     }
 }
