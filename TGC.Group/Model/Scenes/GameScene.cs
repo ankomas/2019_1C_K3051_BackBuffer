@@ -237,6 +237,12 @@ namespace TGC.Group.Model.Scenes
                 dialogDescription = element.item.Description;
             }
 
+            if (element.GetType() == typeof(Ship))
+            {
+                dialogName = "Ship";
+                dialogDescription = "Enter to the ship";
+            }
+
             element.Selectable = true;
 
             if (aimFired)
@@ -257,6 +263,11 @@ namespace TGC.Group.Model.Scenes
         }
         public override void Update(float elapsedTime)
         {
+            if (this.character.IsDead())
+            {
+                //game over
+            }
+            
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
 
             CollisionManager.CheckCollitions(this.World.GetCollisionables());

@@ -24,6 +24,9 @@ namespace TGC.Group.Model.Player
         {
             this.Oxygen = Math.Min(this.Oxygen + toAdd.Oxygen, maxStats.Oxygen);
             this.Life = Math.Min(this.Life + toAdd.Life, maxStats.Life);
+
+            this.Oxygen = Math.Max(this.Oxygen, 0);
+            this.Life = Math.Max(this.Life, 0);
         }
     }
 }
