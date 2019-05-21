@@ -53,7 +53,7 @@ namespace TGC.Group.Model.Scenes
 
         RenderLogic stateDependentRenderLogic, newRenderLogic;
 
-        private StatsIndicators statsIndicators = new StatsIndicators(115, 550);
+        private StatsIndicators statsIndicators;
         
         public GameScene(TgcD3dInput input, string mediaDir) : base(input)
         {
@@ -72,6 +72,7 @@ namespace TGC.Group.Model.Scenes
             InitAim();
             InitHand();
             InitDialogBox();
+            InitStatsIndicator();
 
             this.statsIndicators.init();
             
@@ -163,7 +164,14 @@ namespace TGC.Group.Model.Scenes
             Screen.CenterSprite(dialogBox);
             dialogBox.Position = new TGCVector2(dialogBox.Position.X + 120, dialogBox.Position.Y + 80);
         }
+        private void InnitStatsIndicator()
+        {
+            Vector2 niceOffset = new Vector2(90f, 25f);
+            int baseX0 = (int)(niceOffset.X);
+            int baseY0 = (int)(Screen.Height - (StatsIndicators.OxygenMeterSize + niceOffset.Y));
 
+            statsIndicators = new StatsIndicators(baseX0, baseY0);
+        }
         private void InitSkyBoxes()
         {
             skyBoxUnderwater = new TgcSkyBox();

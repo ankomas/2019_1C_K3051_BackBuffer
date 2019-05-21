@@ -9,13 +9,14 @@ namespace TGC.Group.Model.UI
         private OxygenIndicator oxygenIndicator;
         private LifeIndicator lifeIndicator;
 
+        public static int OxygenMeterSize = (int)Math.Floor(Screen.Height * 0.25f);
+        public static int LifeMeterSize = (int)Math.Floor(Screen.Height * 0.1f);
+
         public StatsIndicators(int baseX0, int baseY0)
         {
-            var oxygenMeterSize = (int) Math.Floor(Screen.Height * 0.25f);
-            var lifeMeterSize = (int) Math.Floor(Screen.Height * 0.1f);
 
-            this.oxygenIndicator = new OxygenIndicator(oxygenMeterSize, baseX0, baseY0);
-            this.lifeIndicator = new LifeIndicator(lifeMeterSize, baseX0 - lifeMeterSize, baseY0 - lifeMeterSize);
+            this.oxygenIndicator = new OxygenIndicator(OxygenMeterSize, baseX0, baseY0);
+            this.lifeIndicator = new LifeIndicator(LifeMeterSize, baseX0 - LifeMeterSize, baseY0 - LifeMeterSize);
         }
 
         public void init()
