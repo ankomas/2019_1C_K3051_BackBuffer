@@ -30,7 +30,7 @@ namespace TGC.Group.Model.Scenes
         string baseDir = "../../../res/";
 
         public delegate void Callback();
-        Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {};
+        Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {}, onGameOverCallback = () => {};
 
         Scene subScene;
         InventoryScene inventoryScene;
@@ -84,6 +84,9 @@ namespace TGC.Group.Model.Scenes
             
             pressed[Key.Escape] = () => {
                 onPauseCallback();
+            };
+            pressed[Key.Q] = () => {
+                onGameOverCallback();
             };
 
             pressed[Key.F] = () => {
@@ -265,7 +268,7 @@ namespace TGC.Group.Model.Scenes
         {
             if (this.character.IsDead())
             {
-                //game over
+                onGameOverCallback();
             }
             
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
@@ -358,6 +361,11 @@ namespace TGC.Group.Model.Scenes
         public GameScene OnGetIntoShip(Callback onGetIntoShipCallback)
         {
             this.onGetIntoShipCallback = onGetIntoShipCallback;
+            return this;
+        }
+        public GameScene OnGameOver(Callback onGameOverCallback)
+        {
+            this.onGameOverCallback = onGameOverCallback;
             return this;
         }
         public void CloseInventory()
