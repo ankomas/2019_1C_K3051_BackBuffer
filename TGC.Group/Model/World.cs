@@ -203,7 +203,7 @@ namespace TGC.Group.Model
         {
             ToRender(camera.Position).ForEach(chunk => chunk.Render());
             entities.ForEach(entity => entity.Render());
-            waterSurface.Render(camera.Position);
+            //waterSurface.Render(camera.Position);
             //Floor.Render();
             //this.waterSurface.Render(camera.Position);
         }

@@ -193,7 +193,7 @@ namespace TGC.Group.Model.Scenes
             skyBoxOutside.Size = new TGCVector3(30000, 8000, 30000);
             skyBoxOutside.Center = new TGCVector3(
                 skyBoxUnderwater.Center.X,
-                skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 10,
+                skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 0,
                 skyBoxUnderwater.Center.Z
                 );
             skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Up, baseDir +    "skybox-up.jpg");
@@ -304,8 +304,15 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
-            this.skyBoxUnderwater.Render();
-            this.skyBoxOutside.Render();
+            if(Camera.Position.Y < 0)
+            {
+                this.skyBoxUnderwater.Render();
+            }
+            else
+            {
+                this.skyBoxOutside.Render();
+            }
+
             this.World.Render(this.Camera);
 
             if (this.BoundingBox)
