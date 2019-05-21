@@ -13,7 +13,7 @@ namespace TGC.Group.Model.Player
 {
     public class Character
     {
-        private static readonly Stats BaseStats = new Stats(5, 100);
+        private static readonly Stats BaseStats = new Stats(35, 100);
 
         public Stats MaxStats => BaseStats + this.equipment.ExtraStats();
 
