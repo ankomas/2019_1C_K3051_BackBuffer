@@ -12,7 +12,7 @@ namespace TGC.Group.Model.Items
         public override string Description { get; } = "High quality metal";
         public override ItemType type { get; } = ItemType.MATERIAL;
         public override CustomSprite Icon { get; }
-        public sealed override TGCVector2 DefaultScale { get; } = new TGCVector2(.05f, .05f);
+        public sealed override TGCVector2 DefaultScale { get; } = new TGCVector2(.042f, .042f);
         public override void Use(Character character)
         {
             //TODO something?

@@ -18,6 +18,7 @@ using Key = Microsoft.DirectX.DirectInput.Key;
 using Screen = TGC.Group.Model.Utils.Screen;
 using System;
 using TGC.Group.Model.UI;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -26,6 +27,9 @@ namespace TGC.Group.Model.Scenes
         private readonly TgcText2D DrawText = new TgcText2D();
         private World World { get; }
         private bool BoundingBox { get; set; }
+        
+        //TODO remove
+        private SpawnRate goldRate = new SpawnRate(1, 4);
 
         string baseDir = "../../../res/";
 
@@ -282,9 +286,16 @@ namespace TGC.Group.Model.Scenes
             this.World.Update((Camera) this.Camera, this.character);
 
             var item = manageSelectableElement(this.World.SelectableElement); // Imsportant: get this AFTER updating the world
-            
-            if(item != null)
+
+            //TODO refactor
+            if (item != null)
+            { 
                 this.character.GiveItem(item);
+                if (this.goldRate.HasToSpawn())
+                {
+                    this.character.GiveItem(new Gold());
+                }
+            }
 
             skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
