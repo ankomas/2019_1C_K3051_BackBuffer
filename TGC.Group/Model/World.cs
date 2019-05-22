@@ -76,8 +76,7 @@
             Floor.loadHeightmap(Game.Default.MediaDirectory + "Heightmap3.jpg", 1000, 65, 
                 new TGCVector3(0,-100,0));
             Floor.loadTexture(Game.Default.MediaDirectory + Game.Default.TexturaTierra);
-            var floorRigidBody = CreateSurfaceFromHeighMap(Floor.getData());
-            AquaticPhysics.Instance.Add(floorRigidBodya);
+            AquaticPhysics.Instance.Add(CreateSurfaceFromHeighMap(Floor.getData()));
 
         }
 
