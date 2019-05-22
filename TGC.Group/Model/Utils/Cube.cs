@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.DirectX.DirectInput;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
+using TGC.Core.Direct3D;
+using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model.Utils
@@ -15,7 +19,7 @@ namespace TGC.Group.Model.Utils
             this.PMin = PMin;
             this.PMax = PMax;
         }
-        
+
         public bool isIntersectedBy(TgcRay r)
         {
             var tMin = (this.PMin.X - r.Origin.X) / r.Direction.X;
@@ -60,40 +64,35 @@ namespace TGC.Group.Model.Utils
 
             return !(tMin > tzMax) && !(tzMin > tMax);
         }
-        
-        // false if fully outside, true if inside or intersects
-        bool boxInFrustum( TgcFrustum fru)
+
+        //Returns the eight points of the cube anti - clock wise starting bottom left and from down to up
+        //8----7
+        //5----6
+        //|    |
+        //4----3
+        //1----2
+        private TGCVector3[] eightPoins()
         {
-            // check box outside/inside of frustum
-            for( int i=0; i<6; i++ )
-            {
-                int out_ = 0;
-                out_ += ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMin.X, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
-                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMin.X, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
-                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMax.Y, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
-                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMax.Y, this.PMin.Z, 1.0f) ) < 0.0 )?1:0);
-                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMin.X, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
-                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMin.X, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
-                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMin.X, this.PMax.Y, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
-                out_+= ((dot( fru.FrustumPlanes[i], vec4(this.PMax.X, this.PMax.Y, this.PMax.Z, 1.0f) ) < 0.0 )?1:0);
-                if( out_==8 ) return false;
-            }
+            TGCVector3[] points = new TGCVector3[8];
+            
+            points[0] = PMin;
+            points[1] = new TGCVector3(PMax.X, PMin.Y, PMin.Z);
+            points[2] = new TGCVector3(PMax.X, PMin.Y, PMax.Z);
+            points[3] = new TGCVector3(PMin.X, PMin.Y, PMax.Z);
+            points[4] = new TGCVector3(PMin.X, PMax.Y, PMin.Z);
+            points[5] = new TGCVector3(PMax.X, PMax.Y, PMin.Z);
+            points[6] = PMax;
+            points[7] = new TGCVector3(PMin.X, PMax.Y, PMax.Z);
 
-            var points = new HashSet<TGCVector3>();
-            foreach (var fruFrustumPlane in fru.FrustumPlanes)
-            {
-                points.Add(fruFrustumPlane.);
-            }
-            // check frustum outside/inside box
-            int out2_;
-                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].x > this.PMax.X)?1:0); if( out2_==8 ) return false;
-                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].x < this.PMin.X)?1:0); if( out2_==8 ) return false;
-                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].y > this.PMax.Y)?1:0); if( out2_==8 ) return false;
-                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].y < this.PMin.X)?1:0); if( out2_==8 ) return false;
-                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].z > this.PMax.Z)?1:0); if( out2_==8 ) return false;
-                out2_=0; for( int i=0; i<8; i++ ) out2_ += ((fru.mPoints[i].z < this.PMin.Z)?1:0); if( out2_==8 ) return false;
+            return points;
+        }
+        
+        // check if any point of the cube is the frustum
+        public bool isIn(TgcFrustum frustum)
+        {
+            var points = eightPoins();
 
-            return true;
+            return frustum == null || frustum.FrustumPlanes.All(plane => points.Any(point => plane.Dot(point) >= 0));
         } 
     }
 }

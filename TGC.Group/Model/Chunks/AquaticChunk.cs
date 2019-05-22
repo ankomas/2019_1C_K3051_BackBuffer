@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Elements;
 using TGC.Group.Model.Elements.ElementFactories;
@@ -11,22 +12,29 @@ namespace TGC.Group.Model.Chunks
 {
     public class AquaticChunk : Chunk
     {
+        private List<Segment> segments;
+        private int divisions;
+
         public AquaticChunk(TGCVector3 origin) : base(origin, AquaticPhysics.Instance)
         {
             var max = origin + DefaultSize;
 
-            var segments = Segment.GenerateSegments(origin, max, (int)DefaultSize.Y / 1000);
+            this.segments = Segment.GenerateSegments(origin, max, (int)DefaultSize.Y / 1000);
 
-            var divisions = (int)(DefaultSize.X / 100);
-
-            GenerateElements(segments, divisions);
-            AddElementsToPhysicsWorld();
-
+            this.divisions = (int)(DefaultSize.X / 100);
         }
 
-        private void GenerateElements(List<Segment> segments, int divisions)
+        public override IEnumerable<Element> Init()
         {
-            segments.ForEach(segment => this.Elements.AddRange(GenerateElementsBySegment(segment, divisions)));
+            var elements = GenerateElements(segments, divisions);
+            AddElementsToPhysicsWorld(elements);
+
+            return elements;
+        }
+
+        private List<Element> GenerateElements(List<Segment> segments, int divisions)
+        {
+            return segments.SelectMany(segment => GenerateElementsBySegment(segment, divisions)).ToList();
         }
 
         private static IEnumerable<Element> GenerateElementsBySegment(Segment segment, int divisions)

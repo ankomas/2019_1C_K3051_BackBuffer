@@ -9,6 +9,7 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Text;
 
 namespace TGC.Group.Model.Scenes
@@ -43,7 +44,7 @@ namespace TGC.Group.Model.Scenes
             Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
         }
 
-        public override void Render()
+        public override void Render(TgcFrustum frustum)
         {
             ClearScreen();
 

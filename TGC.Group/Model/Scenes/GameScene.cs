@@ -17,6 +17,8 @@ using TGC.Core.Direct3D;
 using Key = Microsoft.DirectX.DirectInput.Key;
 using Screen = TGC.Group.Model.Utils.Screen;
 using System;
+using System.Linq;
+using TGC.Core.BoundingVolumes;
 using TGC.Group.Model.UI;
 
 namespace TGC.Group.Model.Scenes
@@ -270,8 +272,6 @@ namespace TGC.Group.Model.Scenes
             
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
 
-            CollisionManager.CheckCollitions(this.World.GetCollisionables());
-
             this.World.Update((Camera) this.Camera, this.character);
 
             var item = manageSelectableElement(this.World.SelectableElement); // Imsportant: get this AFTER updating the world
@@ -300,7 +300,7 @@ namespace TGC.Group.Model.Scenes
             aimFired = false;
         }
 
-        public override void Render()
+        public override void Render(TgcFrustum frustum)
         {
             ClearScreen();
 
@@ -313,11 +313,12 @@ namespace TGC.Group.Model.Scenes
                 this.skyBoxOutside.Render();
             }
 
-            this.World.Render(this.Camera);
+            this.World.Render(this.Camera, frustum);
 
             if (this.BoundingBox)
             {
                 this.World.RenderBoundingBox(this.Camera);
+                this.drawFrustumStats(frustum, 300, 300, Color.GreenYellow);
             }
 
             drawer.BeginDrawSprite();
@@ -345,6 +346,15 @@ namespace TGC.Group.Model.Scenes
             this.statsIndicators.render(this.character);
         }
 
+        private void drawFrustumStats(TgcFrustum frustum, int x, int y, Color color)
+        {
+            var frustumText = frustum
+                .FrustumPlanes
+                .Aggregate("", (current, plane) => current + plane.A + " " + plane.B + " " + plane.C + " " + plane.D + " \n");
+            
+            this.DrawText.drawText("Frustum: " + frustumText, x, y, color);
+        }
+ 
         public override void Dispose()
         {
             this.World.Dispose();

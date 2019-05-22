@@ -1,5 +1,6 @@
 ﻿using Microsoft.DirectX.DirectInput;
 using System.Drawing;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
@@ -106,7 +107,7 @@ namespace TGC.Group.Model.Scenes
             rotation += .0001f;
             Camera.SetCamera(skyBox.Center, lookAt);
         }
-        override public void Render()
+        override public void Render(TgcFrustum frustum)
         {
             ClearScreen();
 
