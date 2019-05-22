@@ -62,6 +62,9 @@ namespace TGC.Group.Model.Scenes.Crafter
                 byte yOffset = 110;
                 byte maxItemsPerLine = 8;
                 byte i = 0;
+
+                this.itemHighlighted = null;
+
                 foreach (var item in Items.Crafter.Crafteables)
                 {
                     int x = i % maxItemsPerLine;
@@ -75,8 +78,7 @@ namespace TGC.Group.Model.Scenes.Crafter
                         hovering = true;
                         this.itemHighlighted = item;
                     }
-                    else
-                    {
+                    else {
                         this.bubble.Scaling = bubbleDefaultScale;
                         item.Icon.Scaling = item.DefaultScale;
                     }
@@ -108,6 +110,10 @@ namespace TGC.Group.Model.Scenes.Crafter
             //    }
             //    drawer.DrawSprite(PDA);
             //}
+            if(this.itemHighlighted != null)
+                this.drawText.drawText(this.itemHighlighted.Recipe.ToString(), 300, 300, 
+                    this.Character.CanCraft(this.itemHighlighted) ?
+                        Color.Aquamarine : Color.Red);
         }
 
         private bool cursorOverBubble()

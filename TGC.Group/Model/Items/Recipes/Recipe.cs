@@ -20,10 +20,10 @@ namespace TGC.Group.Model.Items.Recipes
 
         public override string ToString()
         {
-            var res = "//";
+            var res = "";
             this.Ingredients.ToList().ForEach(ingredient =>
             {
-                res = res + ingredient.Item.Name + "-" + ingredient.Quantity + "//";
+                res = res + ingredient.Item.Name + ": " + ingredient.Quantity + "\n";
             });
             return res;
         }

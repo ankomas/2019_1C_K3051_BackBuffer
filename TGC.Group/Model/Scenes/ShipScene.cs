@@ -97,7 +97,6 @@ namespace TGC.Group.Model.Scenes
             this.subScene.Render();
             
             drawText.drawText("Press TAB or I to open crafting menu, ENTER to exit ship.", 30, 30, Color.White);
-            drawText.drawText("Collect 5 corals to craft potion.", 30, 60, Color.White);
         }
 
         public override void Update(float elapsedTime)

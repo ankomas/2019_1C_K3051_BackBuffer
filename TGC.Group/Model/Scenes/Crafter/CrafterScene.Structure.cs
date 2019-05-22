@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
@@ -57,16 +58,11 @@ namespace TGC.Group.Model.Scenes.Crafter
             this.pressed[GameInput._Enter] = () =>
             {
                 if (this.itemHighlighted == null) return;
-                if (this.Character.CanCraft(this.itemHighlighted))
-                {
-                    this.crafter.Craft(this.itemHighlighted, this.Character);
-                    this.Character.GiveItem(this.crafter.CraftedItem);
-                    this.crafter.CraftedItem = null;    
-                }
-                else
-                {
-                    this.drawText.drawText(this.itemHighlighted.Recipe.ToString(), 30, 30, Color.White);
-                }
+                if (!this.Character.CanCraft(this.itemHighlighted)) return;
+                
+                this.crafter.Craft(this.itemHighlighted, this.Character);
+                this.Character.GiveItem(this.crafter.CraftedItem);
+                this.crafter.CraftedItem = null;
             };
         }
         private void SetState(StateID newStateID)
