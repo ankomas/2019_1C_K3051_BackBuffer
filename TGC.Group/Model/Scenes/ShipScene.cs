@@ -20,7 +20,7 @@ namespace TGC.Group.Model.Scenes
     {
         TgcSkyBox walls;
         float rotation = 0;
-        readonly TgcText2D DrawText = new TgcText2D();
+        private readonly TgcText2D drawText = new TgcText2D();
         TGCVector3 viewDirectionStart = new TGCVector3(-1, 0.25f, 0);
         public delegate void Callback();
         private Callback onGoToWaterCallback = () => {}, onPauseCallback = () => {};
@@ -95,6 +95,9 @@ namespace TGC.Group.Model.Scenes
             walls.Render();
 
             this.subScene.Render();
+            
+            drawText.drawText("Press TAB or I to open crafting menu, ENTER to exit ship.", 30, 30, Color.White);
+            drawText.drawText("Collect 5 corals to craft potion.", 30, 60, Color.White);
         }
 
         public override void Update(float elapsedTime)

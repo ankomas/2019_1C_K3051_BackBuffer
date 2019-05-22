@@ -17,5 +17,15 @@ namespace TGC.Group.Model.Items.Recipes
             return this.Ingredients.All(ingredient => 
                 availableIngredients.Any(ingredient.contains));
         }
+
+        public override string ToString()
+        {
+            var res = "//";
+            this.Ingredients.ToList().ForEach(ingredient =>
+            {
+                res = res + ingredient.Item.Name + "-" + ingredient.Quantity + "//";
+            });
+            return res;
+        }
     }
 }
