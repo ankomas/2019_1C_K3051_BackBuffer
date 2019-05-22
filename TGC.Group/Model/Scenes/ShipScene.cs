@@ -10,19 +10,30 @@ using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Text;
+using TGC.Group.Model.Elements.RigidBodyFactories;
+using TGC.Group.Model.Input;
+using TGC.Group.Model.Scenes.Crafter;
 
 namespace TGC.Group.Model.Scenes
 {
     class ShipScene : Scene
     {
-        readonly TgcText2D DrawText = new TgcText2D();
         TgcSkyBox walls;
+        float rotation = 0;
+        private readonly TgcText2D drawText = new TgcText2D();
         TGCVector3 viewDirectionStart = new TGCVector3(-1, 0.25f, 0);
         public delegate void Callback();
         private Callback onGoToWaterCallback = () => {}, onPauseCallback = () => {};
+        private GameScene GameScene;
+        private Scene subScene;
+        private CrafterScene crafterScene;
 
-        public ShipScene(TgcD3dInput input) : base(input)
+        public ShipScene(TgcD3dInput input, GameScene gameScene) : base(input)
         {
+            this.GameScene = gameScene;
+            subScene = Scene.Empty;
+            this.initCrafterScene();
+
             this.backgroundColor = Color.DarkOrange;
 
             walls = new TgcSkyBox();
@@ -39,16 +50,53 @@ namespace TGC.Group.Model.Scenes
             walls.setFaceTexture(TgcSkyBox.SkyFaces.Up, baseDir +    "ceiling.jpg");
 
             walls.Init();
-            Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
-        }
+            //Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
+            SetCamera(Input);
 
+            TurnExploreCommandsOn();
+        }
+        
+        private void TurnExploreCommandsOn()
+        {
+            pressed[GameInput._Inventory] = this.OpenCrafter;
+        }
+        private void TurnExploreCommandsOff()
+        {
+            pressed[GameInput._Inventory] = () => { };
+        }
+        private void initCrafterScene()
+        {
+            this.crafterScene = new CrafterScene(Input, this.GameScene, this);
+        }
+        private void OpenCrafter()
+        {
+            ((Camera)this.Camera).IgnoreInput();
+            subScene = this.crafterScene;
+            Input.update();
+            TurnExploreCommandsOff();
+        }
+        public void CloseCrafter()
+        {
+            subScene = Scene.Empty;
+            TurnExploreCommandsOn();
+            ((Camera)Camera).ConsiderInput();
+        }
+        private void SetCamera(TgcD3dInput input)
+        {
+            var position = new TGCVector3(0, 1000, 0);
+            var rigidBody = new CapsuleFactory().Create(position, 100, 60);
+            AquaticPhysics.Instance.Add(rigidBody);
+            this.Camera = new Camera(position, input, rigidBody);
+        }
         public override void Render()
         {
             ClearScreen();
 
             walls.Render();
+
+            this.subScene.Render();
             
-            this.DrawText.drawText("Press ENTER to start", 320, 240, Color.Bisque);
+            drawText.drawText("Press TAB or I to open crafting menu, ENTER to exit ship.", 30, 30, Color.White);
         }
 
         public override void Update(float elapsedTime)
@@ -61,6 +109,8 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             }
+            this.subScene.ReactToInput();
+            subScene.Update(elapsedTime);
         }
 
         public ShipScene OnGoToWater(Callback onGoToWaterCallback)

@@ -12,7 +12,7 @@ namespace TGC.Group.Model.Elements
 {
     class Coral : Element
     {
-        public override IItem item { get; } = new Gold();
+        public override IItem item { get; } = new GreenCoral();
 
         public Coral(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
         {

@@ -1,5 +1,9 @@
+using BulletSharp.Math;
+using Microsoft.DirectX.Direct3D;
 using System;
 using System.Collections.Generic;
+using TGC.Core.Camara;
+using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Elements;
 
@@ -13,7 +17,7 @@ namespace TGC.Group.Model.Chunks
         protected AquaticPhysics Physics { get; }
 
         public static readonly Chunk None = new NoneChunk();
-        
+
         public static TGCVector3 DefaultSize { get; } = new TGCVector3(1000, 1000, 1000);
 
         protected Chunk(TGCVector3 origin, AquaticPhysics physicsWorld)
@@ -25,10 +29,14 @@ namespace TGC.Group.Model.Chunks
         
         public static Chunk ByYAxis(TGCVector3 origin)
         {
-            if (origin.Y < 0)
+            const int surface = 0;
+            const int seaFloor = surface - 2;
+            const int underSeaLimit = seaFloor - 1;
+
+            if (origin.Y < DefaultSize.Y * underSeaLimit || origin.Y > surface)
                 return None;
             
-            if (Math.Abs(origin.Y) < DefaultSize.Y)
+            if (origin.Y < DefaultSize.Y * seaFloor)
                 return new FloorChunk(origin);
             
             return new AquaticChunk(origin);

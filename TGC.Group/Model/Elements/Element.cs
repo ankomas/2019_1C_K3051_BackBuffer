@@ -6,16 +6,32 @@ using BulletSharp.Math;
 using TGC.Group.Model.Utils;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
+using Microsoft.DirectX.Direct3D;
+
 namespace TGC.Group.Model.Elements
 {
     public abstract class Element: Collisionable
     {
 
-        public TgcMesh Mesh { get; }
+        private TgcMesh Mesh { get; }
         public RigidBody PhysicsBody { get; set; }
         public bool Selectable { get; set; }
 
         public abstract IItem item { get; }
+
+        private Effect effect;
+        public Effect Effect
+        {
+            set
+            {
+                this.Mesh.Effect = effect = value;
+                this.Mesh.Technique = "FedeTechnique";
+            }
+            get
+            {
+                return effect;
+            }
+        }
 
         public Element(TgcMesh model, RigidBody rigidBody)
         {
@@ -46,10 +62,15 @@ namespace TGC.Group.Model.Elements
                 getCollisionVolume().Render();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.Mesh.Dispose();
             this.PhysicsBody.Dispose();
+        }
+
+        public virtual TGCVector3 getPosition()
+        {
+            return this.Mesh.Position;
         }
 
         public override IRenderObject getCollisionVolume() 

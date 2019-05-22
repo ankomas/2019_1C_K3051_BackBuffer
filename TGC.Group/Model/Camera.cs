@@ -28,6 +28,8 @@ namespace TGC.Group.Model
         public float MovementSpeed { get; set; }
         public float RotationSpeed { get; set; }
 
+        private bool ConsideringInput = true;
+
         public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
             Input = input;
@@ -63,8 +65,11 @@ namespace TGC.Group.Model
 
         public TGCMatrix CalculateCameraRotation()
         {
-            leftrightRot += Input.XposRelative * RotationSpeed;
-            updownRot = FastMath.Clamp( updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
+            if(ConsideringInput)
+            {
+                leftrightRot += Input.XposRelative * RotationSpeed;
+                updownRot = FastMath.Clamp(updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
+            }
                 
             return TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
         }
@@ -73,6 +78,35 @@ namespace TGC.Group.Model
         {
             var moveVector = TGCVector3.Empty;
 
+            if(ConsideringInput)
+                moveVector = GetInputTraslation(moveVector);
+
+            return moveVector;
+        }
+        void MoveNormally(float elapsedTime)
+        {
+            cameraRotation = CalculateCameraRotation();
+
+            Position = CalculateTranslation(elapsedTime, cameraRotation);
+
+            LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
+
+            UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
+
+            if(ConsideringInput) Cursor.Position = mouseCenter;
+
+            base.SetCamera(Position, LookAt, UpVector);
+        }
+        public void Freeze()
+        {
+            currentUpdateLogic = (elapsedTime) => {};
+        }
+        public void Unfreeze()
+        {
+            currentUpdateLogic = MoveNormally;
+        }
+        private TGCVector3 GetInputTraslation(TGCVector3 moveVector)
+        {
             if (GameInput.Up.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 0, -1) * MovementSpeed;
@@ -92,7 +126,7 @@ namespace TGC.Group.Model
             {
                 moveVector += new TGCVector3(1, 0, 0) * MovementSpeed;
             }
-            
+
             if (GameInput.Float.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 1, 0) * MovementSpeed;
@@ -100,28 +134,13 @@ namespace TGC.Group.Model
 
             return moveVector;
         }
-        void MoveNormally(float elapsedTime)
+        public void IgnoreInput()
         {
-            cameraRotation = CalculateCameraRotation();
-
-            Position = CalculateTranslation(elapsedTime, cameraRotation);
-
-            LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
-
-            UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
-
-            Cursor.Position = mouseCenter;
-            base.SetCamera(Position, LookAt, UpVector);
+            ConsideringInput = false;
         }
-
-        public void Freeze()
+        public void ConsiderInput()
         {
-            currentUpdateLogic = (elapsedTime) => {};
-        }
-
-        public void Unfreeze()
-        {
-            currentUpdateLogic = MoveNormally;
+            ConsideringInput = true;
         }
     }
 }

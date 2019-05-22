@@ -1,65 +1,73 @@
-﻿using BulletSharp;
-using BulletSharp.Math;
-using System;
+﻿using System;
 using System.Drawing;
+using BulletSharp;
+using BulletSharp.Math;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Text;
-using TGC.Group.Model.Items;
+using TGC.Group.Model.Entities;
+using TGC.Group.Model.Player;
+using Matrix = Microsoft.DirectX.Matrix;
 
-namespace TGC.Group.Model.Elements.ElementFactories
+
+namespace TGC.Group.Model.Elements
 {
     public class Shark : Entity
     {
-        private static float DefaultVelocity = 5f;
+        private static readonly TgcText2D DrawText = new TgcText2D();
+        private MovementToEntity MovementToCamera;
+        private bool dead;
 
-        private Vector3 LookAt = new Vector3(1, 0, 0);
-        private static TgcText2D DrawText = new TgcText2D();
-        private bool dead = false;
         public Shark(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
-        { 
+        {
+            MovementToCamera = new MovementToEntity(
+                new Vector3(1f, 0f, 0f),
+                FastMath.PI / 100f, 
+                10f
+                );
         }
 
 
-
-        public override void Update(Camera camera)
+        public override void Update(Camera camera, Character character)
         {
-
             var difference = camera.Position.ToBulletVector3() - RigidBody.CenterOfMassPosition;
 
             var sharkBody = (CapsuleShapeX)RigidBody.CollisionShape;
             var cameraBody = (CapsuleShape)camera.RigidBody.CollisionShape;
 
-            if (
-            FastMath.Pow2(difference.X) <= FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) &&
-            FastMath.Pow2(difference.Y) <= FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) &&
-            FastMath.Pow2(difference.Z) <= FastMath.Pow2(sharkBody.Radius - cameraBody.Radius)
-             )
+            if (VerifyCollision(difference, sharkBody, cameraBody))
             {
-                dead = true;
-
+                character.Hit(10);
             }
 
             difference.Normalize();
-            RigidBody.Translate(difference * DefaultVelocity);
-
-
-            base.Update(camera);
-
+           
+            MovementToCamera.Move(Mesh, RigidBody, camera.Position, difference);
+            
+            base.Update(camera, character);
         }
 
-
+        private bool VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
+        {
+            var epsilon = 10f;
+            return FastMath.Pow2(difference.X) <=
+                FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) * epsilon &&
+                FastMath.Pow2(difference.Y) <=
+                FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) * epsilon&&
+                FastMath.Pow2(difference.Z) <=
+                FastMath.Pow2(sharkBody.Radius - cameraBody.Radius) * epsilon ;
+        }
 
         public override void Render()
         {
             base.Render();
-            //DrawText.drawText(a.ToString(), 50, 50, Color.Black);
             if (dead)
             {
                 var point = GetCenter();
-                DrawText.drawText("TE MORISTE WEEE xddxdxd", point.X, point.Y, Color.Red);
+                DrawText.drawText("Hit", point.X, point.Y, Color.Red);
             }
 
         }
@@ -70,15 +78,7 @@ namespace TGC.Group.Model.Elements.ElementFactories
                 D3DDevice.Instance.Device.Viewport.Height / 2
                 );
         }
-
-        public TGCMatrix CalculateRotation(Camera camera)
-        {
-            var vector = camera.Position.ToBulletVector3() - RigidBody.CenterOfMassPosition;
-            vector.Normalize();
-
-            return TGCMatrix.RotationX(vector.X) * TGCMatrix.RotationY(vector.Y) * TGCMatrix.RotationZ(vector.Z);
-        }
-
+        
         public override IRenderObject getCollisionVolume()
         {
             CapsuleShapeX capsule = (CapsuleShapeX)RigidBody.CollisionShape;
@@ -90,8 +90,8 @@ namespace TGC.Group.Model.Elements.ElementFactories
 
         public override void Dispose()
         {
-            this.Mesh.Dispose();
-            this.RigidBody.Dispose();
+            Mesh.Dispose();
+            RigidBody.Dispose();
         }
     }
 }

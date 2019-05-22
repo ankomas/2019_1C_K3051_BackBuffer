@@ -57,7 +57,7 @@ namespace TGC.Group.Model.Scenes
             skyBox = new TgcSkyBox();
             skyBox.Center = new TGCVector3(0, 500, 0);
             skyBox.Size = new TGCVector3(10000, 10000, 10000);
-            string baseDir = "../../../res/";
+            var baseDir = Game.Default.ResDirectory;
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up   , baseDir +  "skybox-up.jpg"    );
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down , baseDir +  "skybox-down.jpg"  );
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left , baseDir +  "skybox-left.jpg"  );
@@ -66,6 +66,10 @@ namespace TGC.Group.Model.Scenes
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back , baseDir +  "skybox-back.jpg"  );
             skyBox.Init();
             Camera = new TgcCamera();
+
+            pressed[GameInput._Down] = () => pointer = Pointer.DOWN;
+            pressed[GameInput._Up] = () => pointer = Pointer.UP;
+            pressed[GameInput._Enter] = fireAction;
         }
 
         private void InitFonts()
@@ -78,14 +82,14 @@ namespace TGC.Group.Model.Scenes
 
         private void InitTitle()
         {
-            title = BitmapRepository.CreateSpriteFromPath(BitmapRepository.Title);
+            title = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Title);
             title.Scaling = new TGCVector2(.15f, .25f);
             title.Position = new TGCVector2(200, 250);
         }
 
         private void InitBlackRectangle()
         {
-            spriteBlackRectangle = BitmapRepository.CreateSpriteFromPath(BitmapRepository.BlackRectangle);
+            spriteBlackRectangle = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackRectangle);
             spriteBlackRectangle.Color = Color.FromArgb(188, 0, 0, 0);
             spriteBlackRectangle.Scaling = new TGCVector2(1, .1f);
             Screen.CenterSprite(spriteBlackRectangle);
@@ -98,10 +102,6 @@ namespace TGC.Group.Model.Scenes
 
         override public void Update(float elapsedTime)
         {
-            if (GameInput.Down.IsPressed(Input)) pointer = Pointer.DOWN;
-            if (GameInput.Up.IsPressed(Input)) pointer = Pointer.UP;
-            if (GameInput.Enter.IsPressed(Input)) fireAction();
-
             TGCVector3 lookAt  = skyBox.Center + TGCVector3.TransformNormal(viewDirectionStart, TGCMatrix.RotationY(rotation));
             rotation += .0001f;
             Camera.SetCamera(skyBox.Center, lookAt);

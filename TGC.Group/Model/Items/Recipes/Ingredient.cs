@@ -20,12 +20,17 @@ namespace TGC.Group.Model.Items.Recipes
                 !ReferenceEquals(this, null) &&
                 !ReferenceEquals(o, null) &&
                 this.GetType() == o.GetType() &&
-                Equals(this.Item.Name, ((Ingredient) o).Item.Name) && this.Quantity == ((Ingredient) o).Quantity;
+                Equals(this.Item, ((Ingredient) o).Item) && this.Quantity == ((Ingredient) o).Quantity;
+        }
+
+        public bool contains(Ingredient ingredient)
+        {
+            return Equals(this.Item, ingredient.Item) && this.Quantity <= ingredient.Quantity;
         }
 
         public override int GetHashCode()
         {
-            return this.Item.Name.GetHashCode() ^ this.Quantity;
+            return this.Item.GetHashCode() ^ this.Quantity;
         }
     }
 }

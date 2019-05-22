@@ -22,6 +22,7 @@ namespace TGC.Group.Model
         private StartMenu startMenu;
         private PauseMenu pauseMenu;
         private ShipScene shipScene;
+        private GameOverScene gameOverScene;
 
         private Scene _curentScene = null;
         private Scene CurrentScene
@@ -53,7 +54,7 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
 
             drawerPause = new Drawer2D();
-            spritePause = BitmapRepository.CreateSpriteFromPath(BitmapRepository.BlackRectangle);
+            spritePause = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackRectangle);
         }
 
         public override void Init()
@@ -81,6 +82,8 @@ namespace TGC.Group.Model
             if (hasToChangeScene()) CurrentScene = nextScene;
 
             PreUpdate();
+
+            CurrentScene.ReactToInput();
 
             CurrentScene.Update(this.ElapsedTime);
 
@@ -127,11 +130,20 @@ namespace TGC.Group.Model
         private void ResetGame()
         {
             gameScene = new GameScene(Input, MediaDir)
-                    .OnPause(() => PauseScene(gameScene));
+                    .OnPause(() => PauseScene(gameScene))
+                    .OnGetIntoShip(() => SetNextScene(shipScene))
+                    .OnGameOver(() => {
+                        SetNextScene(gameOverScene);
+                        ResetGame();
+                    });
 
-            shipScene = new ShipScene(Input)
+            shipScene = new ShipScene(Input, gameScene)
                 .OnGoToWater(() => SetNextScene(gameScene))
                 .OnPause(() => PauseScene(shipScene));
+
+            gameOverScene = new GameOverScene(Input)
+                .WithPreRender(gameScene.Render)
+                .OnGoToStartScreen(() => SetNextScene(startMenu));
         }
 
         private void PauseScene(Scene scene)

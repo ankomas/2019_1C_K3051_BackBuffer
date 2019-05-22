@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BulletSharp;
 using BulletSharp.Math;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -17,6 +18,12 @@ namespace TGC.Group.Model.Elements.RigidBodyFactories
         {
             var radius = mesh.BoundingBox.calculateAxisRadius().ToBulletVector3();
             return CreateRigidBody(mesh.Position, radius, 0);
+        }
+        
+        public RigidBody Create(TgcBoundingAxisAlignBox boundingBox)
+        {
+            var radius = boundingBox.calculateAxisRadius().ToBulletVector3();
+            return CreateRigidBody(boundingBox.Position, radius, 0);
         }
 
         public RigidBody CreatePlane(TgcPlane plane)
