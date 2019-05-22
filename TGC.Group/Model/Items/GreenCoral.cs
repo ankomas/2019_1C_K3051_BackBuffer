@@ -6,21 +6,21 @@ using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
 {
-    public class Gold : IItem
+    public class GreenCoral : IItem
     {
-        public override string Name { get; } = "Gold";
-        public override string Description { get; } = "High quality metal";
+        public override string Name { get; } = "Green coral";
+        public override string Description { get; } = "Used for potion crafting";
         public override ItemType type { get; } = ItemType.MATERIAL;
         public override CustomSprite Icon { get; }
-        public sealed override TGCVector2 DefaultScale { get; } = new TGCVector2(.05f, .05f);
+        public override TGCVector2 DefaultScale { get; } = new TGCVector2(.05f, .05f);
         public override void Use(Character character)
         {
             //TODO something?
         }
 
-        public Gold()
+        public GreenCoral()
         {
-            CustomSprite icon = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Gold);
+            CustomSprite icon = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Plant);
             icon.Scaling = DefaultScale;
             Icon = icon;
         }

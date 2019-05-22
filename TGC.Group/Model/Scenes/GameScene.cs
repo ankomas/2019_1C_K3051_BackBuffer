@@ -289,14 +289,9 @@ namespace TGC.Group.Model.Scenes
             skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
 
-            if (this.Camera.Position.Y < 0)
-            {
-                this.character.UpdateStats(new Stats(-elapsedTime, 0));
-            }
-            else
-            {
-                this.character.UpdateStats(new Stats(elapsedTime*7, 0));
-            }
+            this.character.UpdateStats(this.Camera.Position.Y < 0
+                ? new Stats(-elapsedTime, 0)
+                : new Stats(elapsedTime * 7, 0));
 
             if(Camera.Position.Y > skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2)
             {

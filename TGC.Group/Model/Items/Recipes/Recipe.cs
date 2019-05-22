@@ -14,7 +14,8 @@ namespace TGC.Group.Model.Items.Recipes
 
         public bool CanCraft(List<Ingredient> availableIngredients)
         {
-            return this.Ingredients.All(availableIngredients.Contains);
+            return this.Ingredients.All(ingredient => 
+                availableIngredients.Any(ingredient.contains));
         }
     }
 }
