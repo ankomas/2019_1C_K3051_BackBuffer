@@ -22,6 +22,7 @@ namespace TGC.Group.Model
         private StartMenu startMenu;
         private PauseMenu pauseMenu;
         private ShipScene shipScene;
+        private GameOverScene gameOverScene;
 
         private Scene _curentScene = null;
         private Scene CurrentScene
@@ -130,11 +131,19 @@ namespace TGC.Group.Model
         {
             gameScene = new GameScene(Input, MediaDir)
                     .OnPause(() => PauseScene(gameScene))
-                    .OnGetIntoShip(() => SetNextScene(shipScene));
+                    .OnGetIntoShip(() => SetNextScene(shipScene))
+                    .OnGameOver(() => {
+                        SetNextScene(gameOverScene);
+                        ResetGame();
+                    });
 
-            shipScene = new ShipScene(Input)
+            shipScene = new ShipScene(Input, gameScene)
                 .OnGoToWater(() => SetNextScene(gameScene))
                 .OnPause(() => PauseScene(shipScene));
+
+            gameOverScene = new GameOverScene(Input)
+                .WithPreRender(gameScene.Render)
+                .OnGoToStartScreen(() => SetNextScene(startMenu));
         }
 
         private void PauseScene(Scene scene)

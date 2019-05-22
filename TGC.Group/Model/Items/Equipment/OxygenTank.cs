@@ -16,12 +16,16 @@ namespace TGC.Group.Model.Items.Equipment
 
         public override string Name { get; } = "Oxygen tank";
         public override string Description { get; } = "Increments the oxygen capacity in " + Capacity;
+        
         public override ItemType type { get; } = ItemType.EQUIPABLE;
-        public Recipe CrafteableRecipe { get; } = Recipe;
-
-        public override CustomSprite Icon { get; } = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Fish);
-        public override TGCVector2 DefaultScale { get; } = new TGCVector2(1f, 1f);
-
+        public override CustomSprite Icon { get; } = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.OxygenTank);
+        public override TGCVector2 DefaultScale { get; } = new TGCVector2(.075f, .075f);
+        public OxygenTank() : base(Recipe)
+        {
+            CustomSprite icon = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.OxygenTank);
+            icon.Scaling = DefaultScale;
+            Icon = icon;
+        }
         public override void ApplyEffect(Stats character)
         {
             character.Oxygen += Capacity;

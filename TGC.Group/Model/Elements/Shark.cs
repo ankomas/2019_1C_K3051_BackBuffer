@@ -2,6 +2,7 @@
 using System.Drawing;
 using BulletSharp;
 using BulletSharp.Math;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
@@ -9,6 +10,8 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Text;
 using TGC.Group.Model.Entities;
 using TGC.Group.Model.Player;
+using Matrix = Microsoft.DirectX.Matrix;
+
 
 namespace TGC.Group.Model.Elements
 {
@@ -37,27 +40,26 @@ namespace TGC.Group.Model.Elements
 
             if (VerifyCollision(difference, sharkBody, cameraBody))
             {
-                character.Hit(10);
+                character.Hit(0);
             }
 
             difference.Normalize();
            
             MovementToCamera.Move(Mesh, RigidBody, camera.Position, difference);
-
+            
             base.Update(camera, character);
         }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+
         private bool VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
         {
-            return
-                FastMath.Pow2(difference.X) <=
-                FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) &&
+            var epsilon = 10f;
+            return FastMath.Pow2(difference.X) <=
+                FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) * epsilon &&
                 FastMath.Pow2(difference.Y) <=
-                FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) &&
+                FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) * epsilon&&
                 FastMath.Pow2(difference.Z) <=
-                FastMath.Pow2(sharkBody.Radius - cameraBody.Radius);
+                FastMath.Pow2(sharkBody.Radius - cameraBody.Radius) * epsilon ;
         }
-
 
         public override void Render()
         {

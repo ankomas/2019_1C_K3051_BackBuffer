@@ -20,6 +20,7 @@ using System;
 using System.Linq;
 using TGC.Core.BoundingVolumes;
 using TGC.Group.Model.UI;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -28,11 +29,14 @@ namespace TGC.Group.Model.Scenes
         private readonly TgcText2D DrawText = new TgcText2D();
         private World World { get; }
         private bool BoundingBox { get; set; }
+        
+        //TODO remove
+        private SpawnRate goldRate = new SpawnRate(1, 4);
 
         string baseDir = "../../../res/";
 
         public delegate void Callback();
-        Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {};
+        Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {}, onGameOverCallback = () => {};
 
         Scene subScene;
         InventoryScene inventoryScene;
@@ -87,6 +91,11 @@ namespace TGC.Group.Model.Scenes
             pressed[Key.Escape] = () => {
                 onPauseCallback();
             };
+
+            // Die with Q for debugging or god mode
+            //pressed[Key.Q] = () => {
+            //    onGameOverCallback();
+            //};
 
             pressed[Key.F] = () => {
                 this.BoundingBox = !this.BoundingBox;
@@ -188,6 +197,7 @@ namespace TGC.Group.Model.Scenes
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "underwater_skybox-front.jpg" );
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Back , baseDir + "underwater_skybox-back.jpg"  );
             skyBoxUnderwater.Init();
+            
 
             skyBoxOutside = new TgcSkyBox();
             skyBoxOutside.Color = Color.FromArgb(255, 71, 96, 164);
@@ -205,6 +215,7 @@ namespace TGC.Group.Model.Scenes
             skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "skybox-front-middle.jpg");
             skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Back, baseDir + "skybox-back-middle.jpg");
             skyBoxOutside.Init();
+            
         }
 
         private void SetClampTextureAddressing()
@@ -267,7 +278,7 @@ namespace TGC.Group.Model.Scenes
         {
             if (this.character.IsDead())
             {
-                //game over
+                onGameOverCallback();
             }
             
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
@@ -275,21 +286,23 @@ namespace TGC.Group.Model.Scenes
             this.World.Update((Camera) this.Camera, this.character);
 
             var item = manageSelectableElement(this.World.SelectableElement); // Imsportant: get this AFTER updating the world
-            
-            if(item != null)
+
+            //TODO refactor
+            if (item != null)
+            { 
                 this.character.GiveItem(item);
+                if (this.goldRate.HasToSpawn())
+                {
+                    this.character.GiveItem(new Gold());
+                }
+            }
 
             skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
 
-            if (this.Camera.Position.Y < 0)
-            {
-                this.character.UpdateStats(new Stats(-elapsedTime, 0));
-            }
-            else
-            {
-                this.character.UpdateStats(new Stats(elapsedTime*7, 0));
-            }
+            this.character.UpdateStats(this.Camera.Position.Y < 0
+                ? new Stats(-elapsedTime, 0)
+                : new Stats(elapsedTime * 7, 0));
 
             if(Camera.Position.Y > skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2)
             {
@@ -318,7 +331,7 @@ namespace TGC.Group.Model.Scenes
             if (this.BoundingBox)
             {
                 this.World.RenderBoundingBox(this.Camera);
-                this.drawFrustumStats(frustum, 300, 300, Color.GreenYellow);
+                this.statistics(300, 300, Color.GreenYellow);
             }
 
             drawer.BeginDrawSprite();
@@ -346,15 +359,12 @@ namespace TGC.Group.Model.Scenes
             this.statsIndicators.render(this.character);
         }
 
-        private void drawFrustumStats(TgcFrustum frustum, int x, int y, Color color)
+        private void statistics(int x, int y, Color color)
         {
-            var frustumText = frustum
-                .FrustumPlanes
-                .Aggregate("", (current, plane) => current + plane.A + " " + plane.B + " " + plane.C + " " + plane.D + " \n");
-            
-            this.DrawText.drawText("Frustum: " + frustumText, x, y, color);
+            this.DrawText.drawText("Objects updated = " + this.World.elementsUpdated, x, y, color);
+            this.DrawText.drawText("Objects rendered = " + this.World.elementsRendered, x , y+30, color);
         }
- 
+
         public override void Dispose()
         {
             this.World.Dispose();
@@ -368,6 +378,11 @@ namespace TGC.Group.Model.Scenes
         public GameScene OnGetIntoShip(Callback onGetIntoShipCallback)
         {
             this.onGetIntoShipCallback = onGetIntoShipCallback;
+            return this;
+        }
+        public GameScene OnGameOver(Callback onGameOverCallback)
+        {
+            this.onGameOverCallback = onGameOverCallback;
             return this;
         }
         public void CloseInventory()

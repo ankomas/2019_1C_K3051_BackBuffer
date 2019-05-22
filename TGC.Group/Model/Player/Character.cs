@@ -75,5 +75,10 @@ namespace TGC.Group.Model.Player
             this.ActualStats.Update(consumable.stats, MaxStats);
             RemoveItem(consumable);
         }
+
+        public bool CanCraft(ICrafteable item)
+        {
+            return item.Recipe.CanCraft(this.Inventory.AsIngredients());
+        }
     }
 }

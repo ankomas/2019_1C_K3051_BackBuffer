@@ -12,9 +12,9 @@ namespace TGC.Group.Model.Items
         public override string Name { get; } = "Fish";
         public override string Description { get; } = "Looks delicious!";
         public override ItemType type { get; } = ItemType.CONSUMABLE;
-        public override CustomSprite Icon { get; set; }
+        public override CustomSprite Icon { get; }
 
-        public override TGCVector2 DefaultScale { get; } = new TGCVector2(.1f, .05f);
+        public sealed override TGCVector2 DefaultScale { get; } = new TGCVector2(.1f, .05f);
 
         public override Stats stats => new Stats(0, 10);
 

@@ -130,8 +130,10 @@
     <Compile Include="Model\Items\Equipment\OxygenTank.cs" />
     <Compile Include="Model\Items\Fish.cs" />
     <Compile Include="Model\Items\Gold.cs" />
+    <Compile Include="Model\Items\GreenCoral.cs" />
     <Compile Include="Model\Items\ICrafteable.cs" />
     <Compile Include="Model\Items\IItem.cs" />
+    <Compile Include="Model\Items\Materials\GreenPotion.cs" />
     <Compile Include="Model\Items\Recipes\Ingredient.cs" />
     <Compile Include="Model\Items\Recipes\Recipe.cs" />
     <Compile Include="Model\Items\Type\ItemType.cs" />
@@ -143,6 +145,9 @@
     <Compile Include="Model\Resources\Meshes\FishMeshes.cs" />
     <Compile Include="Model\Resources\Meshes\SharkMesh.cs" />
     <Compile Include="Model\Resources\Sprites\SpriteRepository.cs" />
+    <Compile Include="Model\Scenes\Crafter\CrafterScene.cs" />
+    <Compile Include="Model\Scenes\Crafter\CrafterScene.Structure.cs" />
+    <Compile Include="Model\Scenes\GameOverScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.Structure.cs" />
     <Compile Include="Model\Scenes\ShipScene.cs" />

@@ -8,7 +8,7 @@ namespace TGC.Group.Model.Utils
         private readonly int min;
         private readonly int max;
 
-        private SpawnRate(int min, int max)
+        public SpawnRate(int min, int max)
         {
             this.min = min;
             this.max = max;

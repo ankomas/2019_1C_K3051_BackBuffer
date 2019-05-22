@@ -20,6 +20,24 @@ namespace TGC.Group.Model.Utils
             this.PMax = PMax;
         }
 
+        public Cube(TGCVector3 origin, int radius)
+        {
+            this.PMin = new TGCVector3(origin.X - radius, origin.Y - radius, origin.Z - radius);
+            this.PMax = new TGCVector3(origin.X + radius, origin.Y + radius, origin.Z + radius);
+        }
+
+        public bool contains(TGCVector3 point)
+        {
+            return betweenBounds(point.X, this.PMin.X, this.PMax.X)
+                && betweenBounds(point.Y, this.PMin.Y, this.PMax.Y)
+                && betweenBounds(point.Z, this.PMin.Z, this.PMax.Z);
+        }
+
+        private bool betweenBounds(float point, float min, float max)
+        {
+            return point >= min && point <= max;
+        }
+
         public bool isIntersectedBy(TgcRay r)
         {
             var tMin = (this.PMin.X - r.Origin.X) / r.Direction.X;

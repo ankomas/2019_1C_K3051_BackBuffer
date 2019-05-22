@@ -5,17 +5,32 @@ using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
 {
-    public interface IItem
+    public abstract class IItem
     {
-        string Name { get; }
-        string Description { get; }
+        public abstract string Name { get; }
+        public abstract string Description { get; }
 
-        ItemType type { get; }
+        public abstract ItemType type { get; }
+
+        public abstract CustomSprite Icon { get; }
+
+        public abstract TGCVector2 DefaultScale { get; }
+
+        public abstract void Use(Character character);
+
+        public override bool Equals(object o)
+        {
+            return 
+                ReferenceEquals(this, o) ||
+                !ReferenceEquals(this, null) &&
+                !ReferenceEquals(o, null) &&
+                this.GetType() == o.GetType() &&
+                Equals(this.Name, ((IItem) o).Name);
+        }
         
-        CustomSprite Icon { get; }
-
-        TGCVector2 DefaultScale { get; }
-
-        void Use(Character character);
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode();
+        }
     }
 }

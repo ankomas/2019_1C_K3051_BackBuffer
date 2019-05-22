@@ -18,8 +18,8 @@ namespace TGC.Group.Model.Scenes
         private static Scene emptySceneSingleInstance;
         public static Scene Empty => emptySceneSingleInstance ?? (emptySceneSingleInstance = new EmptyScene());
         protected Color backgroundColor = Color.Black;
-        protected bool _uses3DCamera = true;
-        public bool Uses3DCamera { get { return _uses3DCamera; } }
+        private bool _uses3DCamera = true;
+        public bool Uses3DCamera { get { return _uses3DCamera; } protected set { _uses3DCamera = value; } }
         private TgcCamera _camera = null;
         public TgcCamera Camera
         {
