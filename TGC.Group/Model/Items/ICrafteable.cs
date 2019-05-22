@@ -2,8 +2,13 @@ using TGC.Group.Model.Items.Recipes;
 
 namespace TGC.Group.Model.Items
 {
-    public interface ICrafteable:IItem
+    public abstract class ICrafteable:IItem
     {
-        Recipe CrafteableRecipe { get; }
+        public Recipe Recipe;
+
+        public ICrafteable(Recipe recipe)
+        {
+            this.Recipe = recipe;
+        }
     }
 }

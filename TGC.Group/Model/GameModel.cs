@@ -137,7 +137,7 @@ namespace TGC.Group.Model
                         ResetGame();
                     });
 
-            shipScene = new ShipScene(Input)
+            shipScene = new ShipScene(Input, gameScene)
                 .OnGoToWater(() => SetNextScene(gameScene))
                 .OnPause(() => PauseScene(shipScene));
 

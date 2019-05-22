@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TGC.Group.Model.Items.Equipment;
+using TGC.Group.Model.Items.Materials;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Player;
 
@@ -9,21 +10,21 @@ namespace TGC.Group.Model.Items
     {
         public ICrafteable CraftedItem;
 
-        public List<ICrafteable> Crafteables { get; } = new List<ICrafteable>
+        public static List<ICrafteable> Crafteables { get; } = new List<ICrafteable>
         {
-            new OxygenTank()
+            new OxygenTank(), new GreenPotion()
         };
 
         public List<ICrafteable> CrafteablesBy(List<Ingredient> ingredients)
         {
-            return Crafteables.FindAll(crafteable => crafteable.CrafteableRecipe.CanCraft(ingredients));
+            return Crafteables.FindAll(crafteable => crafteable.Recipe.CanCraft(ingredients));
         }
 
         public void Craft(ICrafteable crafteable, Character character)
         {
-            if (!crafteable.CrafteableRecipe.CanCraft(character.Inventory.AsIngredients())) return;
+            if (!crafteable.Recipe.CanCraft(character.Inventory.AsIngredients())) return;
             
-            character.RemoveIngredients(crafteable.CrafteableRecipe.Ingredients);
+            character.RemoveIngredients(crafteable.Recipe.Ingredients);
 
             this.CraftedItem = crafteable;
         }
