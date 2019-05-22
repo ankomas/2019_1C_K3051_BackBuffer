@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.Text;
 using TGC.Group.Model.Input;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.Utils;
@@ -12,6 +13,7 @@ namespace TGC.Group.Model.Scenes.Crafter
         public delegate void UpdateLogic(float elapsedTime);
         public UpdateLogic updateLogic = time => { };
         private Items.Crafter crafter = new Items.Crafter();
+        private readonly TgcText2D drawText = new TgcText2D();
         enum StateID
         {
 
@@ -54,10 +56,16 @@ namespace TGC.Group.Model.Scenes.Crafter
             
             this.pressed[GameInput._Enter] = () =>
             {
-                if (this.itemHighlighted != null)
+                if (this.itemHighlighted == null) return;
+                if (this.Character.CanCraft(this.itemHighlighted))
                 {
-                    this.crafter.Craft(itemHighlighted, Character);
+                    this.crafter.Craft(this.itemHighlighted, this.Character);
                     this.Character.GiveItem(this.crafter.CraftedItem);
+                    this.crafter.CraftedItem = null;    
+                }
+                else
+                {
+                    this.drawText.drawText(this.itemHighlighted.Recipe.ToString(), 30, 30, Color.White);
                 }
             };
         }
