@@ -40,7 +40,7 @@ namespace TGC.Group.Model.Scenes
             xTitle = (int)(sprite.Position.X + 60);
             yTitle = (int)(sprite.Position.Y + 80);
 
-            _uses3DCamera = false;
+            Uses3DCamera = false;
             textBig.changeFont(new System.Drawing.Font("Arial Black", 40f));
             textSmall.changeFont(new System.Drawing.Font("Arial Black", 20f));
 

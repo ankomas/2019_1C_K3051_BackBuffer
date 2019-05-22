@@ -17,18 +17,18 @@ namespace TGC.Group.Model.UI
 
         protected override void renderText(Character character)
         {
-            double lifeLevel = character.ActualStats.Life;
+            double lifeLevel = Math.Floor(character.ActualStats.Life);
 
-            var oXPosition = this.meterX0 + toInt(Scale(this.meterSize, 60));
-            var oYPosition = this.meterY0 + toInt(Scale(this.meterSize, 32));
+            var oXPosition = this.MeterX0 + ToInt(Scale(this.MeterSize, 60));
+            var oYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 32));
 
             var o2LevelXPosition = lifeLevel >= 10
-                ? this.meterX0 + toInt(Scale(this.meterSize, 48))
-                : this.meterX0 + toInt(Scale(this.meterSize, 65));
-            var o2LevelYPosition = this.meterY0 + toInt(Scale(this.meterSize, 74));
+                ? this.MeterX0 + ToInt(Scale(this.MeterSize, 48))
+                : this.MeterX0 + ToInt(Scale(this.MeterSize, 65));
+            var o2LevelYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 74));
 
-            this.textBig.drawText("❤", oXPosition, oYPosition, Color.Bisque);
-            this.textBig.drawText("" + lifeLevel, o2LevelXPosition, o2LevelYPosition, Color.Bisque);
+            this.TextBig.drawText("❤", oXPosition, oYPosition, Color.Bisque);
+            this.TextBig.drawText("" + lifeLevel, o2LevelXPosition, o2LevelYPosition, Color.Bisque);
         }
     }
 }

@@ -2,12 +2,16 @@
 using System.Drawing;
 using BulletSharp;
 using BulletSharp.Math;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Text;
 using TGC.Group.Model.Entities;
+using TGC.Group.Model.Player;
+using Matrix = Microsoft.DirectX.Matrix;
+
 
 namespace TGC.Group.Model.Elements
 {
@@ -27,42 +31,43 @@ namespace TGC.Group.Model.Elements
         }
 
 
-        public override void Update(Camera camera)
+        public override void Update(Camera camera, Character character)
         {
             var difference = camera.Position.ToBulletVector3() - RigidBody.CenterOfMassPosition;
 
             var sharkBody = (CapsuleShapeX)RigidBody.CollisionShape;
             var cameraBody = (CapsuleShape)camera.RigidBody.CollisionShape;
 
-            VerifyCollision(difference, sharkBody, cameraBody);
+            if (VerifyCollision(difference, sharkBody, cameraBody))
+            {
+                character.Hit(10);
+            }
 
             difference.Normalize();
            
             MovementToCamera.Move(Mesh, RigidBody, camera.Position, difference);
-
-            base.Update(camera);
+            
+            base.Update(camera, character);
         }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-        private void VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
+
+        private bool VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
         {
-            dead =
-                FastMath.Pow2(difference.X) <=
-                FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) &&
+            var epsilon = 10f;
+            return FastMath.Pow2(difference.X) <=
+                FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) * epsilon &&
                 FastMath.Pow2(difference.Y) <=
-                FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) &&
+                FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) * epsilon&&
                 FastMath.Pow2(difference.Z) <=
-                FastMath.Pow2(sharkBody.Radius - cameraBody.Radius);
+                FastMath.Pow2(sharkBody.Radius - cameraBody.Radius) * epsilon ;
         }
-
 
         public override void Render()
         {
             base.Render();
-            //DrawText.drawText(a.ToString(), 50, 50, Color.Black);
             if (dead)
             {
                 var point = GetCenter();
-                DrawText.drawText("TE MORISTE WEEE xddxdxd", point.X, point.Y, Color.Red);
+                DrawText.drawText("Hit", point.X, point.Y, Color.Red);
             }
 
         }

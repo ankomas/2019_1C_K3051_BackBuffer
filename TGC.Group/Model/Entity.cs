@@ -3,6 +3,7 @@ using BulletSharp.Math;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Player;
 
 namespace TGC.Group.Model
 {
@@ -23,7 +24,7 @@ namespace TGC.Group.Model
             Mesh.Render();
 
         }
-        public virtual void Update(Camera camera)
+        public virtual void Update(Camera camera, Character character)
         {
             Mesh.Position = new TGCVector3(RigidBody.CenterOfMassPosition);
             Mesh.Transform =

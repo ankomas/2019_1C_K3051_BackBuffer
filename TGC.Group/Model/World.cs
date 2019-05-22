@@ -1,25 +1,22 @@
 ﻿
 ﻿using System;
-using BulletSharp.Math;
-using Microsoft.DirectX.Direct3D;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using BulletSharp;
-using BulletSharp.Math;
-using Microsoft.DirectX.Direct3D;
-using TGC.Core.Camara;
-using TGC.Core.Collision;
-using TGC.Core.Direct3D;
-using TGC.Core.Mathematica;
-using TGC.Core.Terrain;
-using TGC.Group.Model.Elements;
-using TGC.Group.Model.Elements.RigidBodyFactories;
-using TGC.Group.Model.Resources.Meshes;
-using Chunk = TGC.Group.Model.Chunks.Chunk;
-using Element = TGC.Group.Model.Elements.Element;
+ using System.Collections.Generic;
+ using System.Linq;
+ using BulletSharp;
+ using Microsoft.DirectX.Direct3D;
+ using TGC.Core.Camara;
+ using TGC.Core.Collision;
+ using TGC.Core.Mathematica;
+ using TGC.Core.Terrain;
+ using TGC.Group.Model.Chunks;
+ using TGC.Group.Model.Elements;
+ using TGC.Group.Model.Elements.RigidBodyFactories;
+ using TGC.Group.Model.Player;
+ using TGC.Group.Model.Resources.Meshes;
+ using Chunk = TGC.Group.Model.Chunks.Chunk;
+ using Element = TGC.Group.Model.Elements.Element;
 
-namespace TGC.Group.Model
+ namespace TGC.Group.Model
 {
     internal class World
     {
@@ -44,9 +41,9 @@ namespace TGC.Group.Model
 
             waterSurface = new WaterSurface(initialPoint);
             
-            AddChunk(initialPoint);
+            this.chunks.Add(new TGCVector3(initialPoint), new InitialChunk(initialPoint));
             AddShark();
-//            AddHeightMap();
+            AddHeightMap();
             
             /*
             string path = "../../../Shaders/Fede.fx", compilationErrors;
@@ -72,19 +69,22 @@ namespace TGC.Group.Model
             */
         }
 
+        //todo: need refactor
         private void AddHeightMap()
         {
             Floor = new TgcSimpleTerrain();
-            Floor.loadHeightmap(Game.Default.MediaDirectory + "Heightmap3.jpg", 1000, 100, 
+            Floor.loadHeightmap(Game.Default.MediaDirectory + "Heightmap3.jpg", 1000, 65, 
                 new TGCVector3(0,-100,0));
             Floor.loadTexture(Game.Default.MediaDirectory + Game.Default.TexturaTierra);
-            CreateSurfaceFromHeighMap(Floor.getData());
+            var floorRigidBody = CreateSurfaceFromHeighMap(Floor.getData());
+            AquaticPhysics.Instance.Add(floorRigidBodya);
 
         }
 
+        //todo: need refactor
         public RigidBody CreateSurfaceFromHeighMap(CustomVertex.PositionTextured[] triangleDataVB)
         {
-            //Triangulos
+            
             var triangleMesh = new TriangleMesh();
             int i = 0;
             TGCVector3 vector0;
@@ -107,8 +107,6 @@ namespace TGC.Group.Model
             var meshMotionState = new DefaultMotionState();
             var meshRigidBodyInfo = new RigidBodyConstructionInfo(0, meshMotionState, meshCollisionShape);
             RigidBody meshRigidBody = new RigidBody(meshRigidBodyInfo);
-            AquaticPhysics.Instance.Add(meshRigidBody);
-
             return meshRigidBody;
             
             
@@ -117,7 +115,7 @@ namespace TGC.Group.Model
         protected void AddShark()
         {
             var mesh = SharkMesh.All()[0];
-            mesh.Position = new TGCVector3(30, 1000, -2000);
+            mesh.Position = new TGCVector3(30, 0, -2000);
             mesh.UpdateMeshTransform();
             
             var rigidBody = new CapsuleFactory().CreateShark(mesh); ;
@@ -189,21 +187,20 @@ namespace TGC.Group.Model
             return GetChunksByRadius(cameraPosition, RenderRadius);
         }
 
-        public void Update(Camera camera)
+        public void Update(Camera camera, Character character)
         {
             var toUpdate = ToUpdate(camera.Position);
             toUpdate.ForEach(chunk => chunk.Update(camera));
             SelectableElement = GetSelectableElement(camera, toUpdate);
-            entities.ForEach(entity => entity.Update(camera));
+            entities.ForEach(entity => entity.Update(camera, character));
         }
         
         public void Render(TgcCamera camera)
         {
             ToRender(camera.Position).ForEach(chunk => chunk.Render());
             entities.ForEach(entity => entity.Render());
-            waterSurface.Render(camera.Position);
-        //    Floor.Render();
-            //this.waterSurface.Render(camera.Position);
+                //waterSurface.Render(camera.Position);
+            Floor.Render();
         }
 
         public void RenderBoundingBox(TgcCamera camera)
@@ -228,11 +225,11 @@ namespace TGC.Group.Model
                     .FindAll(element => element.isIntersectedBy(new TgcRay(camera.Position, direction)));
             
             intersectedElements.Sort((element1, element2) => 
-                (int) TGCVector3.LengthSq(camera.Position, element1.Mesh.Position) -
-                (int) TGCVector3.LengthSq(camera.Position, element2.Mesh.Position));
+                (int) TGCVector3.LengthSq(camera.Position, element1.getPosition()) -
+                (int) TGCVector3.LengthSq(camera.Position, element2.getPosition()));
 
             return intersectedElements.Find(element => 
-                Math.Abs(TGCVector3.LengthSq(camera.Position, element.Mesh.Position)) < InteractionRadius);
+                Math.Abs(TGCVector3.LengthSq(camera.Position, element.getPosition())) < InteractionRadius);
         }
         public void Remove(Element selectableElement)
         {

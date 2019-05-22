@@ -30,7 +30,7 @@ namespace TGC.Group.Model.Scenes
         string baseDir = "../../../res/";
 
         public delegate void Callback();
-        Callback onPauseCallback = () => {};
+        Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {}, onGameOverCallback = () => {};
 
         Scene subScene;
         InventoryScene inventoryScene;
@@ -53,7 +53,7 @@ namespace TGC.Group.Model.Scenes
 
         RenderLogic stateDependentRenderLogic, newRenderLogic;
 
-        private StatsIndicators statsIndicators = new StatsIndicators(115, 550);
+        private StatsIndicators statsIndicators;
         
         public GameScene(TgcD3dInput input, string mediaDir) : base(input)
         {
@@ -72,6 +72,7 @@ namespace TGC.Group.Model.Scenes
             InitAim();
             InitHand();
             InitDialogBox();
+            InitStatsIndicator();
 
             this.statsIndicators.init();
             
@@ -85,6 +86,11 @@ namespace TGC.Group.Model.Scenes
                 onPauseCallback();
             };
 
+            // Die with Q for debugging or god mode
+            //pressed[Key.Q] = () => {
+            //    onGameOverCallback();
+            //};
+
             pressed[Key.F] = () => {
                 this.BoundingBox = !this.BoundingBox;
             };
@@ -94,16 +100,16 @@ namespace TGC.Group.Model.Scenes
 
         private void TurnExploreCommandsOn()
         {
-            pressed[Key.I] = OpenInventory;
+            pressed[GameInput._Inventory] = OpenInventory;
             pressed[GameInput._Enter] = () => aimFired = true;
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[Key.I] = pressed[GameInput._Enter] = () => { };
+            pressed[GameInput._Inventory] = pressed[GameInput._Enter] = () => { };
         }
         private void OpenInventory()
         {
-            ((Camera)Camera).Freeze();
+            ((Camera)Camera).IgnoreInput();
             subScene = inventoryScene;
             Input.update();
             TurnExploreCommandsOff();
@@ -163,14 +169,21 @@ namespace TGC.Group.Model.Scenes
             Screen.CenterSprite(dialogBox);
             dialogBox.Position = new TGCVector2(dialogBox.Position.X + 120, dialogBox.Position.Y + 80);
         }
+        private void InitStatsIndicator()
+        {
+            Vector2 niceOffset = new Vector2(Screen.Width * 0.1f, Screen.Height * 0.05f);
+            int baseX0 = (int)(niceOffset.X);
+            int baseY0 = (int)(Screen.Height - (StatsIndicators.OxygenMeterSize + niceOffset.Y));
 
+            statsIndicators = new StatsIndicators(baseX0, baseY0);
+        }
         private void InitSkyBoxes()
         {
             skyBoxUnderwater = new TgcSkyBox();
             skyBoxUnderwater.Color = backgroundColor;
             skyBoxUnderwater.SkyEpsilon = 30;
-            skyBoxUnderwater.Center = Camera.Position;
             skyBoxUnderwater.Size = new TGCVector3(30000, 8000, 30000);
+            skyBoxUnderwater.Center = new TGCVector3(0, -skyBoxUnderwater.Size.Y / 4, 0);
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Up   , baseDir + "underwater_skybox-up.jpg"    );
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Down , baseDir + "underwater_skybox-down.jpg"  );
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Left , baseDir + "underwater_skybox-left.jpg"  );
@@ -178,6 +191,7 @@ namespace TGC.Group.Model.Scenes
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "underwater_skybox-front.jpg" );
             skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Back , baseDir + "underwater_skybox-back.jpg"  );
             skyBoxUnderwater.Init();
+            
 
             skyBoxOutside = new TgcSkyBox();
             skyBoxOutside.Color = Color.FromArgb(255, 71, 96, 164);
@@ -185,7 +199,7 @@ namespace TGC.Group.Model.Scenes
             skyBoxOutside.Size = new TGCVector3(30000, 8000, 30000);
             skyBoxOutside.Center = new TGCVector3(
                 skyBoxUnderwater.Center.X,
-                skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 30,
+                skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 0,
                 skyBoxUnderwater.Center.Z
                 );
             skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Up, baseDir +    "skybox-up.jpg");
@@ -195,6 +209,7 @@ namespace TGC.Group.Model.Scenes
             skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "skybox-front-middle.jpg");
             skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Back, baseDir + "skybox-back-middle.jpg");
             skyBoxOutside.Init();
+            
         }
 
         private void SetClampTextureAddressing()
@@ -212,60 +227,76 @@ namespace TGC.Group.Model.Scenes
         }
         private IItem manageSelectableElement(Element element)
         {
+            dialogName = dialogDescription = "";
+
             if (element == null)
             {
                 cursor = aim;
-                dialogName = dialogDescription = "";
                 return null;
             }
+            
             cursor = hand;
             IItem item = null;
 
-            element.Selectable = true;
+            if (element.item != null)
+            {
+                dialogName = element.item.Name;
+                dialogDescription = element.item.Description;
+            }
 
-            dialogName = element.item.Name;
-            dialogDescription = element.item.Description;
+            if (element.GetType() == typeof(Ship))
+            {
+                dialogName = "Ship";
+                dialogDescription = "Enter to the ship";
+            }
+
+            element.Selectable = true;
 
             if (aimFired)
             {
-                this.World.Remove(element);
-                item = element.item;
-                aimFired = false;
+                if (element.GetType() == typeof(Ship))
+                {
+                    onGetIntoShipCallback();
+                }
+                else
+                {
+                    this.World.Remove(element);
+                    item = element.item;
+                    aimFired = false;   
+                }
             }
 
             return item;
         }
         public override void Update(float elapsedTime)
         {
+            if (this.character.IsDead())
+            {
+                onGameOverCallback();
+            }
+            
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
 
             CollisionManager.CheckCollitions(this.World.GetCollisionables());
 
-            this.World.Update((Camera) this.Camera);
+            this.World.Update((Camera) this.Camera, this.character);
 
-            var item = this.manageSelectableElement(this.World.SelectableElement); // Important: get this AFTER updating the world
+            var item = manageSelectableElement(this.World.SelectableElement); // Imsportant: get this AFTER updating the world
             
             if(item != null)
                 this.character.GiveItem(item);
 
-            //TODO crafter logic, move to crafter when coded
-            if (OxygenTank.Recipe.CanCraft(this.character.Inventory.AsIngredients()) && !this.gaveOxygenTank)
-            {
-                character.RemoveIngredients(OxygenTank.Recipe.Ingredients);
-                var oxygenTank = new OxygenTank();
-                character.GiveItem(oxygenTank);
-
-                ///////TODO when UI is ready, the selected element will be equipped
-                this.character.Equip(oxygenTank);
-
-                this.gaveOxygenTank = true;
-            }
-            //***********************************************
-
             skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
 
-            this.character.UpdateStats(new Stats(-elapsedTime, 0));
+            if (this.Camera.Position.Y < 0)
+            {
+                this.character.UpdateStats(new Stats(-elapsedTime, 0));
+            }
+            else
+            {
+                this.character.UpdateStats(new Stats(elapsedTime*7, 0));
+            }
 
             if(Camera.Position.Y > skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2)
             {
@@ -280,8 +311,15 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
-            this.skyBoxUnderwater.Render();
-            this.skyBoxOutside.Render();
+            if(Camera.Position.Y < 0)
+            {
+                this.skyBoxUnderwater.Render();
+            }
+            else
+            {
+                this.skyBoxOutside.Render();
+            }
+
             this.World.Render(this.Camera);
 
             if (this.BoundingBox)
@@ -324,11 +362,21 @@ namespace TGC.Group.Model.Scenes
             this.onPauseCallback = onPauseCallback;
             return this;
         }
+        public GameScene OnGetIntoShip(Callback onGetIntoShipCallback)
+        {
+            this.onGetIntoShipCallback = onGetIntoShipCallback;
+            return this;
+        }
+        public GameScene OnGameOver(Callback onGameOverCallback)
+        {
+            this.onGameOverCallback = onGameOverCallback;
+            return this;
+        }
         public void CloseInventory()
         {
             subScene = Scene.Empty;
             TurnExploreCommandsOn();
-            ((Camera)Camera).Unfreeze();
+            ((Camera)Camera).ConsiderInput();
         }
         public override void ReactToInput()
         {

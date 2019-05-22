@@ -1,5 +1,6 @@
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Items.Type;
+using TGC.Group.Model.Player;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
@@ -14,5 +15,7 @@ namespace TGC.Group.Model.Items
         CustomSprite Icon { get; }
 
         TGCVector2 DefaultScale { get; }
+
+        void Use(Character character);
     }
 }
