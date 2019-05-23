@@ -22,6 +22,10 @@ namespace TGC.Group.Model.Chunks
         public static TGCVector3 DefaultSize { get; } = new TGCVector3(1000, 1000, 1000);
         
         private Cube cube;
+        
+        public static int surface = 0;
+        public static int seaFloor = surface - 2;
+        public static int underSeaLimit = seaFloor - 1;
 
         protected Chunk(TGCVector3 origin, AquaticPhysics physicsWorld)
         {
@@ -33,10 +37,6 @@ namespace TGC.Group.Model.Chunks
         
         public static Chunk ByYAxis(TGCVector3 origin)
         {
-            const int surface = 0;
-            const int seaFloor = surface - 2;
-            const int underSeaLimit = seaFloor - 1;
-
             if (origin.Y < DefaultSize.Y * underSeaLimit || origin.Y > surface)
                 return None;
             

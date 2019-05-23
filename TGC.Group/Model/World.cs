@@ -170,9 +170,11 @@ using TGC.Core.Terrain;
                 (int)(origin.Y/Chunk.DefaultSize.Y), 
                 (int)(origin.Z/Chunk.DefaultSize.Z));
 
+            var yRadius = Math.Abs(Math.Min(radius, Chunk.underSeaLimit));
+
             for (var i = -radius; i <= radius; i++)
             {
-                for (var j = -radius; j <= radius; j++)
+                for (var j = -yRadius; j <= yRadius; j++)
                 {
                     for (var k = -radius; k <= radius; k++)
                     {
