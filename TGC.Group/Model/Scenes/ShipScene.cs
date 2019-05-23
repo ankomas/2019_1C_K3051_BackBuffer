@@ -25,14 +25,13 @@ namespace TGC.Group.Model.Scenes
         public delegate void Callback();
         private Callback onGoToWaterCallback = () => {}, onPauseCallback = () => {};
         private GameScene GameScene;
-        private Scene subScene;
-        private CrafterScene crafterScene;
+        private InventoryScene inventoryScene;
+        //private Scene subScene;
+        //private CrafterScene crafterScene;
 
         public ShipScene(TgcD3dInput input, GameScene gameScene) : base(input)
         {
             this.GameScene = gameScene;
-            subScene = Scene.Empty;
-            this.initCrafterScene();
 
             this.backgroundColor = Color.DarkOrange;
 
@@ -52,34 +51,18 @@ namespace TGC.Group.Model.Scenes
             walls.Init();
             //Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
             SetCamera(Input);
+            inventoryScene = new InventoryScene(Input);
 
             TurnExploreCommandsOn();
         }
         
         private void TurnExploreCommandsOn()
         {
-            pressed[GameInput._Inventory] = this.OpenCrafter;
+            pressed[GameInput._Inventory] = OpenInventory;
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[GameInput._Inventory] = () => { };
-        }
-        private void initCrafterScene()
-        {
-            this.crafterScene = new CrafterScene(Input, this.GameScene, this);
-        }
-        private void OpenCrafter()
-        {
-            ((Camera)this.Camera).IgnoreInput();
-            subScene = this.crafterScene;
-            Input.update();
-            TurnExploreCommandsOff();
-        }
-        public void CloseCrafter()
-        {
-            subScene = Scene.Empty;
-            TurnExploreCommandsOn();
-            ((Camera)Camera).ConsiderInput();
+            pressed[GameInput._Inventory] = CloseInventory;
         }
         private void SetCamera(TgcD3dInput input)
         {
@@ -88,17 +71,18 @@ namespace TGC.Group.Model.Scenes
             AquaticPhysics.Instance.Add(rigidBody);
             this.Camera = new Camera(position, input, rigidBody);
         }
-        public override void Render()
+        private void OpenInventory()
         {
-            ClearScreen();
-
-            walls.Render();
-
-            this.subScene.Render();
-            
-            drawText.drawText("Press TAB or I to open crafting menu, ENTER to exit ship.", 30, 30, Color.White);
+            TurnExploreCommandsOff();
+            ((Camera)Camera).IgnoreInput();
+            inventoryScene.Open(this.GameScene.Character);
         }
-
+        private void CloseInventory()
+        {
+            TurnExploreCommandsOn();
+            ((Camera)Camera).ConsiderInput();
+            inventoryScene.Close();
+        }
         public override void Update(float elapsedTime)
         {
             if(Input.keyPressed(Key.Return))
@@ -109,10 +93,16 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             }
-            this.subScene.ReactToInput();
-            subScene.Update(elapsedTime);
+            inventoryScene.Update(elapsedTime);
         }
+        public override void Render()
+        {
+            ClearScreen();
 
+            walls.Render();
+
+            inventoryScene.Render();
+        }
         public ShipScene OnGoToWater(Callback onGoToWaterCallback)
         {
             this.onGoToWaterCallback = onGoToWaterCallback;
@@ -123,5 +113,27 @@ namespace TGC.Group.Model.Scenes
             this.onPauseCallback = onPauseCallback;
             return this;
         }
+        public override void ReactToInput()
+        {
+            base.ReactToInput();
+            inventoryScene.ReactToInput();
+        }
+        //private void initCrafterScene()
+        //{
+        //    this.crafterScene = new CrafterScene(Input, this.GameScene, this);
+        //}
+        //private void OpenCrafter()
+        //{
+        //    ((Camera)this.Camera).IgnoreInput();
+        //    subScene = this.crafterScene;
+        //    Input.update();
+        //    TurnExploreCommandsOff();
+        //}
+        //public void CloseCrafter()
+        //{
+        //    subScene = Scene.Empty;
+        //    TurnExploreCommandsOn();
+        //    ((Camera)Camera).ConsiderInput();
+        //}
     }
 }

@@ -36,7 +36,6 @@ namespace TGC.Group.Model.Scenes
         public delegate void Callback();
         Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {}, onGameOverCallback = () => {};
 
-        Scene subScene;
         InventoryScene inventoryScene;
 
         TgcSkyBox skyBoxUnderwater, skyBoxOutside;
@@ -83,8 +82,6 @@ namespace TGC.Group.Model.Scenes
             World = new World(new TGCVector3(0, 0, 0));
 
             cursor = aim;
-
-            subScene = Scene.Empty;
             
             pressed[Key.Escape] = () => {
                 onPauseCallback();
@@ -109,16 +106,22 @@ namespace TGC.Group.Model.Scenes
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[GameInput._Inventory] = pressed[GameInput._Enter] = () => { };
+            pressed[GameInput._Inventory] = CloseInventory;
+            pressed[GameInput._Enter] = () => {};
         }
         private void OpenInventory()
         {
             ((Camera)Camera).IgnoreInput();
-            subScene = inventoryScene;
+            inventoryScene.Open(this.character);
             Input.update();
             TurnExploreCommandsOff();
         }
-
+        public void CloseInventory()
+        {
+            inventoryScene.Close();
+            TurnExploreCommandsOn();
+            ((Camera)Camera).ConsiderInput();
+        }
         private void IncrementFarPlane(float scale)
         {
             D3DDevice.Instance.Device.Transform.Projection =
@@ -141,7 +144,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void InitInventoryScene()
         {
-            inventoryScene = new InventoryScene(Input, this);
+            inventoryScene = new InventoryScene(Input);
         }
         private void InitWaterVision()
         {
@@ -309,7 +312,7 @@ namespace TGC.Group.Model.Scenes
                 character.UpdateStats(new Stats(character.MaxStats.Oxygen, 0));
             }
 
-            subScene.Update(elapsedTime);
+            inventoryScene.Update(elapsedTime);
             aimFired = false;
         }
 
@@ -342,8 +345,7 @@ namespace TGC.Group.Model.Scenes
             }
             drawer.EndDrawSprite();
 
-            subScene.Render();
-
+            inventoryScene.Render();
 
             if (dialogName != "")
             {
@@ -378,16 +380,10 @@ namespace TGC.Group.Model.Scenes
             this.onGameOverCallback = onGameOverCallback;
             return this;
         }
-        public void CloseInventory()
-        {
-            subScene = Scene.Empty;
-            TurnExploreCommandsOn();
-            ((Camera)Camera).ConsiderInput();
-        }
         public override void ReactToInput()
         {
             base.ReactToInput();
-            subScene.ReactToInput();
+            inventoryScene.ReactToInput();
         }
     }
 }
