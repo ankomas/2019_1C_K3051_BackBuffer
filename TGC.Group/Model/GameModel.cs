@@ -77,6 +77,7 @@ namespace TGC.Group.Model
 
         }
 
+        private float e2 = 0f;
         public override void Update()
         {
             if (hasToChangeScene()) CurrentScene = nextScene;

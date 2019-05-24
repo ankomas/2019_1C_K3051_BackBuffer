@@ -37,7 +37,7 @@ namespace TGC.Group.Model
             RigidBody = rigidBody;
             mouseCenter = GetMouseCenter();
             RotationSpeed = 0.1f;
-            MovementSpeed = 500f;
+            MovementSpeed = 2000f;
             initialDirectionView = new TGCVector3(0, 0, -1);
             leftrightRot = 0;
             updownRot = 0;

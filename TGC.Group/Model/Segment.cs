@@ -13,10 +13,10 @@ namespace TGC.Group.Model
 {
     internal class Segment
     {
-        private readonly Cube cube;
+        public readonly Cube Cube;
         private Segment(Cube cube)
         {
-            this.cube = cube;
+            this.Cube = cube;
         }
 
         public IEnumerable<Element> GenerateElements(int divisions, SpawnRate spawnRate, ElementFactory elementFactory)
@@ -29,7 +29,7 @@ namespace TGC.Group.Model
 
         private List<Cube> ElementsToSpawn(int divisions, SpawnRate spawnRate)
         {
-            return GenerateXzCubes(this.cube.PMin, this.cube.PMax, divisions)
+            return GenerateXzCubes(this.Cube.PMin, this.Cube.PMax, divisions)
                             .FindAll(scaleBox => spawnRate.HasToSpawn());
         }
 
@@ -54,7 +54,7 @@ namespace TGC.Group.Model
             return res;
         }
 
-        private static List<Cube> GenerateXzCubes(TGCVector3 pMin, TGCVector3 pMax, int divisions)
+        public static List<Cube> GenerateXzCubes(TGCVector3 pMin, TGCVector3 pMax, int divisions)
         {
             var res = new List<Cube>();
 

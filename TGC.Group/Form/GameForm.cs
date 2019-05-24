@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
@@ -8,6 +9,7 @@ using TGC.Core.Shaders;
 using TGC.Core.Sound;
 using TGC.Core.Textures;
 using TGC.Group.Model;
+using Timer = System.Windows.Forms.Timer;
 
 namespace TGC.Group.Form
 {
@@ -114,6 +116,7 @@ namespace TGC.Group.Form
         /// </summary>
         public void InitRenderLoop()
         {
+            var start = DateTime.UtcNow;
             while (ApplicationRunning)
             {
                 //Renderizo si es que hay un ejemplo activo.
@@ -122,8 +125,12 @@ namespace TGC.Group.Form
                     //Solo renderizamos si la aplicacion tiene foco, para no consumir recursos innecesarios.
                     if (ApplicationActive())
                     {
-                        Modelo.Update();
-                        Modelo.Render();
+                        if ((DateTime.UtcNow - start).TotalMilliseconds > 4)
+                        {
+                            start = DateTime.UtcNow;
+                            Modelo.Update();
+                            Modelo.Render();   
+                        }
                     }
                     else
                     {

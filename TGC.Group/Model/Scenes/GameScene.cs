@@ -17,10 +17,14 @@ using TGC.Core.Direct3D;
 using Key = Microsoft.DirectX.DirectInput.Key;
 using Screen = TGC.Group.Model.Utils.Screen;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using BulletSharp;
 using TGC.Core.BoundingVolumes;
 using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
+using Chunk = TGC.Group.Model.Chunks.Chunk;
+using Element = TGC.Group.Model.Elements.Element;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -274,6 +278,7 @@ namespace TGC.Group.Model.Scenes
 
             return item;
         }
+
         public override void Update(float elapsedTime)
         {
             if (this.character.IsDead())
@@ -330,8 +335,8 @@ namespace TGC.Group.Model.Scenes
 
             if (this.BoundingBox)
             {
-                this.World.RenderBoundingBox(this.Camera);
-                this.statistics(300, 300, Color.GreenYellow);
+                //this.World.RenderBoundingBox(this.Camera);
+                this.statistics(300, 0, Color.GreenYellow);
             }
 
             drawer.BeginDrawSprite();
@@ -363,6 +368,28 @@ namespace TGC.Group.Model.Scenes
         {
             this.DrawText.drawText("Objects updated = " + this.World.elementsUpdated, x, y, color);
             this.DrawText.drawText("Objects rendered = " + this.World.elementsRendered, x , y+30, color);
+            this.DrawText.drawText("Position = " + tgcString(this.Camera.Position) + relativePosition(this.Camera.Position), x , y+60, color);
+            this.DrawText.drawText("Origins = " + tgcv3ToString(this.World.renderedOrigins), x , y+90, color);
+
+        }
+
+        private string relativePosition(TGCVector3 cameraPosition)
+        {
+            return "(" + Math.Floor(cameraPosition.X / Chunk.DefaultSize.X) + ","
+                   + Math.Floor(cameraPosition.Y / Chunk.DefaultSize.Y) + ","
+                   + Math.Floor(cameraPosition.Z / Chunk.DefaultSize.Z) + ")";
+        }
+
+        private string tgcv3ToString(List<TGCVector3> worldRenderedOrigins)
+        {
+            var res = "";
+            worldRenderedOrigins.ForEach(tgc3 => res=res+tgcString(tgc3)+ " " + relativePosition(tgc3) + "\n");
+            return res;
+        }
+
+        private string tgcString(TGCVector3 tgc3)
+        {
+            return "x-"+tgc3.X + "-y-" + tgc3.Y + "-z-" + tgc3.Z;
         }
 
         public override void Dispose()
