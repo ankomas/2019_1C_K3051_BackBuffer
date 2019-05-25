@@ -134,16 +134,17 @@ namespace TGC.Group.Model
                 });
 
             gameScene = new GameScene(GameAbstractScene.InitialGameState)
-                    .OnPause(() => {
-                        PauseScene(gameScene);
-                    })
-                    .OnGetIntoShip((gameState) => {
-                        SetNextScene(shipScene.WithGameState(gameState));
-                    })
-                    .OnGameOver(() => {
-                        SetNextScene(gameOverScene);
-                        ResetGame();
-                    });
+                .OnPause(() => {
+                    PauseScene(gameScene);
+                })
+                .OnGetIntoShip((gameState) => {
+                    shipScene.ResetCamera();
+                    SetNextScene(shipScene.WithGameState(gameState));
+                })
+                .OnGameOver(() => {
+                    SetNextScene(gameOverScene);
+                    ResetGame();
+                });
 
             gameOverScene = new GameOverScene()
                 .WithPreRender(gameScene.Render)

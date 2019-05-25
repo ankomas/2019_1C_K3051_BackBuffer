@@ -15,6 +15,7 @@ using TGC.Group.Model.Elements.RigidBodyFactories;
 using TGC.Group.Model.Input;
 using TGC.Core.SceneLoader;
 using TGC.Core.Direct3D;
+using TGC.Group.Model.Player;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -94,6 +95,10 @@ namespace TGC.Group.Model.Scenes
         {
             pressed[GameInput._Inventory] = CloseInventory;
         }
+        public void ResetCamera()
+        {
+            SetCamera(Input);
+        }
         private void SetCamera(TgcD3dInput input)
         {
             var position = new TGCVector3(0, 1000, 0);
@@ -123,6 +128,9 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             }
+
+            this.GameState.character.UpdateStats(new Stats(elapsedTime * 7, 0));
+
             inventoryScene.Update(elapsedTime);
         }
         public override void Render()
@@ -133,6 +141,7 @@ namespace TGC.Group.Model.Scenes
             crafter.Render();
 
             inventoryScene.Render();
+            statsIndicators.Render(this.GameState.character);
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {

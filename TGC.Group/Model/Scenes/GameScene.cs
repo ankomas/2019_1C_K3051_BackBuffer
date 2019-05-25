@@ -47,8 +47,6 @@ namespace TGC.Group.Model.Scenes
 
         private bool gaveOxygenTank = false; //TODO remove
         private bool aimFired = false;
-
-        private StatsIndicators statsIndicators;
         
         public GameScene(GameState gameState) : base(gameState)
         {
@@ -67,9 +65,6 @@ namespace TGC.Group.Model.Scenes
             InitAim();
             InitHand();
             InitDialogBox();
-            InitStatsIndicator();
-
-            this.statsIndicators.init();
             
             World = new World(new TGCVector3(0, 0, 0));
 
@@ -169,14 +164,6 @@ namespace TGC.Group.Model.Scenes
             dialogBox.Color = Color.FromArgb(188, dialogBox.Color.R, dialogBox.Color.G, dialogBox.Color.B);
             Screen.CenterSprite(dialogBox);
             dialogBox.Position = new TGCVector2(dialogBox.Position.X + 120, dialogBox.Position.Y + 80);
-        }
-        private void InitStatsIndicator()
-        {
-            Vector2 niceOffset = new Vector2(Screen.Width * 0.1f, Screen.Height * 0.05f);
-            int baseX0 = (int)(niceOffset.X);
-            int baseY0 = (int)(Screen.Height - (StatsIndicators.OxygenMeterSize + niceOffset.Y));
-
-            statsIndicators = new StatsIndicators(baseX0, baseY0);
         }
         private void InitSkyBoxes()
         {
@@ -301,11 +288,6 @@ namespace TGC.Group.Model.Scenes
                 ? new Stats(-elapsedTime, 0)
                 : new Stats(elapsedTime * 7, 0));
 
-            if(Camera.Position.Y > skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2)
-            {
-                this.GameState.character.UpdateStats(new Stats(this.GameState.character.MaxStats.Oxygen, 0));
-            }
-
             inventoryScene.Update(elapsedTime);
             aimFired = false;
         }
@@ -351,7 +333,7 @@ namespace TGC.Group.Model.Scenes
             drawer.DrawSprite(mask);
             drawer.EndDrawSprite();
             
-            this.statsIndicators.render(this.GameState.character);
+            this.statsIndicators.Render(this.GameState.character);
         }
 
         public override void Dispose()
