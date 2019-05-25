@@ -40,7 +40,7 @@ namespace TGC.Group.Model.Scenes
         private Callback onOpen, onClose;
         UpdateLogic emptyLambda = (time) => { };
 
-        public InventoryScene(TgcD3dInput input) : base(input)
+        public InventoryScene() : base()
         {
             InitPDA();
             InitDarknessCover();

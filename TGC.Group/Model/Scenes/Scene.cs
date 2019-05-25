@@ -13,6 +13,7 @@ namespace TGC.Group.Model.Scenes
     {
         protected CommandList pressed = new CommandList();
         protected CommandList down = new CommandList();
+        private List<Scene> subscenes = new List<Scene>();
 
         private static Scene emptySceneSingleInstance;
         public static Scene Empty => emptySceneSingleInstance ?? (emptySceneSingleInstance = new EmptyScene());
@@ -25,11 +26,11 @@ namespace TGC.Group.Model.Scenes
             set { _camera = value; }
             get { return _camera ?? new TgcCamera(); }
         }
-        protected TgcD3dInput Input { get; set; }
+        public static TgcD3dInput Input { get; set; }
 
-        protected Scene(TgcD3dInput Input)
+        protected Scene()
         {
-            this.Input = Input;
+            if (Input == null) throw new System.Exception("Scene.Input not set yet");
         }
 
         abstract public void Update(float elapsedTime);
@@ -39,11 +40,11 @@ namespace TGC.Group.Model.Scenes
         {
             D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
         }
-        public virtual void ReactToInput()
+        private void ReactToOwnInput()
         {
-            foreach(Key key in pressed.keys)
+            foreach (Key key in pressed.keys)
             {
-                if(Input.keyPressed(key))
+                if (Input.keyPressed(key))
                 {
                     pressed[key]();
                 }
@@ -70,11 +71,24 @@ namespace TGC.Group.Model.Scenes
                 }
             }
         }
+        public virtual void ReactToInput()
+        {
+            ReactToOwnInput();
+            foreach(Scene subscene in subscenes)
+            {
+                subscene.ReactToInput();
+            }
+        }
+
+        protected void RegisterSubscene(Scene subscene)
+        {
+            subscenes.Add(subscene);
+        }
     }
 
     class EmptyScene : Scene
     {
-        public EmptyScene() : base(null) {}
+        public EmptyScene() : base() {}
         public override void Render() {}
         public override void Update(float elapsedTime) {}
     }

@@ -147,6 +147,7 @@
     <Compile Include="Model\Resources\Sprites\SpriteRepository.cs" />
     <Compile Include="Model\Scenes\Crafter\CrafterScene.cs" />
     <Compile Include="Model\Scenes\Crafter\CrafterScene.Structure.cs" />
+    <Compile Include="Model\Scenes\GameAbstractScene.cs" />
     <Compile Include="Model\Scenes\GameOverScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.Structure.cs" />
