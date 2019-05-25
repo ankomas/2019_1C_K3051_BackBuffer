@@ -34,7 +34,7 @@ namespace TGC.Group.Model.Scenes
 
         Microsoft.DirectX.Direct3D.Effect effect;
         TgcScene crafterTgcScene;
-        TgcMesh crafter;
+        TgcMesh crafter, shipMesh;
 
         public ShipScene(GameState gameState) : base(gameState)
         {
@@ -64,13 +64,19 @@ namespace TGC.Group.Model.Scenes
             crafter = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "crafter-v8-TgcScene.xml").Meshes[0];
 
+            shipMesh = new TgcSceneLoader()
+                .loadSceneFromFile(Game.Default.MediaDirectory + "new-ship-TgcScene.xml").Meshes[0];
+
             //crafter.Transform.Translate(0, 500, 0);
 
             crafter.Scale = new TGCVector3(.5f, .5f, .5f);
 
-            crafter.Position = new TGCVector3(-250, 950, 0);
+            crafter.Position = new TGCVector3(-250, 950, 200);
             crafter.UpdateMeshTransform();
             crafter.RotateY((float)Math.PI / 2);
+
+            shipMesh.Scale = new TGCVector3(8, 8, 16);
+            shipMesh.Position = new TGCVector3(-250, 700, -300);
 
 
             //crafter.Effect = effect;
@@ -101,7 +107,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = new TGCVector3(0, 1000, 0);
+            var position = new TGCVector3(0, 1000, 900);
             var rigidBody = new CapsuleFactory().Create(position, 100, 60);
             AquaticPhysics.Instance.Add(rigidBody);
             this.Camera = new Camera(position, input, rigidBody);
@@ -137,8 +143,9 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
-            walls.Render();
+            //walls.Render();
             crafter.Render();
+            shipMesh.Render();
 
             inventoryScene.Render();
             statsIndicators.Render(this.GameState.character);
