@@ -20,7 +20,7 @@ namespace TGC.Group.Model.Elements
         private static readonly TgcText2D DrawText = new TgcText2D();
         private bool dead;
 
-        public Shark(TgcMesh model, RigidBody rigidBody, MovementToPosition movement) : base(model, rigidBody, movement) { }
+        public Shark(TgcMesh model, RigidBody rigidBody, Movement movement) : base(model, rigidBody, movement) { }
 
         public override void Update(Camera camera, Character character)
         {

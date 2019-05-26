@@ -10,7 +10,7 @@ namespace TGC.Group.Model.Movements
 
         protected override TGCVector3 DirectionToRotate(TGCVector3 myPosition, TGCVector3 destination)
         {
-            return TGCVector3.Cross( destination - myPosition, LookAt);
+            return TGCVector3.Cross(  myPosition - destination, LookAt);
         }
 
         protected override TGCVector3 LimitAngles(TGCVector3 anglesToRotate)
