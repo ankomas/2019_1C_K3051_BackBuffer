@@ -1,4 +1,5 @@
-﻿using BulletSharp;
+﻿using System.Drawing;
+using BulletSharp;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
@@ -9,13 +10,14 @@ namespace TGC.Group.Model.Elements
     class Fish : Element
     {
 
-        private float ProximityRadius = FastMath.Pow2(50f);
+        private float ProximityRadius = FastMath.Pow2(700f);
+        private bool runningAway;
         private RandomMovement RandomMov { get; set; }
         private EscapeFromPosition EscapeMov { get; set; }
         public Fish(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
         {
-            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 100f );
-            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.1f, 20f);
+            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 60f );
+            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.3f, 20f);
         }
 
         public override void Update(Camera camera)
@@ -35,14 +37,24 @@ namespace TGC.Group.Model.Elements
 
         private MovementToApply EscapeFromCamera(Camera camera)
         {
+            if (!runningAway)
+            {
+                EscapeMov.LookAt = RandomMov.LookAt;
+                runningAway = true;
+            }
             return EscapeMov.Move(Mesh.Position, camera.Position);
         }
 
         private MovementToApply MoveRandomly()
         {
+            if (runningAway)
+            {
+                RandomMov.LookAt = EscapeMov.LookAt;
+                runningAway = false;
+            }
+
             return RandomMov.Move(Mesh.Position, TGCVector3.Empty);
         }
-
         private bool IsInTheRange(Camera camera)
         {
             return (Mesh.Position - camera.Position).LengthSq() <= ProximityRadius;

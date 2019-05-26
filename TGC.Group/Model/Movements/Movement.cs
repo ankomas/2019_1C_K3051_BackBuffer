@@ -8,7 +8,7 @@ namespace TGC.Group.Model.Movements
 {
     public abstract class Movement
     {
-        protected TGCVector3 LookAt;
+        public TGCVector3 LookAt;
         private readonly float rotationVelocity;
         private readonly float translationVelocity;
         
