@@ -41,7 +41,7 @@ namespace TGC.Group.Model.Scenes
         InventoryScene inventoryScene;
 
         TgcSkyBox skyBoxUnderwater, skyBoxOutside;
-        CustomSprite waterVision, mask, aim, hand, cursor, dialogBox;
+        CustomSprite waterVision, mask, dialogBox;
         Drawer2D drawer = new Drawer2D();
         string dialogName, dialogDescription;
         internal Character Character { get { return this.GameState.character; } }
@@ -64,13 +64,9 @@ namespace TGC.Group.Model.Scenes
             InitSkyBoxes();
             InitWaterVision();
             InitMask();
-            InitAim();
-            InitHand();
             InitDialogBox();
             
             World = new World(new TGCVector3(0, 0, 0));
-
-            cursor = aim;
             
             pressed[Key.Escape] = () => {
                 onPauseCallback();
@@ -147,17 +143,6 @@ namespace TGC.Group.Model.Scenes
         {
             mask = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Mask);
             Screen.FitSpriteToScreen(mask);
-        }
-        private void InitAim()
-        {
-            aim = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Aim);
-            Screen.CenterSprite(aim);
-        }
-        private void InitHand()
-        {
-            hand = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Hand);
-            hand.Scaling = new TGCVector2(.75f, .75f);
-            Screen.CenterSprite(hand);
         }
         private void InitDialogBox()
         {

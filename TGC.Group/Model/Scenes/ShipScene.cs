@@ -16,6 +16,7 @@ using TGC.Group.Model.Input;
 using TGC.Core.SceneLoader;
 using TGC.Core.Direct3D;
 using TGC.Group.Model.Player;
+using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -34,7 +35,12 @@ namespace TGC.Group.Model.Scenes
 
         Microsoft.DirectX.Direct3D.Effect effect;
         TgcScene crafterTgcScene;
-        TgcMesh crafter, shipMesh, hatchMesh;
+        TgcMesh crafterMesh, shipMesh, hatchMesh;
+        List<Thing> selectableThings = new List<Thing>();
+        Drawer2D drawer2D = new Drawer2D(); 
+
+        TgcText2D DrawText = new TgcText2D();
+        string debug;
 
         public ShipScene(GameState gameState) : base(gameState)
         {
@@ -60,7 +66,7 @@ namespace TGC.Group.Model.Scenes
                 ShaderFlags.None, null, out errors
                 );
 
-            crafter = new TgcSceneLoader()
+            crafterMesh = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "crafter-v8-TgcScene.xml").Meshes[0];
 
             shipMesh = new TgcSceneLoader()
@@ -69,22 +75,16 @@ namespace TGC.Group.Model.Scenes
             hatchMesh = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "hatch-TgcScene.xml").Meshes[0];
 
-            //crafter.Transform.Translate(0, 500, 0);
-
-            crafter.Scale = new TGCVector3(.5f, .5f, .5f);
-
-            crafter.Position = new TGCVector3(600, 950, -300);
-            //crafter.UpdateMeshTransform();
-            //crafter.RotateY((float)Math.PI / 4);
+            crafterMesh.Scale = new TGCVector3(.5f, .5f, .5f);
+            crafterMesh.Position = new TGCVector3(600, 950, -300);
 
             shipMesh.Scale = new TGCVector3(16, 12, 16);
             shipMesh.Position = new TGCVector3(-250, 700, -300);
 
             hatchMesh.Position = new TGCVector3(600, 700, 450);
 
-            //crafter.Effect = effect;
-            //crafter.Technique = "CrafterTechnique";
-            //crafter.updateBoundingBox();
+            selectableThings.Add(new Thing(crafterMesh, "Crafter", "Start crafting"));
+            selectableThings.Add(new Thing(hatchMesh, "Hatch", "Exit ship"));
 
             walls.Init();
             //Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
@@ -127,6 +127,20 @@ namespace TGC.Group.Model.Scenes
             ((Camera)Camera).ConsiderInput();
             inventoryScene.Close();
         }
+        private void TellIfCameraIsLookingAtThing(Thing thing)
+        {
+            TGCVector3 dist = thing.Position - Camera.Position;
+
+            bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 600;
+
+            dist.Normalize();
+
+            TGCVector3 normalLookAt = TGCVector3.Normalize(Camera.LookAt - Camera.Position);
+
+            float dot = TGCVector3.Dot(dist, normalLookAt);
+
+            thing.Looked = isClose && dot > 0.985;
+        }
         public override void Update(float elapsedTime)
         {
             if(Input.keyPressed(Key.Return))
@@ -141,18 +155,38 @@ namespace TGC.Group.Model.Scenes
             this.GameState.character.UpdateStats(new Stats(elapsedTime * 7, 0));
 
             inventoryScene.Update(elapsedTime);
+
+            selectableThings.ForEach(TellIfCameraIsLookingAtThing);
         }
         public override void Render()
         {
             ClearScreen();
 
-            //walls.Render();
-            crafter.Render();
             shipMesh.Render();
-            hatchMesh.Render();
+
+            foreach (var thing in selectableThings)
+            {
+                thing.Render();
+                if (thing.Looked)
+                {
+                    thing.mesh.BoundingBox.Render();
+                    dialogBox.Clear();
+                    dialogBox.AddLine(thing.name);
+                    dialogBox.AddLine("------------");
+                    dialogBox.AddLine(thing.actionDescription);
+                    dialogBox.Render();
+                    cursor = hand;
+                }
+            }
+
+            drawer2D.BeginDrawSprite();
+            drawer2D.DrawSprite(cursor);
+            drawer2D.EndDrawSprite();
 
             inventoryScene.Render();
             statsIndicators.Render(this.GameState.character);
+
+            cursor = aim;
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {
@@ -181,5 +215,25 @@ namespace TGC.Group.Model.Scenes
         //    TurnExploreCommandsOn();
         //    ((Camera)Camera).ConsiderInput();
         //}
+    }
+
+    class Thing
+    {
+        public string debug;
+        public TgcMesh mesh;
+        public bool Looked = false;
+        public string name, actionDescription;
+        public TGCVector3 Position => mesh.BoundingBox.PMin + TGCVector3.Multiply(mesh.BoundingBox.PMax - mesh.BoundingBox.PMin, 0.5f);
+
+        public Thing(TgcMesh mesh, string name, string actionDescription)
+        {
+            this.mesh = mesh;
+            this.name = name;
+            this.actionDescription = actionDescription;
+        }
+        public void Render()
+        {
+            mesh.Render();
+        }
     }
 }

@@ -155,6 +155,7 @@
     <Compile Include="Model\Segment.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\IRigidBodyFactory.cs" />
     <Compile Include="Model\UI\CircularIndicator.cs" />
+    <Compile Include="Model\UI\DialogBox.cs" />
     <Compile Include="Model\UI\StatsIndicators.cs" />
     <Compile Include="Model\UI\LifeIndicator.cs" />
     <Compile Include="Model\UI\OxygenIndicator.cs" />

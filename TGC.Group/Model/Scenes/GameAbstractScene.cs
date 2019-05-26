@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Input;
+using TGC.Core.Mathematica;
 using TGC.Group.Model.Elements;
 using TGC.Group.Model.Items;
+using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
 using TGC.Group.TGCUtils;
@@ -24,7 +26,8 @@ namespace TGC.Group.Model.Scenes
     abstract class GameAbstractScene : Scene
     {
         public static GameState InitialGameState => new GameState(new Player.Character());
-        CustomSprite cursor, aim, hand;
+        protected CustomSprite cursor, aim, hand;
+        protected DialogBox dialogBox = new DialogBox();
         string dialogName, dialogDescription;
         public delegate void TransitionCallback(GameState gameState);
         public GameState GameState { get; set; }
@@ -35,6 +38,9 @@ namespace TGC.Group.Model.Scenes
         {
             this.GameState = gameState;
             InitStatsIndicator();
+            InitAim();
+            InitHand();
+            cursor = aim;
         }
         public override void Render()
         {
@@ -60,6 +66,17 @@ namespace TGC.Group.Model.Scenes
             statsIndicators = new StatsIndicators(baseX0, baseY0);
 
             this.statsIndicators.init();
+        }
+        private void InitAim()
+        {
+            aim = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Aim);
+            Screen.CenterSprite(aim);
+        }
+        private void InitHand()
+        {
+            hand = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Hand);
+            hand.Scaling = new TGCVector2(.75f, .75f);
+            Screen.CenterSprite(hand);
         }
     }
 }
