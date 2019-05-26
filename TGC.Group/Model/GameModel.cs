@@ -38,9 +38,6 @@ namespace TGC.Group.Model
 
         private Scene nextScene;
 
-        Drawer2D drawerPause;
-        CustomSprite spritePause;
-
         /// <summary>
         ///     Constructor del juego.
         /// </summary>
@@ -52,20 +49,19 @@ namespace TGC.Group.Model
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
-
-            drawerPause = new Drawer2D();
-            spritePause = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackRectangle);
         }
 
         public override void Init()
         {
             //note(fede): Only at this point the Input field has been initialized by the form
 
-            startMenu = new StartMenu(Input)
+            Scene.Input = Input;
+
+            startMenu = new StartMenu()
                     .onGameStart(() => SetNextScene(shipScene))
                     .onGameExit(StopGame);
 
-            pauseMenu = new PauseMenu(Input, drawerPause, spritePause)
+            pauseMenu = new PauseMenu()
                 .OnGoToStartMenu(() => {
                     ResetGame();
                     SetNextScene(startMenu);
@@ -129,19 +125,29 @@ namespace TGC.Group.Model
 
         private void ResetGame()
         {
-            gameScene = new GameScene(Input, MediaDir)
-                    .OnPause(() => PauseScene(gameScene))
-                    .OnGetIntoShip(() => SetNextScene(shipScene))
-                    .OnGameOver(() => {
-                        SetNextScene(gameOverScene);
-                        ResetGame();
-                    });
+            shipScene = new ShipScene(GameAbstractScene.InitialGameState)
+                .OnGoToWater((gameState) => {
+                    gameScene.ResetCamera();
+                    SetNextScene(gameScene.WithGameState(gameState));
+                })
+                .OnPause(() => {
+                    PauseScene(shipScene);
+                });
 
-            shipScene = new ShipScene(Input, gameScene)
-                .OnGoToWater(() => SetNextScene(gameScene))
-                .OnPause(() => PauseScene(shipScene));
+            gameScene = new GameScene(GameAbstractScene.InitialGameState)
+                .OnPause(() => {
+                    PauseScene(gameScene);
+                })
+                .OnGetIntoShip((gameState) => {
+                    shipScene.ResetCamera();
+                    SetNextScene(shipScene.WithGameState(gameState));
+                })
+                .OnGameOver(() => {
+                    SetNextScene(gameOverScene);
+                    ResetGame();
+                });
 
-            gameOverScene = new GameOverScene(Input)
+            gameOverScene = new GameOverScene()
                 .WithPreRender(gameScene.Render)
                 .OnGoToStartScreen(() => SetNextScene(startMenu));
         }

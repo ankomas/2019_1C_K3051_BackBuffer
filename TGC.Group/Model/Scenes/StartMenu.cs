@@ -35,7 +35,7 @@ namespace TGC.Group.Model.Scenes
 
         private float rotation = 0;
 
-        public StartMenu(TgcD3dInput Input) : base(Input)
+        public StartMenu() : base()
         {
             onGameStartCallback = onGameExitCallback = () => {};
 

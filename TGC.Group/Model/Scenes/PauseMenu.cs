@@ -5,6 +5,7 @@ using TGC.Core.Mathematica;
 using TGC.Group.TGCUtils;
 using TGC.Group.Model.Utils;
 using TGC.Group.Model.Input;
+using TGC.Group.Model.Resources.Sprites;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -26,19 +27,18 @@ namespace TGC.Group.Model.Scenes
         Pointer pointer = Pointer.UP;
         Color[] colors = { Color.White, Color.DarkGray };
 
-        Drawer2D drawer;
-        CustomSprite sprite;
-        public PauseMenu(TgcD3dInput input, Drawer2D drawer, CustomSprite sprite) : base(input)
+        Drawer2D drawer = new Drawer2D();
+        CustomSprite darknessCover;
+        public PauseMenu() : base()
         {
-            this.drawer = drawer;
-            this.sprite = sprite;
-            sprite.Color = Color.FromArgb(188, 0, 50, 200);
-            sprite.Scaling = new TGCVector2(.8f, .5f);
+            darknessCover = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackRectangle);
+            darknessCover.Color = Color.FromArgb(188, 0, 50, 200);
+            darknessCover.Scaling = new TGCVector2(.8f, .5f);
 
-            Screen.CenterSprite(sprite);
+            Screen.CenterSprite(darknessCover);
 
-            xTitle = (int)(sprite.Position.X + 60);
-            yTitle = (int)(sprite.Position.Y + 80);
+            xTitle = (int)(darknessCover.Position.X + 60);
+            yTitle = (int)(darknessCover.Position.Y + 80);
 
             Uses3DCamera = false;
             textBig.changeFont(new System.Drawing.Font("Arial Black", 40f));
@@ -72,7 +72,7 @@ namespace TGC.Group.Model.Scenes
             preRender();
 
             drawer.BeginDrawSprite();
-            drawer.DrawSprite(sprite);
+            drawer.DrawSprite(darknessCover);
             drawer.EndDrawSprite();
 
             textBig.drawText("PAUSE", xTitle + 50, yTitle, Color.DarkGray);

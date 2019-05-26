@@ -156,7 +156,7 @@ namespace TGC.Group.Model.Scenes.Crafter
             {
                 this.PDAPositionX = GetPDAInitialPosition();
                 SetNextState(StateID.IN);
-                this.shipScene.CloseCrafter();
+                //this.shipScene.CloseCrafter();
             }
 
             this.PDA.Position = new TGCVector2(this.PDAPositionX, this.PDA.Position.Y);

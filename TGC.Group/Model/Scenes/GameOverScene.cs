@@ -24,7 +24,7 @@ namespace TGC.Group.Model.Scenes
         float darknessTransparency = 0f, maxDarknessTransparency = 220f;
         float letterTransparency = 0f;
 
-        public GameOverScene(TgcD3dInput input) : base(input)
+        public GameOverScene() : base()
         {
             Uses3DCamera = false;
 

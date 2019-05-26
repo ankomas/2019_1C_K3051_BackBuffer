@@ -37,7 +37,7 @@ namespace TGC.Group.Model.Scenes.Crafter
         private StateID stateID, nextStateID;
 
         private TGCVector2 bubbleDefaultScale = new TGCVector2(.5f, .5f);
-        public CrafterScene(TgcD3dInput input, GameScene gameScene, ShipScene shipScene) : base(input)
+        public CrafterScene(TgcD3dInput input, GameScene gameScene, ShipScene shipScene) : base()
         {
             this.gameScene = gameScene;
             this.shipScene = shipScene;
