@@ -138,7 +138,7 @@
     <Compile Include="Model\Items\Type\ItemType.cs" />
     <Compile Include="Model\Movements\EscapeFromPosition.cs" />
     <Compile Include="Model\Movements\Movement.cs" />
-    <Compile Include="Model\Movements\MovementRandom.cs" />
+    <Compile Include="Model\Movements\RandomMovement.cs" />
     <Compile Include="Model\Movements\MovementToPosition.cs" />
     <Compile Include="Model\Player\Character.cs" />
     <Compile Include="Model\Player\Equipment.cs" />

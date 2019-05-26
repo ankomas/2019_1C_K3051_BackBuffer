@@ -12,6 +12,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using TGC.Group.Model.Chunks;
 using TGC.Group.Model.Elements;
+using TGC.Group.Model.Elements.ElementFactories;
 using TGC.Group.Model.Player;
 using TGC.Group.Model.Utils;
 using Chunk = TGC.Group.Model.Chunks.Chunk;
@@ -50,7 +51,6 @@ namespace TGC.Group.Model
             chunks.Add(new TGCVector3(initialPoint), initialChunk);
             entities.AddRange(initialChunk.Init());
             shark = SharkFactory.Create(new TGCVector3(30, 0, -2000));
-            //AddHeightMap();
 
             /*
             string path = "../../../Shaders/Fede.fx", compilationErrors;

@@ -21,15 +21,14 @@ namespace TGC.Group.Model.Elements
         {
             var mesh = SharkMesh.Get();
             mesh.Position = position; //new TGCVector3(30, 0, -2000);
-            mesh.UpdateMeshTransform();
-            
+
             var rigidBody = new CapsuleFactory().CreateShark(mesh); 
             AquaticPhysics.Instance.Add(rigidBody);
 
             return new Shark(
                 mesh,
                 rigidBody,
-                new MovementToPosition(new TGCVector3(1, 0, 0), rotationVelocity, translationVelocity)
+                new MovementToPosition(new TGCVector3(1f, 0, 0), rotationVelocity, translationVelocity)
             );
         }
 
