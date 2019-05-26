@@ -127,6 +127,7 @@ namespace TGC.Group.Model
         {
             shipScene = new ShipScene(GameAbstractScene.InitialGameState)
                 .OnGoToWater((gameState) => {
+                    gameScene.ResetCamera();
                     SetNextScene(gameScene.WithGameState(gameState));
                 })
                 .OnPause(() => {

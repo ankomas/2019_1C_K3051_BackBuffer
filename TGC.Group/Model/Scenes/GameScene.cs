@@ -85,7 +85,10 @@ namespace TGC.Group.Model.Scenes
 
             TurnExploreCommandsOn();
         }
-
+        public void ResetCamera()
+        {
+            SetCamera(Input);
+        }
         private void TurnExploreCommandsOn()
         {
             pressed[GameInput._Inventory] = OpenInventory;

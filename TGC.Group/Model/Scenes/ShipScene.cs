@@ -83,8 +83,8 @@ namespace TGC.Group.Model.Scenes
 
             hatchMesh.Position = new TGCVector3(600, 700, 450);
 
-            selectableThings.Add(new Thing(crafterMesh, "Crafter", "Start crafting"));
-            selectableThings.Add(new Thing(hatchMesh, "Hatch", "Exit ship"));
+            selectableThings.Add(new Thing(crafterMesh, "Crafter", "Start crafting", () => {}));
+            selectableThings.Add(new Thing(hatchMesh, "Hatch", "Exit ship", () => onGoToWaterCallback(this.GameState)));
 
             walls.Init();
             //Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
@@ -95,10 +95,20 @@ namespace TGC.Group.Model.Scenes
 
             TurnExploreCommandsOn();
         }
-        
+        private void TryToInteractWithSelectableThing()
+        {
+            foreach (Thing thing in selectableThings)
+            {
+                if (thing.Looked)
+                {
+                    thing.ExecuteAction();
+                }
+            }
+        }
         private void TurnExploreCommandsOn()
         {
             pressed[GameInput._Inventory] = OpenInventory;
+            pressed[GameInput._Enter] = TryToInteractWithSelectableThing;
         }
         private void TurnExploreCommandsOff()
         {
@@ -143,10 +153,6 @@ namespace TGC.Group.Model.Scenes
         }
         public override void Update(float elapsedTime)
         {
-            if(Input.keyPressed(Key.Return))
-            {
-                onGoToWaterCallback(this.GameState);
-            }
             if (Input.keyPressed(Key.Escape))
             {
                 onPauseCallback();
@@ -223,17 +229,23 @@ namespace TGC.Group.Model.Scenes
         public TgcMesh mesh;
         public bool Looked = false;
         public string name, actionDescription;
+        private ShipScene.Callback action = () => {};
         public TGCVector3 Position => mesh.BoundingBox.PMin + TGCVector3.Multiply(mesh.BoundingBox.PMax - mesh.BoundingBox.PMin, 0.5f);
 
-        public Thing(TgcMesh mesh, string name, string actionDescription)
+        public Thing(TgcMesh mesh, string name, string actionDescription, ShipScene.Callback action)
         {
             this.mesh = mesh;
             this.name = name;
             this.actionDescription = actionDescription;
+            this.action = action;
         }
         public void Render()
         {
             mesh.Render();
+        }
+        public void ExecuteAction()
+        {
+            action();
         }
     }
 }
