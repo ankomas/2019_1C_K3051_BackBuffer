@@ -3,7 +3,6 @@ using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Entities;
 using TGC.Group.Model.Items;
 
 namespace TGC.Group.Model.Elements

@@ -1,5 +1,6 @@
 using BulletSharp;
 using BulletSharp.Math;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
@@ -7,55 +8,55 @@ namespace TGC.Group.Model.Movements
 {
     public abstract class Movement
     {
-        private Vector3 LookAt;
-        private float RotationVelocity;
-        private float TranslationVelocity;
+        protected TGCVector3 LookAt;
+        private readonly float rotationVelocity;
+        private readonly float translationVelocity;
         
-        protected Movement(Vector3 lookAt, float rotationVelocity, float translationVelocity)
+        protected Movement(TGCVector3 lookAt, float rotationVelocity, float translationVelocity)
         {
             LookAt = lookAt;
-            RotationVelocity = rotationVelocity;
-            TranslationVelocity = translationVelocity;
+            this.rotationVelocity = rotationVelocity;
+            this.translationVelocity = translationVelocity;
         }
 
         
         
-        public MovementToApply Move(TgcMesh mesh, RigidBody rigidBody, TGCVector3 destination)
+        public MovementToApply Move(TGCVector3 position, TGCVector3 destination)
         {
-            var angles = AnglesToRotate(mesh.Position, destination);
+            var angles = AnglesToRotate(position, destination);
             UpdateLookAtVector(angles);
             return new MovementToApply(
                 new TGCVector3(angles),
-                Matrix.Translation(-LookAt * TranslationVelocity)
+                TGCMatrix.Translation(-LookAt * translationVelocity)
             );
         }
 
-        private Vector3 AnglesToRotate(TGCVector3 position, TGCVector3 destination)
+        private TGCVector3 AnglesToRotate(TGCVector3 position, TGCVector3 destination)
         {
-            var directions =  DirectionToRotate(position.ToBulletVector3(), destination.ToBulletVector3());
+            var directions =  DirectionToRotate(position, destination);
             directions.Normalize();
-            return LimitAngles(directions * RotationVelocity);
+            return LimitAngles(directions * rotationVelocity);
             
         }
 
-        private void UpdateLookAtVector(Vector3 angles)
+        private void UpdateLookAtVector(TGCVector3 angles)
         {
-            LookAt = Vector3.TransformNormal(LookAt, 
-                Matrix.RotationYawPitchRoll(angles.Y,angles.X,angles.Z)
+            LookAt = TGCVector3.TransformNormal(LookAt, 
+                TGCMatrix.RotationYawPitchRoll(angles.Y,angles.X,angles.Z)
             );
         }
 
 
-        protected abstract Vector3 DirectionToRotate(Vector3 myPosition, Vector3 destination);
-        protected abstract Vector3 LimitAngles(Vector3 anglesToRotate);
+        protected abstract TGCVector3 DirectionToRotate(TGCVector3 myPosition, TGCVector3 destination);
+        protected abstract TGCVector3 LimitAngles(TGCVector3 anglesToRotate);
 
     }
 
     public class MovementToApply
     { 
-        public Matrix Translation { get; set; }
+        public TGCMatrix Translation { get; set; }
         public TGCVector3 AnglesToRotate { get; set; }
-        public MovementToApply(TGCVector3 anglesToRotate, Matrix translation)
+        public MovementToApply(TGCVector3 anglesToRotate, TGCMatrix translation)
         {
             AnglesToRotate = anglesToRotate;
             Translation = translation;

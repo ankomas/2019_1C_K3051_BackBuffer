@@ -3,7 +3,7 @@ using System.Dynamic;
 using BulletSharp.Math;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Elements.RigidBodyFactories;
-using TGC.Group.Model.Entities;
+using TGC.Group.Model.Movements;
 using TGC.Group.Model.Resources.Meshes;
 
 namespace TGC.Group.Model.Elements
@@ -26,10 +26,11 @@ namespace TGC.Group.Model.Elements
             var rigidBody = new CapsuleFactory().CreateShark(mesh); 
             AquaticPhysics.Instance.Add(rigidBody);
 
-            return new Shark(mesh, rigidBody)
-            {
-                MovementToCamera = new MovementToPosition(Vector3.UnitX, rotationVelocity, translationVelocity)
-            };
+            return new Shark(
+                mesh,
+                rigidBody,
+                new MovementToPosition(new TGCVector3(1, 0, 0), rotationVelocity, translationVelocity)
+            );
         }
 
     }
