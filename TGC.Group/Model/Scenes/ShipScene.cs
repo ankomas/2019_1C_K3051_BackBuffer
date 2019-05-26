@@ -34,7 +34,7 @@ namespace TGC.Group.Model.Scenes
 
         Microsoft.DirectX.Direct3D.Effect effect;
         TgcScene crafterTgcScene;
-        TgcMesh crafter, shipMesh;
+        TgcMesh crafter, shipMesh, hatchMesh;
 
         public ShipScene(GameState gameState) : base(gameState)
         {
@@ -60,24 +60,27 @@ namespace TGC.Group.Model.Scenes
                 ShaderFlags.None, null, out errors
                 );
 
-
             crafter = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "crafter-v8-TgcScene.xml").Meshes[0];
 
             shipMesh = new TgcSceneLoader()
-                .loadSceneFromFile(Game.Default.MediaDirectory + "new-ship-TgcScene.xml").Meshes[0];
+                .loadSceneFromFile(Game.Default.MediaDirectory + "new-ship-2-TgcScene.xml").Meshes[0];
+
+            hatchMesh = new TgcSceneLoader()
+                .loadSceneFromFile(Game.Default.MediaDirectory + "hatch-TgcScene.xml").Meshes[0];
 
             //crafter.Transform.Translate(0, 500, 0);
 
             crafter.Scale = new TGCVector3(.5f, .5f, .5f);
 
-            crafter.Position = new TGCVector3(-250, 950, 200);
-            crafter.UpdateMeshTransform();
-            crafter.RotateY((float)Math.PI / 2);
+            crafter.Position = new TGCVector3(600, 950, -300);
+            //crafter.UpdateMeshTransform();
+            //crafter.RotateY((float)Math.PI / 4);
 
-            shipMesh.Scale = new TGCVector3(8, 8, 16);
+            shipMesh.Scale = new TGCVector3(16, 12, 16);
             shipMesh.Position = new TGCVector3(-250, 700, -300);
 
+            hatchMesh.Position = new TGCVector3(600, 700, 450);
 
             //crafter.Effect = effect;
             //crafter.Technique = "CrafterTechnique";
@@ -107,7 +110,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = new TGCVector3(0, 1000, 900);
+            var position = new TGCVector3(675, 1000, 900);
             var rigidBody = new CapsuleFactory().Create(position, 100, 60);
             AquaticPhysics.Instance.Add(rigidBody);
             this.Camera = new Camera(position, input, rigidBody);
@@ -146,6 +149,7 @@ namespace TGC.Group.Model.Scenes
             //walls.Render();
             crafter.Render();
             shipMesh.Render();
+            hatchMesh.Render();
 
             inventoryScene.Render();
             statsIndicators.Render(this.GameState.character);

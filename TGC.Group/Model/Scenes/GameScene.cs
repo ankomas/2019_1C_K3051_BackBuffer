@@ -19,6 +19,7 @@ using Screen = TGC.Group.Model.Utils.Screen;
 using System;
 using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
+using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -47,7 +48,8 @@ namespace TGC.Group.Model.Scenes
 
         private bool gaveOxygenTank = false; //TODO remove
         private bool aimFired = false;
-        
+
+        TgcMesh skb;
         public GameScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
@@ -296,7 +298,7 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
-            if(Camera.Position.Y < 0)
+            if (Camera.Position.Y < 0)
             {
                 this.skyBoxUnderwater.Render();
             }
