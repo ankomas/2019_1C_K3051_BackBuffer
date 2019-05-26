@@ -18,7 +18,7 @@ namespace TGC.Group.Model
     /// </summary>
     public class GameModel : TgcExample
     {
-        private GameScene gameScene;
+        private WorldScene gameScene;
         private StartMenu startMenu;
         private PauseMenu pauseMenu;
         private ShipScene shipScene;
@@ -125,7 +125,7 @@ namespace TGC.Group.Model
 
         private void ResetGame()
         {
-            shipScene = new ShipScene(GameAbstractScene.InitialGameState)
+            shipScene = new ShipScene(GameplayScene.InitialGameState)
                 .OnGoToWater((gameState) => {
                     gameScene.ResetCamera();
                     SetNextScene(gameScene.WithGameState(gameState));
@@ -134,7 +134,7 @@ namespace TGC.Group.Model
                     PauseScene(shipScene);
                 });
 
-            gameScene = new GameScene(GameAbstractScene.InitialGameState)
+            gameScene = new WorldScene(GameplayScene.InitialGameState)
                 .OnPause(() => {
                     PauseScene(gameScene);
                 })

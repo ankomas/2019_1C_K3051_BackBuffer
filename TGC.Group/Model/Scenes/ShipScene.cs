@@ -20,7 +20,7 @@ using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Scenes
 {
-    class ShipScene : GameAbstractScene
+    class ShipScene : GameplayScene
     {
         TgcSkyBox walls;
         float rotation = 0;

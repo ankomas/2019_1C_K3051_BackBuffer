@@ -10,7 +10,7 @@ namespace TGC.Group.Model.Scenes.Crafter
 {
     partial class CrafterScene : Scene
     {
-        private GameScene gameScene;
+        private WorldScene gameScene;
         private ShipScene shipScene;
         private int count;
 

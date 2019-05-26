@@ -23,7 +23,7 @@ namespace TGC.Group.Model.Scenes
             this.character = character;
         }
     }
-    abstract class GameAbstractScene : Scene
+    abstract class GameplayScene : Scene
     {
         public static GameState InitialGameState => new GameState(new Player.Character());
         protected CustomSprite cursor, aim, hand;
@@ -34,7 +34,7 @@ namespace TGC.Group.Model.Scenes
 
         protected StatsIndicators statsIndicators;
 
-        public GameAbstractScene(GameState gameState) : base()
+        public GameplayScene(GameState gameState) : base()
         {
             this.GameState = gameState;
             InitStatsIndicator();
@@ -52,7 +52,7 @@ namespace TGC.Group.Model.Scenes
             throw new NotImplementedException();
         }
 
-        public GameAbstractScene WithGameState(GameState gameState)
+        public GameplayScene WithGameState(GameState gameState)
         {
             this.GameState = gameState;
             return this;

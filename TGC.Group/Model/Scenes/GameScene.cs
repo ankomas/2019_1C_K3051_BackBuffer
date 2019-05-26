@@ -23,7 +23,7 @@ using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Scenes
 {
-    class GameScene : GameAbstractScene
+    class WorldScene : GameplayScene
     {
         private readonly TgcText2D DrawText = new TgcText2D();
         private World World { get; }
@@ -50,7 +50,7 @@ namespace TGC.Group.Model.Scenes
         private bool aimFired = false;
 
         TgcMesh skb;
-        public GameScene(GameState gameState) : base(gameState)
+        public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
 
@@ -331,17 +331,17 @@ namespace TGC.Group.Model.Scenes
             this.World.Dispose();
         }
 
-        public GameScene OnPause(Callback onPauseCallback)
+        public WorldScene OnPause(Callback onPauseCallback)
         {
             this.onPauseCallback = onPauseCallback;
             return this;
         }
-        public GameScene OnGetIntoShip(TransitionCallback onGetIntoShipCallback)
+        public WorldScene OnGetIntoShip(TransitionCallback onGetIntoShipCallback)
         {
             this.onGetIntoShipCallback = onGetIntoShipCallback;
             return this;
         }
-        public GameScene OnGameOver(Callback onGameOverCallback)
+        public WorldScene OnGameOver(Callback onGameOverCallback)
         {
             this.onGameOverCallback = onGameOverCallback;
             return this;
