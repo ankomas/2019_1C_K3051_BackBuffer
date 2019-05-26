@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Elements.ElementFactories;
 using TGC.Group.Model.Elements.RigidBodyFactories;
 using TGC.Group.Model.Resources.Meshes;
 

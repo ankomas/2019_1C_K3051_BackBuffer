@@ -1,27 +1,21 @@
-﻿using System.Drawing;
-using BulletSharp;
-using BulletSharp.Math;
-using Microsoft.DirectX.Direct3D;
-using TGC.Core.BoundingVolumes;
+﻿using BulletSharp;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Core.Text;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Movements;
-using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Elements
 {
     class Fish : Element
     {
 
-        private float ProximityRadius = FastMath.Pow2(200f);
+        private float ProximityRadius = FastMath.Pow2(50f);
         private RandomMovement RandomMov { get; set; }
         private EscapeFromPosition EscapeMov { get; set; }
         public Fish(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
         {
-            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.05f, 5f );
-            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.05f, 5f);
+            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 100f );
+            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.1f, 20f);
         }
 
         public override void Update(Camera camera)

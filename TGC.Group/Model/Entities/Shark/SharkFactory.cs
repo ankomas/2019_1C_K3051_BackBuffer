@@ -21,7 +21,8 @@ namespace TGC.Group.Model.Elements
         {
             var mesh = SharkMesh.Get();
             mesh.Position = position; //new TGCVector3(30, 0, -2000);
-
+            mesh.AutoTransformEnable = false;
+            
             var rigidBody = new CapsuleFactory().CreateShark(mesh); 
             AquaticPhysics.Instance.Add(rigidBody);
 

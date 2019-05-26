@@ -37,9 +37,11 @@ namespace TGC.Group.Model
 
         private TGCMatrix CalculateTransform()
         {
-            return TGCMatrix.Scaling(Mesh.Scale) * new TGCMatrix(RigidBody.CenterOfMassTransform);
+            return TGCMatrix.Scaling(Mesh.Scale) * 
+                   TGCMatrix.RotationYawPitchRoll(Mesh.Rotation.Y, Mesh.Rotation.X, Mesh.Rotation.Z)*
+                   new TGCMatrix(RigidBody.CenterOfMassTransform);
         }
-
+    
         public abstract void Dispose();
         public override abstract IRenderObject getCollisionVolume();
         

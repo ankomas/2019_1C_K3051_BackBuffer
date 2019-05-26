@@ -8,7 +8,7 @@ namespace TGC.Group.Model.Movements
 {
     public class RandomMovement : Movement
     {
-        private Random random ;
+        private readonly Random random ;
         public RandomMovement(TGCVector3 lookAt, float rotationVelocity, float translationVelocity) : base(lookAt, rotationVelocity, translationVelocity)
         {
             random = new Random();
@@ -16,7 +16,7 @@ namespace TGC.Group.Model.Movements
 
         protected override TGCVector3 DirectionToRotate(TGCVector3 myPosition, TGCVector3 destination)
         {
-            var dest = new TGCVector3(random.Next(100), 10f, 0f);
+            var dest = new TGCVector3(random.Next(100), 0.3f, 0f);
             return dest; //TGCVector3.Cross(  dest, LookAt);
         }
 

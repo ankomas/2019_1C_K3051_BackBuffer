@@ -45,7 +45,7 @@ namespace TGC.Group.Model.Elements
 
         private bool VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
         {
-            var epsilon = 10f;
+            var epsilon = 30f;
             return FastMath.Pow2(difference.X) <=
                 FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) * epsilon &&
                 FastMath.Pow2(difference.Y) <=

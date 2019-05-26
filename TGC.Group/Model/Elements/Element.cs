@@ -18,7 +18,7 @@ namespace TGC.Group.Model.Elements
         public bool Selectable { get; set; }
 
         public abstract IItem item { get; }
-
+/*
         private Effect effect;
         public Effect Effect
         {
@@ -32,7 +32,7 @@ namespace TGC.Group.Model.Elements
                 return effect;
             }
         }
-
+*/
         public Element(TgcMesh model, RigidBody rigidBody)
         {
             Mesh = model;
@@ -51,7 +51,9 @@ namespace TGC.Group.Model.Elements
 
         private void UpdateMesh()
         {
-            Mesh.Transform = TGCMatrix.Scaling(Mesh.Scale) * new TGCMatrix(PhysicsBody.CenterOfMassTransform);
+            Mesh.Transform = TGCMatrix.Scaling(Mesh.Scale) * 
+                             TGCMatrix.RotationYawPitchRoll(Mesh.Rotation.Y, Mesh.Rotation.X, Mesh.Rotation.Z) *
+                             new TGCMatrix(PhysicsBody.CenterOfMassTransform);
         }
 
         public virtual void Render()

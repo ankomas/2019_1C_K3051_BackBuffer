@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Utils;
 
-namespace TGC.Group.Model.Elements
+namespace TGC.Group.Model.Elements.ElementFactories
 {
     abstract class ElementFactory
     {
