@@ -1,19 +1,19 @@
 ﻿using BulletSharp;
+using BulletSharp.Math;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
 using TGC.Core.Mathematica;
-using BulletSharp.Math;
-using TGC.Group.Model.Utils;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
-using Microsoft.DirectX.Direct3D;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.Elements
 {
     public abstract class Element: Collisionable
     {
 
-        private TgcMesh Mesh { get; }
+        protected TgcMesh Mesh { get; }
         public RigidBody PhysicsBody { get; set; }
         public bool Selectable { get; set; }
 
@@ -24,8 +24,8 @@ namespace TGC.Group.Model.Elements
         {
             set
             {
-                this.Mesh.Effect = effect = value;
-                this.Mesh.Technique = "FedeTechnique";
+                Mesh.Effect = effect = value;
+                Mesh.Technique = "FedeTechnique";
             }
             get
             {
@@ -35,8 +35,8 @@ namespace TGC.Group.Model.Elements
 
         public Element(TgcMesh model, RigidBody rigidBody)
         {
-            this.Mesh = model;
-            this.PhysicsBody = rigidBody;
+            Mesh = model;
+            PhysicsBody = rigidBody;
         }
         public bool isIntersectedBy(TgcRay ray)
         {
@@ -45,30 +45,32 @@ namespace TGC.Group.Model.Elements
 
         public virtual void Update(Camera camera)
         {
-            this.Mesh.Position = new TGCVector3(this.PhysicsBody.CenterOfMassPosition.X, this.PhysicsBody.CenterOfMassPosition.Y, this.PhysicsBody.CenterOfMassPosition.Z);
-            this.Mesh.Transform = 
-                TGCMatrix.Scaling(this.Mesh.Scale) *
-                new TGCMatrix(this.PhysicsBody.CenterOfMassTransform);
-            this.Selectable = false;
+            UpdateMesh();
+            Selectable = false;
+        }
+
+        private void UpdateMesh()
+        {
+            Mesh.Transform = TGCMatrix.Scaling(Mesh.Scale) * new TGCMatrix(PhysicsBody.CenterOfMassTransform);
         }
 
         public virtual void Render()
         {
-            this.Mesh.Render();
+            Mesh.Render();
             
-            if(this.Selectable)
+            if(Selectable)
                 getCollisionVolume().Render();
         }
 
         public virtual void Dispose()
         {
-            this.Mesh.Dispose();
-            this.PhysicsBody.Dispose();
+            Mesh.Dispose();
+            PhysicsBody.Dispose();
         }
 
         public virtual TGCVector3 getPosition()
         {
-            return this.Mesh.Position;
+            return Mesh.Position;
         }
 
         public override IRenderObject getCollisionVolume() 

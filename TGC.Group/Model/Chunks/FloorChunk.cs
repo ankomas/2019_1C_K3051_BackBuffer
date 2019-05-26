@@ -52,8 +52,9 @@ namespace TGC.Group.Model.Chunks
         {
             
             Floor = new TgcPlane(origin, DefaultSize, TgcPlane.Orientations.XZplane, FloorTexture);
-            FloorRigidBody = new BoxFactory().CreatePlane(this.Floor);
-            
+            FloorRigidBody = new BoxFactory().CreatePlane(Floor);
+            AquaticPhysics.Instance.Add(FloorRigidBody);
+
         }
 
         public override IEnumerable<Element> Init()

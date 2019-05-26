@@ -37,7 +37,7 @@ namespace TGC.Group.Model
             RigidBody = rigidBody;
             mouseCenter = GetMouseCenter();
             RotationSpeed = 0.1f;
-            MovementSpeed = 2000f;
+            MovementSpeed = 2000f * 30f;
             initialDirectionView = new TGCVector3(0, 0, -1);
             leftrightRot = 0;
             updownRot = 0;
@@ -58,8 +58,8 @@ namespace TGC.Group.Model
 
         private TGCVector3 CalculateTranslation(float elapsedTime, TGCMatrix cameraRotation)
         {
-            var normalizedTranslation =  TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, cameraRotation);
-            RigidBody.CenterOfMassTransform *= TGCMatrix.Translation(normalizedTranslation).ToBsMatrix;
+            var normalizedTranslation =  TGCVector3.TransformNormal(CalculateInputTranslation(), cameraRotation);
+            RigidBody.LinearVelocity = normalizedTranslation.ToBulletVector3() * elapsedTime;
             return new TGCVector3(RigidBody.CenterOfMassPosition);
         }
 
@@ -79,7 +79,7 @@ namespace TGC.Group.Model
             var moveVector = TGCVector3.Empty;
 
             if(ConsideringInput)
-                moveVector = GetInputTraslation(moveVector);
+                moveVector = GetInputTranslation(moveVector);
 
             return moveVector;
         }
@@ -105,7 +105,7 @@ namespace TGC.Group.Model
         {
             currentUpdateLogic = MoveNormally;
         }
-        private TGCVector3 GetInputTraslation(TGCVector3 moveVector)
+        private TGCVector3 GetInputTranslation(TGCVector3 moveVector)
         {
             if (GameInput.Up.IsDown(Input))
             {

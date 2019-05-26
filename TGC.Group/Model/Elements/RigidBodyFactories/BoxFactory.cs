@@ -38,8 +38,7 @@ namespace TGC.Group.Model.Elements.RigidBodyFactories
             var boxShape = new BoxShape(halfSize);
             var transform = TGCMatrix.Translation(position);
             var motionState = new DefaultMotionState(transform.ToBsMatrix);
-            var rigidBody = new RigidBody(new RigidBodyConstructionInfo(mass, motionState, boxShape));
-            return rigidBody;
+            return new RigidBody(new RigidBodyConstructionInfo(mass, motionState, boxShape));
         }
 
     }

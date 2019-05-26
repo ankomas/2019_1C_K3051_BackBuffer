@@ -18,18 +18,10 @@ namespace TGC.Group.Model.Elements
     public class Shark : Entity
     {
         private static readonly TgcText2D DrawText = new TgcText2D();
-        private MovementToEntity MovementToCamera;
+        public MovementToPosition MovementToCamera { get; set; }
         private bool dead;
 
-        public Shark(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
-        {
-            MovementToCamera = new MovementToEntity(
-                new Vector3(1f, 0f, 0f),
-                FastMath.PI / 100f, 
-                10f
-                );
-        }
-
+        public Shark(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody) { }
 
         public override void Update(Camera camera, Character character)
         {
@@ -40,12 +32,12 @@ namespace TGC.Group.Model.Elements
 
             if (VerifyCollision(difference, sharkBody, cameraBody))
             {
-                character.Hit(0);
+                character.Hit(10);
             }
 
             difference.Normalize();
            
-            MovementToCamera.Move(Mesh, RigidBody, camera.Position, difference);
+            MovementToCamera.Move(Mesh, RigidBody, camera.Position);
             
             base.Update(camera, character);
         }
