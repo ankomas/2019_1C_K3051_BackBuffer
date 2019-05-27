@@ -304,8 +304,7 @@ namespace TGC.Group.Model.Scenes
 
             if (this.BoundingBox)
             {
-                //this.World.RenderBoundingBox(this.Camera);
-                this.statistics(300, 0, Color.GreenYellow);
+                this.World.RenderBoundingBox(this.Camera);
             }
 
             drawer.BeginDrawSprite();
@@ -330,34 +329,6 @@ namespace TGC.Group.Model.Scenes
             drawer.EndDrawSprite();
             
             this.statsIndicators.Render(this.GameState.character);
-        }
-
-        private void statistics(int x, int y, Color color)
-        {
-            this.DrawText.drawText("Objects updated = " + this.World.elementsUpdated, x, y, color);
-            this.DrawText.drawText("Objects rendered = " + this.World.elementsRendered, x , y+30, color);
-            this.DrawText.drawText("Position = " + tgcString(this.Camera.Position) + relativePosition(this.Camera.Position), x , y+60, color);
-            this.DrawText.drawText("Origins = " + tgcv3ToString(this.World.renderedOrigins), x , y+90, color);
-
-        }
-
-        private string relativePosition(TGCVector3 cameraPosition)
-        {
-            return "(" + Math.Floor(cameraPosition.X / Chunk.DefaultSize.X) + ","
-                   + Math.Floor(cameraPosition.Y / Chunk.DefaultSize.Y) + ","
-                   + Math.Floor(cameraPosition.Z / Chunk.DefaultSize.Z) + ")";
-        }
-
-        private string tgcv3ToString(List<TGCVector3> worldRenderedOrigins)
-        {
-            var res = "";
-            worldRenderedOrigins.ForEach(tgc3 => res=res+tgcString(tgc3)+ " " + relativePosition(tgc3) + "\n");
-            return res;
-        }
-
-        private string tgcString(TGCVector3 tgc3)
-        {
-            return "x-"+tgc3.X + "-y-" + tgc3.Y + "-z-" + tgc3.Z;
         }
 
         public override void Dispose()
