@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using Microsoft.DirectX.Direct3D;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ using Element = TGC.Group.Model.Elements.Element;
     {
         public static readonly int RenderRadius = 7;//(int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
         public static readonly int UpdateRadius = RenderRadius;
-        private const int InteractionRadius = 490000; // Math.pow(700, 2)
+        private const int InteractionRadius = 1000000; // Math.pow(1000, 2)
         
         private readonly Dictionary<TGCVector3, Chunk> chunks;
         private List<Chunk> chunksToUpdate = new List<Chunk>();
@@ -180,6 +181,8 @@ using Element = TGC.Group.Model.Elements.Element;
             
             var elements = new List<Element>();
             var updateCube = new Cube(camera.Position, (int)Math.Floor((UpdateRadius+1)*Chunk.DefaultSize.X));
+            
+            var allElements = new List<Element>();
                 
             elements.AddRange(elementsInCube(this.entities, updateCube));
             //elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
@@ -192,8 +195,11 @@ using Element = TGC.Group.Model.Elements.Element;
             this.shark.Update(camera, character);
 
             this.elementsUpdated = elements.Count;
+            
+            allElements.AddRange(elements);
+            allElements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
 
-            SelectableElement = GetSelectableElement(camera, elements);
+            SelectableElement = GetSelectableElement(camera, allElements);
         }
 
         public void Render(TgcCamera camera, TgcFrustum frustum)
