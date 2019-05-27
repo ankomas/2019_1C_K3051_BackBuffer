@@ -11,7 +11,7 @@ namespace TGC.Group.Model.Scenes.Crafter
 {
     partial class CrafterScene : Scene
     {
-        private GameScene gameScene;
+        private WorldScene gameScene;
         private ShipScene shipScene;
         private int count;
 
@@ -162,7 +162,7 @@ namespace TGC.Group.Model.Scenes.Crafter
             {
                 this.PDAPositionX = GetPDAInitialPosition();
                 SetNextState(StateID.IN);
-                this.shipScene.CloseCrafter();
+                //this.shipScene.CloseCrafter();
             }
 
             this.PDA.Position = new TGCVector2(this.PDAPositionX, this.PDA.Position.Y);
