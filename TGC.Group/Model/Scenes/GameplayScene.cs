@@ -42,7 +42,7 @@ namespace TGC.Group.Model.Scenes
             InitHand();
             cursor = aim;
         }
-        public override void Render()
+        public void Render()
         {
             throw new NotImplementedException();
         }

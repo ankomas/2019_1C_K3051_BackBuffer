@@ -13,10 +13,10 @@ namespace TGC.Group.Model
 {
     internal class Segment
     {
-        private readonly Cube cube;
+        public readonly Cube Cube;
         private Segment(Cube cube)
         {
-            this.cube = cube;
+            this.Cube = cube;
         }
 
         public IEnumerable<Element> GenerateElements(int divisions, SpawnRate spawnRate, ElementFactory elementFactory)
@@ -29,7 +29,7 @@ namespace TGC.Group.Model
 
         private List<Cube> ElementsToSpawn(int divisions, SpawnRate spawnRate)
         {
-            return GenerateXzCubes(this.cube.PMin, this.cube.PMax, divisions)
+            return GenerateXzCubes(this.Cube.PMin, this.Cube.PMax, divisions)
                             .FindAll(scaleBox => spawnRate.HasToSpawn());
         }
 
@@ -54,8 +54,9 @@ namespace TGC.Group.Model
             return res;
         }
 
-        private static List<Cube> GenerateXzCubes(TGCVector3 pMin, TGCVector3 pMax, int divisions)
+        public static List<Cube> GenerateXzCubes(TGCVector3 pMin, TGCVector3 pMax, int divisions)
         {
+            /*
             var res = new List<Cube>();
 
             var xStep = (pMax.X - pMin.X) / divisions;
@@ -73,7 +74,28 @@ namespace TGC.Group.Model
             }
 
             return res;
+            */
+            return GenerateXzCubes(pMin, pMax, 0, divisions);
         }
 
+        public static List<Cube> GenerateXzCubes(TGCVector3 pMin, TGCVector3 pMax, int floor, int top)
+        {
+            var res = new List<Cube>();
+
+            var xStep = (pMax.X - pMin.X) / top;
+            var zStep = (pMax.Z - pMin.Z) / top;
+
+            for (var zDelta = floor; zDelta < top; zDelta++)
+            {
+                for (var xDelta = floor; xDelta < top; xDelta++)
+                {
+                    res.Add(
+                        new Cube(
+                            new TGCVector3(pMin.X + xDelta * xStep, pMin.Y, pMin.Z + zDelta * zStep), 
+                            new TGCVector3(pMin.X + (xDelta+1) * xStep, pMax.Y, pMin.Z + (zDelta+1) * zStep)));                        
+                }
+            }
+
+            return res;        }
     }
 }

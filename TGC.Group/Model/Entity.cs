@@ -4,6 +4,7 @@ using Microsoft.DirectX.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Player;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model
 {

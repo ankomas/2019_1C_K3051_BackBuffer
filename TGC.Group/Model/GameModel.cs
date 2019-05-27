@@ -94,7 +94,7 @@ namespace TGC.Group.Model
             D3DDevice.Instance.Device.BeginScene();
             TexturesManager.Instance.clearAll();
 
-            CurrentScene.Render();
+            CurrentScene.Render(this.Frustum);
 
             PostRender();
         }
@@ -155,7 +155,7 @@ namespace TGC.Group.Model
         private void PauseScene(Scene scene)
         {
             SetNextScene(pauseMenu
-                    .WithPreRender(scene.Render)
+                    .WithPreRender(() => scene.Render())
                     .OnReturnToGame(() => SetNextScene(scene))
                  );
         }

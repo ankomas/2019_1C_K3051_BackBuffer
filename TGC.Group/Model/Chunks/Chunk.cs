@@ -6,6 +6,7 @@ using TGC.Core.Camara;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Elements;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.Chunks
 {
@@ -13,26 +14,29 @@ namespace TGC.Group.Model.Chunks
     {
         public List<Element> Elements { get; }
 
-        protected TGCVector3 Origin { get; }
+        public TGCVector3 Origin { get; }
         protected AquaticPhysics Physics { get; }
 
         public static readonly Chunk None = new NoneChunk();
 
         public static TGCVector3 DefaultSize { get; } = new TGCVector3(1000, 1000, 1000);
+        
+        private Cube cube;
+        
+        public static int surface = 0;
+        public static int seaFloor = surface - 2;
+        public static int underSeaLimit = seaFloor - 1;
 
         protected Chunk(TGCVector3 origin, AquaticPhysics physicsWorld)
         {
             this.Origin = origin;
             this.Physics = physicsWorld;
             this.Elements = new List<Element>();
+            this.cube = new Cube(this.Origin, this.Origin + DefaultSize);
         }
         
         public static Chunk ByYAxis(TGCVector3 origin)
         {
-            const int surface = 0;
-            const int seaFloor = surface - 2;
-            const int underSeaLimit = seaFloor - 1;
-
             if (origin.Y < DefaultSize.Y * underSeaLimit || origin.Y > surface)
                 return None;
             
@@ -42,13 +46,13 @@ namespace TGC.Group.Model.Chunks
             return new AquaticChunk(origin);
         }
 
-        protected void AddElementsToPhysicsWorld()
+        protected void AddElementsToPhysicsWorld(List<Element> elements)
         {
-            this.Elements.ForEach(element => Physics.Add(element.PhysicsBody));
+            elements.ForEach(element => Physics.Add(element.PhysicsBody));
         }
-        public virtual IEnumerable<Entity> Init()
+        public virtual IEnumerable<Element> Init()
         {
-            return new List<Entity>();
+            return new List<Element>();
         }
 
         public virtual void Update(Camera camera)
@@ -81,6 +85,11 @@ namespace TGC.Group.Model.Chunks
             Physics.Remove(selectableElement.PhysicsBody);
             this.Elements.Remove(selectableElement);
             selectableElement.Dispose();
+        }
+
+        public Cube asCube()
+        {
+            return this.cube;
         }
     }
 }

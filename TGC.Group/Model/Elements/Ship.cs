@@ -4,6 +4,7 @@ using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.Elements
 {

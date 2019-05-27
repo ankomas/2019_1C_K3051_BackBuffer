@@ -40,9 +40,7 @@ namespace TGC.Group.Model.Elements
         }
         public bool isIntersectedBy(TgcRay ray)
         {
-            var aabb = (TgcBoundingAxisAlignBox) getCollisionVolume();
-            var toTest = new Cube(aabb.PMin, aabb.PMax);
-            return toTest.isIntersectedBy(ray);
+            return asCube().isIntersectedBy(ray);
         }
 
         public virtual void Update(Camera camera)
@@ -78,6 +76,13 @@ namespace TGC.Group.Model.Elements
             Vector3 aabbMin, aabbMax;
             PhysicsBody.GetAabb(out aabbMin, out aabbMax);
             return new TgcBoundingAxisAlignBox(new TGCVector3(aabbMin), new TGCVector3(aabbMax));
+        }
+
+        public Cube asCube()
+        {
+            var aabb = (TgcBoundingAxisAlignBox) getCollisionVolume();
+            var cube = new Cube(aabb.PMin, aabb.PMax);
+            return cube;
         }
     }
 }

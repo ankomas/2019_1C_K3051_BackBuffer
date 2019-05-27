@@ -9,6 +9,7 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.BoundingVolumes;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Text;
 using TGC.Group.Model.Elements.RigidBodyFactories;
@@ -164,7 +165,7 @@ namespace TGC.Group.Model.Scenes
 
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
         }
-        public override void Render()
+        public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
