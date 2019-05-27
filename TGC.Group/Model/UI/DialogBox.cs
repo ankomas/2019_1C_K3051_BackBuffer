@@ -57,7 +57,6 @@ namespace TGC.Group.Model.UI
             float scaleX = targetX / bitmapX;
 
             TGCVector2 s = new TGCVector2(scaleX, scaleY);
-            Console.WriteLine("scale: " + s);
 
             darknessCover.Scaling = s;
         }

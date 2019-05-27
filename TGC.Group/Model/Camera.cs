@@ -29,6 +29,7 @@ namespace TGC.Group.Model
         public float RotationSpeed { get; set; }
 
         private bool ConsideringInput = true;
+        private bool manual = false;
 
         public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
@@ -85,6 +86,8 @@ namespace TGC.Group.Model
         }
         void MoveNormally(float elapsedTime)
         {
+            if (manual) return;
+
             cameraRotation = CalculateCameraRotation();
 
             Position = CalculateTranslation(elapsedTime, cameraRotation);
@@ -141,6 +144,14 @@ namespace TGC.Group.Model
         public void ConsiderInput()
         {
             ConsideringInput = true;
+        }
+        public void UseManually()
+        {
+            manual = true;
+        }
+        public void StopUsingManually()
+        {
+            manual = false;
         }
     }
 }

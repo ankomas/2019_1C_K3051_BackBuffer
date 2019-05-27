@@ -10,8 +10,6 @@ namespace TGC.Group.Model.Scenes.Crafter
 {
     partial class CrafterScene : Scene
     {
-        private WorldScene gameScene;
-        private ShipScene shipScene;
         private int count;
 
         private TgcText2D text = new TgcText2D();
@@ -21,7 +19,7 @@ namespace TGC.Group.Model.Scenes.Crafter
         float PDAPositionX, finalPDAPositionX, PDAMoveCoefficient;
         int PDATransparency;
 
-        private Character Character => this.gameScene.Character;
+        private Character Character;
 
         public ICrafteable itemHighlighted { get; set; }
 
@@ -163,6 +161,12 @@ namespace TGC.Group.Model.Scenes.Crafter
             this.PDA.Color = Color.FromArgb(this.PDATransparency, this.PDA.Color.R, this.PDA.Color.G, this.PDA.Color.B);
             this.darknessCover.Color = Color.FromArgb(CalculaterBlacknessTransparency(), this.darknessCover.Color.R,
                 this.darknessCover.Color.G, this.darknessCover.Color.B);
+        }
+
+        public void Open(Character character)
+        {
+            this.Character = character;
+            stateID = StateID.CRAFTER;
         }
     }
 }
