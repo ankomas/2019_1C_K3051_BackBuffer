@@ -19,7 +19,7 @@ namespace TGC.Group.Model.Chunks
 
         public static readonly Chunk None = new NoneChunk();
 
-        public static TGCVector3 DefaultSize { get; } = new TGCVector3(11000, 1000, 11000);
+        public static TGCVector3 DefaultSize { get; } = new TGCVector3(1000, 1000, 1000);
         
         private Cube cube;
         

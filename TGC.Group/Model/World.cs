@@ -24,7 +24,7 @@ using Element = TGC.Group.Model.Elements.Element;
 {
     internal class World
     {
-        public static readonly int RenderRadius = (int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
+        public static readonly int RenderRadius = 7;//(int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
         public static readonly int UpdateRadius = RenderRadius;
         private const int InteractionRadius = 490000; // Math.pow(700, 2)
         
@@ -53,30 +53,6 @@ using Element = TGC.Group.Model.Elements.Element;
             this.chunks.Add(new TGCVector3(initialPoint), initialChunk);
             this.entities.AddRange(initialChunk.Init());
             AddShark();
-            //AddHeightMap();
-            
-            /*
-            string path = "../../../Shaders/Fede.fx", compilationErrors;
-            try
-            {
-                effect = Effect.FromFile(D3DDevice.Instance.Device, path, null, null, ShaderFlags.None, null, out compilationErrors);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Error al cargar shader: " + path + ". Errores: Ni lo cargó xd");
-            }
-
-            if (effect == null)
-            {
-                throw new Exception("Error al cargar shader: " + path + ". Errores: " + compilationErrors);
-            }
-
-            foreach (var e in this.entities)
-            {
-                e.Mesh.Effect = effect;
-                e.Mesh.Technique = "FedeTechnique";
-            }
-            */
         }
 
         //todo: need refactor
@@ -147,76 +123,37 @@ using Element = TGC.Group.Model.Elements.Element;
         private List<Chunk> GetChunksByRadius(TGCVector3 origin, int radius)
         {
             var toUpdate = new ConcurrentBag<Chunk>();
-            var intOrigin = new TGCVector3(
-                (int) Math.Floor(origin.X / Chunk.DefaultSize.X),
-                (int) Math.Floor(origin.Y/Chunk.DefaultSize.Y), 
-                (int) Math.Floor(origin.Z/Chunk.DefaultSize.Z));
 
             var yFloor = Chunk.underSeaLimit;
             var yTop = Chunk.surface;
 
-            var xRange = Enumerable.Range(-radius, radius * 2 + 1);
-            var yRange = Enumerable.Range(yFloor, Math.Abs(yFloor) + yTop + 1);
-            var zRange = Enumerable.Range(-radius, radius * 2 + 1);
-
             var vectors = new HashSet<TGCVector3>();
 
             var trueOrigin = new TGCVector3(
-                Chunk.DefaultSize.X * (int) Math.Round(origin.X / Chunk.DefaultSize.X),
-                Chunk.DefaultSize.Y * (int) Math.Round(origin.Y / Chunk.DefaultSize.Y),
-                Chunk.DefaultSize.Z * (int) Math.Round(origin.Z / Chunk.DefaultSize.Z));
+                Chunk.DefaultSize.X * (int) (Math.Round(origin.X / Chunk.DefaultSize.X)+radius),
+                Chunk.DefaultSize.Y * (int) (Math.Round(origin.Y / Chunk.DefaultSize.Y)),
+                Chunk.DefaultSize.Z * (int) (Math.Round(origin.Z / Chunk.DefaultSize.Z)+radius));
 
-            var zaCube = new Cube(trueOrigin, (int)Math.Floor(radius*Chunk.DefaultSize.X));
+            var zaCube = new Cube(trueOrigin, (int)Math.Floor(radius*Chunk.DefaultSize.X), (int)Math.Floor(radius*Chunk.DefaultSize.Y));
             
-            var ySegments = Segment.GenerateSegments(new TGCVector3(zaCube.PMin.X, (int)Math.Floor(Chunk.DefaultSize.Y * yFloor), zaCube.PMin.Z),
+            var ySegments = Segment.GenerateSegments(
+                new TGCVector3(zaCube.PMin.X, (int)Math.Floor(Chunk.DefaultSize.Y * yFloor), zaCube.PMin.Z),
                 new TGCVector3(zaCube.PMax.X, (int)Math.Floor(Chunk.DefaultSize.Y * yTop), zaCube.PMax.Z), 
                 Math.Abs(yFloor) + Math.Abs(yTop));
             
             var xzCubes = ySegments.ConvertAll(segment => segment.Cube)
-                .SelectMany(cube => Segment.GenerateXzCubes(cube.PMin, cube.PMax, radius * 2    ));
+                .SelectMany(cube => Segment.GenerateXzCubes(cube.PMin, cube.PMax, -radius*2, radius*2));
 
             foreach (var xzCube in xzCubes)
             {
                 vectors.Add(xzCube.PMin);
-                vectors.Add(new TGCVector3(xzCube.PMin.X, xzCube.PMin.Y, xzCube.PMax.Z));
-                vectors.Add(new TGCVector3(xzCube.PMax.X, xzCube.PMin.Y, xzCube.PMin.Z));
-                vectors.Add(new TGCVector3(xzCube.PMax.X, xzCube.PMin.Y, xzCube.PMax.Z));
             }
-            /*
-            foreach (var x in xRange)
-            {
-                foreach (var y in yRange)
-                {
-                    foreach (var z in zRange)
-                    {
-                        vectors.Add(
-                                new TGCVector3(
-                                    Chunk.DefaultSize.X * (intOrigin.X + x),
-                                    Chunk.DefaultSize.Y * (intOrigin.Y + y),
-                                    Chunk.DefaultSize.Z * (intOrigin.Z + z))
-                            );
-                    }
-                }
-            }
-            */
 
             foreach (var position in vectors)
             {
                 toUpdate.Add(chunks.ContainsKey(position) ? chunks[position] : AddChunk(position));
             }            
-            /*for (var j = yFloor; j <= yTop; j++)
-            {
-                for (var k = -radius; k <= radius; k++)
-                {
-                    var position = new TGCVector3(
-                        Chunk.DefaultSize.X * (intOrigin.X + i),
-                        Chunk.DefaultSize.Y * (intOrigin.Y + j),
-                        Chunk.DefaultSize.Z * (intOrigin.Z + k));
-                    
-                    toUpdate.Add(chunks.ContainsKey(position) ? chunks[position] : AddChunk(position));
-                }
-            }*/
-
+            
             return toUpdate.ToList();
         }
 

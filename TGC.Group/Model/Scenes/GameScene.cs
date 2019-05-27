@@ -307,7 +307,7 @@ namespace TGC.Group.Model.Scenes
 
             this.character.UpdateStats(this.Camera.Position.Y < 0
                 ? new Stats(-elapsedTime, 0)
-                : new Stats(elapsedTime * 7, 0));
+                : new Stats(elapsedTime * (this.character.MaxStats.Oxygen/3), 0));
 
             if(Camera.Position.Y > skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2)
             {

@@ -26,6 +26,12 @@ namespace TGC.Group.Model.Utils
             this.PMax = new TGCVector3(origin.X + radius, origin.Y + radius, origin.Z + radius);
         }
 
+        public Cube(TGCVector3 origin, int radiusXZ, int radiusY)
+        {
+            this.PMin = new TGCVector3(origin.X - radiusXZ, origin.Y - radiusY, origin.Z - radiusXZ);
+            this.PMax = new TGCVector3(origin.X + radiusXZ, origin.Y + radiusY, origin.Z + radiusXZ);
+        }
+
         public bool contains(TGCVector3 point)
         {
             return betweenBounds(point.X, this.PMin.X, this.PMax.X)
