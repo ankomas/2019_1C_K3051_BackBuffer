@@ -182,7 +182,7 @@ using Element = TGC.Group.Model.Elements.Element;
             var updateCube = new Cube(camera.Position, (int)Math.Floor((UpdateRadius+1)*Chunk.DefaultSize.X));
                 
             elements.AddRange(elementsInCube(this.entities, updateCube));
-            elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
+            //elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
 
             elements.ForEach(element => element.Update(camera));
             toUpdate.ForEach(chunk => chunk.Update(camera));

@@ -57,12 +57,12 @@ namespace TGC.Group.Model.Chunks
 
         public virtual void Update(Camera camera)
         {
-            //this.Elements.ForEach(element => element.Update(camera));
+            this.Elements.ForEach(element => element.Update(camera));
         }
 
         public virtual void Render()
         {
-            //this.Elements.ForEach(element => element.Render());
+            this.Elements.ForEach(element => element.Render());
         }
 
         public virtual void RenderBoundingBox()
