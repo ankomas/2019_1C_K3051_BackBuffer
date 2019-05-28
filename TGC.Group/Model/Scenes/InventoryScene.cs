@@ -51,6 +51,9 @@ namespace TGC.Group.Model.Scenes
             drawer.DrawSprite(darknessCover);
             drawer.DrawSprite(PDA);
             drawer.EndDrawSprite();
+
+            this.itemHighlighted = null;
+            
             if (stateID == StateID.OPENED)
             {
                 bool hovering = false;
