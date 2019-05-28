@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Input;
 using TGC.Core.Text;
 using TGC.Group.Model.Input;
@@ -24,11 +25,11 @@ namespace TGC.Group.Model.Scenes
         float darknessTransparency = 0f, maxDarknessTransparency = 220f;
         float letterTransparency = 0f;
 
-        public GameOverScene(TgcD3dInput input) : base(input)
+        public GameOverScene() : base()
         {
             Uses3DCamera = false;
 
-            pressed[GameInput._Enter] = () => {
+            pressed[GameInput.Accept] = () => {
                 onGoToStartScreenCallback();
             };
 
@@ -45,7 +46,7 @@ namespace TGC.Group.Model.Scenes
 
             darknessCover.Color = Color.FromArgb(0, 0, 0, 0);
         }
-        public override void Render()
+        private void Render()
         {
             preRender();
 
@@ -66,13 +67,19 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
-            darknessTransparency = Math.Min(darknessTransparency + 200f * elapsedTime, maxDarknessTransparency);
+            darknessTransparency = Math.Min(darknessTransparency + 100f * elapsedTime, maxDarknessTransparency);
 
             if (darknessTransparency == maxDarknessTransparency)
                 letterTransparency = Math.Min(letterTransparency + 200f * elapsedTime, 255);
 
             darknessCover.Color = Color.FromArgb((int)darknessTransparency, 255, 0, 0);
         }
+
+        public override void Render(TgcFrustum frustum)
+        {
+            this.Render();
+        }
+
         public GameOverScene OnGoToStartScreen(Callback onGoToStartScreenCallback)
         {
             this.onGoToStartScreenCallback = onGoToStartScreenCallback;

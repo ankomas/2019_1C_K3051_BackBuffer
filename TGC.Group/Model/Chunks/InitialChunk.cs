@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using BulletSharp;
 using TGC.Core.BoundingVolumes;
@@ -14,6 +15,11 @@ namespace TGC.Group.Model.Chunks
     {
         public InitialChunk(TGCVector3 origin) : base(origin, AquaticPhysics.Instance)
         {
+
+        }
+
+        public override IEnumerable<Element> Init()
+        {
             var scene = new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "ship-TgcScene.xml");
             scene.Meshes.ForEach(mesh => mesh.Scale = mesh.Scale*5);
 
@@ -23,8 +29,9 @@ namespace TGC.Group.Model.Chunks
             
             var ship = new Ship(scene, new BoxFactory().Create(boundingBox));
             
-            this.Elements.Add(ship);
             AquaticPhysics.Instance.Add(ship.PhysicsBody);
+
+            return new List<Element> {ship};
         }
     }
     

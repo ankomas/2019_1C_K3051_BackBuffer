@@ -1,5 +1,6 @@
 ﻿using Microsoft.DirectX.DirectInput;
 using System.Drawing;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
@@ -35,7 +36,7 @@ namespace TGC.Group.Model.Scenes
 
         private float rotation = 0;
 
-        public StartMenu(TgcD3dInput Input) : base(Input)
+        public StartMenu() : base()
         {
             onGameStartCallback = onGameExitCallback = () => {};
 
@@ -67,9 +68,9 @@ namespace TGC.Group.Model.Scenes
             skyBox.Init();
             Camera = new TgcCamera();
 
-            pressed[GameInput._Down] = () => pointer = Pointer.DOWN;
-            pressed[GameInput._Up] = () => pointer = Pointer.UP;
-            pressed[GameInput._Enter] = fireAction;
+            pressed[GameInput.Down] = () => pointer = Pointer.DOWN;
+            pressed[GameInput.Up] = () => pointer = Pointer.UP;
+            pressed[GameInput.Accept] = fireAction;
         }
 
         private void InitFonts()
@@ -106,7 +107,7 @@ namespace TGC.Group.Model.Scenes
             rotation += .0001f;
             Camera.SetCamera(skyBox.Center, lookAt);
         }
-        override public void Render()
+        override public void Render(TgcFrustum frustum)
         {
             ClearScreen();
 
