@@ -1,10 +1,8 @@
 ﻿using BulletSharp;
-using BulletSharp.Math;
-using Microsoft.DirectX.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Movements;
 using TGC.Group.Model.Player;
-using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model
 {
@@ -12,11 +10,14 @@ namespace TGC.Group.Model
     {
         public TgcMesh Mesh { get; }
         public RigidBody RigidBody { get; }
+        
+        public Movement Movement { get; set; }
 
-        public Entity(TgcMesh mesh, RigidBody rigid)
+        public Entity(TgcMesh mesh, RigidBody rigid, Movement movement)
         {
             Mesh = mesh;
             RigidBody = rigid;
+            Movement = movement;
         }
 
 
@@ -27,12 +28,23 @@ namespace TGC.Group.Model
         }
         public virtual void Update(Camera camera, Character character)
         {
+            var movementToApply = Movement.Move(Mesh.Position, camera.Position);
+            RigidBody.CenterOfMassTransform *= movementToApply.Translation.ToBsMatrix;
             Mesh.Position = new TGCVector3(RigidBody.CenterOfMassPosition);
-            Mesh.Transform =
-                TGCMatrix.Scaling(Mesh.Scale) *
-                new TGCMatrix(RigidBody.CenterOfMassTransform);
+            Mesh.Rotation += movementToApply.AnglesToRotate;
+            Mesh.Transform = CalculateTransform();
         }
+
+        private TGCMatrix CalculateTransform()
+        {
+            return TGCMatrix.Scaling(Mesh.Scale) * 
+                   TGCMatrix.RotationYawPitchRoll(Mesh.Rotation.Y, Mesh.Rotation.X, Mesh.Rotation.Z)*
+                   new TGCMatrix(RigidBody.CenterOfMassTransform);
+        }
+    
         public abstract void Dispose();
         public override abstract IRenderObject getCollisionVolume();
+        
+
     }
 }

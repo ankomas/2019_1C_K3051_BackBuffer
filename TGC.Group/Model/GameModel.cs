@@ -18,6 +18,7 @@ namespace TGC.Group.Model
     /// </summary>
     public class GameModel : TgcExample
     {
+        public static float GlobalElapsedTime;
         private WorldScene gameScene;
         private StartMenu startMenu;
         private PauseMenu pauseMenu;
@@ -79,6 +80,8 @@ namespace TGC.Group.Model
 
             PreUpdate();
 
+            GlobalElapsedTime = ElapsedTime;
+            
             CurrentScene.ReactToInput();
 
             CurrentScene.Update(this.ElapsedTime);

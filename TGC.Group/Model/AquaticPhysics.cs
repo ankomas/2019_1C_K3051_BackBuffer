@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BulletSharp.Math;
 using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model
@@ -41,7 +42,7 @@ namespace TGC.Group.Model
                 collisionConfiguration
             )
             {
-                Gravity = new TGCVector3(0, -10f, 0).ToBulletVector3(),
+                Gravity = Vector3.Zero, // new TGCVector3(0, -10f, 0).ToBulletVector3(),
             };
 
         }
