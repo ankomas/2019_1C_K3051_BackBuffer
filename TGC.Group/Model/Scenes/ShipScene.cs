@@ -137,7 +137,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = new TGCVector3(200, 1000, 100);
+            var position = new TGCVector3(675, 1000, 900);
             var rigidBody = new CapsuleFactory().Create(position, 100, 60);
             AquaticPhysics.Instance.Add(rigidBody);
             this.Camera = new Camera(position, input, rigidBody);
@@ -171,7 +171,7 @@ namespace TGC.Group.Model.Scenes
         }
         public override void Update(float elapsedTime)
         {
-            this.GameState.character.UpdateStats(new Stats(elapsedTime * 7, 0));
+            this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
             //AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
@@ -217,7 +217,7 @@ namespace TGC.Group.Model.Scenes
 
             statsIndicators.Render(this.GameState.character);
             
-            this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch\nCraft: click the crafter",
+            this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter",
                 300, 300, Color.NavajoWhite);
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
