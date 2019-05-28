@@ -332,6 +332,12 @@ namespace TGC.Group.Model.Scenes
             this.statsIndicators.Render(this.GameState.character);
         }
 
+        public new void Render()
+        {
+            if (GameModel.frustum != null) 
+                this.Render(GameModel.frustum);
+        }
+
         public override void Dispose()
         {
             this.World.Dispose();

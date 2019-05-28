@@ -2,9 +2,11 @@ using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Textures;
 using System;
+using System.Runtime.CompilerServices;
 using TGC.Group.Model.Scenes;
 using TGC.Group.Form;
 using System.Windows.Forms;
+using TGC.Core.BoundingVolumes;
 using TGC.Group.TGCUtils;
 using TGC.Group.Model.Resources.Sprites;
 
@@ -38,6 +40,8 @@ namespace TGC.Group.Model
         }
 
         private Scene nextScene;
+
+        public static TgcFrustum frustum;
 
         /// <summary>
         ///     Constructor del juego.
@@ -98,6 +102,7 @@ namespace TGC.Group.Model
             TexturesManager.Instance.clearAll();
 
             CurrentScene.Render(this.Frustum);
+            GameModel.frustum = this.Frustum;
 
             PostRender();
         }
