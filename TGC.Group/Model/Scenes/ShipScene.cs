@@ -170,7 +170,7 @@ namespace TGC.Group.Model.Scenes
         public override void Update(float elapsedTime)
         {
             this.GameState.character.UpdateStats(new Stats(elapsedTime * 7, 0));
-
+            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
             //if (uh) Camera.SetCamera(craftingScene.ShipCamera.Position, craftingScene.ShipCamera.LookAt);

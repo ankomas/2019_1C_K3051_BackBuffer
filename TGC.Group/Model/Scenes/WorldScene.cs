@@ -57,6 +57,8 @@ namespace TGC.Group.Model.Scenes
         private bool aimFired = false;
 
         TgcMesh skb;
+        private TGCVector3 initialCameraPosition = new TGCVector3(300, -100, 200);
+
         public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
@@ -205,7 +207,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = new TGCVector3(30, 30, 200);
+            var position = this.initialCameraPosition;
             var rigidBody = new CapsuleFactory().Create(position, 100, 60);
             AquaticPhysics.Instance.Add(rigidBody);
             Camera = new Camera(position, input, rigidBody);

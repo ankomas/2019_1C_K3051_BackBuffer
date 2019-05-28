@@ -41,6 +41,7 @@ namespace TGC.Group.Model.Scenes
         public ICrafteable ItemHighlighted { get; set; }
         private Items.Crafter crafter = new Items.Crafter();
         private List<bool> selectedItems = new List<bool>();
+        private bool opened = false;
 
         public CraftingScene()
         {
@@ -304,9 +305,12 @@ namespace TGC.Group.Model.Scenes
             ShipCamera.SetCamera(ShipCamera.Position, crafterPosition);
 
             updater = BeginningAnimation;
+
+            this.opened = true;
         }
         public void Close()
         {
+            if(!this.opened) return;
             ShipCamera.SetCamera(ShipCamera.Position, this.initialLookAt);
             updater = EndAnimation;
             renderer = () => {};
