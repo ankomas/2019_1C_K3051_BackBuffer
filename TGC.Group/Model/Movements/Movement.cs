@@ -33,7 +33,7 @@ namespace TGC.Group.Model.Movements
 
         private TGCVector3 AnglesToRotate(TGCVector3 position, TGCVector3 destination)
         {
-            var directions =  DirectionToRotate(position, destination);
+            var directions =  DirectionToRotate(position, destination) * GameModel.GlobalElapsedTime;
             directions.Normalize();
             return LimitAngles(directions * rotationVelocity);
             

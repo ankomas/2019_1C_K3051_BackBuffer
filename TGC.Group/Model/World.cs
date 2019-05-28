@@ -52,7 +52,7 @@ namespace TGC.Group.Model
             
             chunks.Add(new TGCVector3(initialPoint), initialChunk);
             entities.AddRange(initialChunk.Init());
-            shark = SharkFactory.Create(new TGCVector3(30, 0, -2000));
+            shark = SharkFactory.Create(new TGCVector3(30, -1000, -2000));
             
         }
 
