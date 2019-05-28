@@ -70,12 +70,13 @@ namespace TGC.Group.Model.Scenes
         private void InitAim()
         {
             aim = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Aim);
+            aim.Scaling = new TGCVector2(.5f, .5f);
             Screen.CenterSprite(aim);
         }
         private void InitHand()
         {
             hand = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Hand);
-            hand.Scaling = new TGCVector2(.75f, .75f);
+            hand.Scaling = new TGCVector2(.5f, .5f);
             Screen.CenterSprite(hand);
         }
     }

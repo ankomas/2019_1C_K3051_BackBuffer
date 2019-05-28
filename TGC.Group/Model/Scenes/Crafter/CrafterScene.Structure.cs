@@ -52,7 +52,7 @@ namespace TGC.Group.Model.Scenes.Crafter
 
             this.SetState(StateID.IN);
             
-            this.pressed[GameInput._Enter] = () =>
+            this.pressed[GameInput.Accept] = () =>
             {
                 if (this.itemHighlighted == null) return;
                 if (!this.Character.CanCraft(this.itemHighlighted)) return;
@@ -68,7 +68,7 @@ namespace TGC.Group.Model.Scenes.Crafter
 
             this.stateID = newStateID;
             this.updateLogic = newState.updateLogic;
-            pressed[GameInput._Inventory] = () => this.SetNextState(newState.nextStateID);
+            pressed[GameInput.Inventory] = () => this.SetNextState(newState.nextStateID);
         }
         private void SetNextState(StateID newStateID)
         {

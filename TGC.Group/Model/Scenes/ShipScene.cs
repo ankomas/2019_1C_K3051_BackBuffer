@@ -23,8 +23,6 @@ namespace TGC.Group.Model.Scenes
 {
     class ShipScene : GameplayScene
     {
-        bool uh = false;
-
         TgcSkyBox walls;
         float rotation = 0;
         private readonly TgcText2D drawText = new TgcText2D();
@@ -104,11 +102,11 @@ namespace TGC.Group.Model.Scenes
 
             TurnExploreCommandsOn();
 
-            pressed[GameInput._Escape] = () =>
+            pressed[Key.P] = () =>
             {
                 onPauseCallback();
             };
-            pressed[Key.P] = CloseCrafter;
+            pressed[GameInput.GoBack] = CloseCrafter;
         }
         private void TryToInteractWithSelectableThing()
         {
@@ -122,12 +120,13 @@ namespace TGC.Group.Model.Scenes
         }
         private void TurnExploreCommandsOn()
         {
-            pressed[GameInput._Inventory] = OpenInventory;
-            pressed[GameInput._Enter] = TryToInteractWithSelectableThing;
+            pressed[GameInput.Inventory] = OpenInventory;
+            pressed[GameInput.Accept] = TryToInteractWithSelectableThing;
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[GameInput._Inventory] = CloseInventory;
+            pressed[GameInput.Inventory] = CloseInventory;
+            pressed[GameInput.Accept] = () => {};
         }
         public void ResetCamera()
         {
@@ -142,6 +141,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void OpenInventory()
         {
+            cursor = null;
             TurnExploreCommandsOff();
             ((Camera)Camera).IgnoreInput();
             inventoryScene.Open(this.GameState.character);
@@ -187,26 +187,32 @@ namespace TGC.Group.Model.Scenes
                 thing.Render();
                 if (thing.Looked)
                 {
-                    thing.mesh.BoundingBox.Render();
                     dialogBox.Clear();
-                    dialogBox.AddLine(thing.name);
-                    dialogBox.AddLine("------------");
-                    dialogBox.AddLine(thing.actionDescription);
-                    dialogBox.Render();
-                    cursor = hand;
+                    if (cursor != null) 
+                    {
+                        thing.mesh.BoundingBox.Render();
+                        dialogBox.AddLineSmall(thing.name);
+                        dialogBox.AddLineSmall("------------");
+                        dialogBox.AddLineSmall(thing.actionDescription);
+                        dialogBox.Render();
+                        cursor = hand;
+                    }
                 }
             }
 
-            drawer2D.BeginDrawSprite();
-            drawer2D.DrawSprite(cursor);
-            drawer2D.EndDrawSprite();
+            if(cursor != null)
+            {
+                drawer2D.BeginDrawSprite();
+                drawer2D.DrawSprite(cursor);
+                drawer2D.EndDrawSprite();
+
+                cursor = aim;
+            }
 
             inventoryScene.Render();
             craftingScene.Render();
 
             statsIndicators.Render(this.GameState.character);
-
-            cursor = aim;
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {
@@ -225,11 +231,14 @@ namespace TGC.Group.Model.Scenes
         }
         private void OpenCrafter()
         {
+            cursor = null;
+            TurnExploreCommandsOff();
             craftingScene.Open(this.GameState.character, ((Camera)Camera), this.crafter.Position);
-            uh = true;
         }
         public void CloseCrafter()
         {
+            cursor = hand;
+            TurnExploreCommandsOn();
             craftingScene.Close();
         }
     }

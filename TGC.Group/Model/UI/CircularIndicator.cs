@@ -54,13 +54,13 @@ namespace TGC.Group.Model.UI
             blackCircle = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackCircle);
             blackCircle.Scaling = new TGCVector2(Scale(this.MeterSize, .295f), Scale(this.MeterSize, .295f));
             blackCircle.Position = new TGCVector2(meterX0 - Scale(this.MeterSize, 3), meterY0 - Scale(this.MeterSize, 3));
-            blackCircle.Color = Color.FromArgb(120, 0, 0, 0);
+            blackCircle.Color = Color.FromArgb(188, 0, 0, 0);
             
             this.TextBig.changeFont(new System.Drawing.Font("Arial Narrow Bold", Scale(this.MeterSize, 25)));
             this.TextSmall.changeFont(new System.Drawing.Font("Arial Narrow Bold", Scale(this.MeterSize, 15)));
         }
 
-        public void init()
+        public void Init()
         {
             string compilationErrors;
             
@@ -93,21 +93,21 @@ namespace TGC.Group.Model.UI
             vertices[5] = new CustomVertex.TransformedColored(this.MeterX0 + this.MeterSize, this.MeterY0 + this.MeterSize, 0, 1, yellow);
         }
 
-        public void render(Character character)
+        public void Render(Character character)
         {
-            renderBlackCircle();
-            renderEffect(character);
-            renderText(character);
+            RenderBlackCircle();
+            RenderEffect(character);
+            RenderText(character);
         }
 
-        private void renderBlackCircle()
+        private void RenderBlackCircle()
         {
             Drawer.BeginDrawSprite();
             Drawer.DrawSprite(this.blackCircle);
             Drawer.EndDrawSprite();
         }
 
-        protected void renderEffect(float actualStat, float maxStat)
+        protected void RenderEffect(float actualStat, float maxStat)
         {
             /**********OXYGEN METER SHADER***********/
             this.effect.Begin(FX.None);
@@ -126,7 +126,7 @@ namespace TGC.Group.Model.UI
             /****************************************/
         }
 
-        protected abstract void renderEffect(Character character);
-        protected abstract void renderText(Character character);
+        protected abstract void RenderEffect(Character character);
+        protected abstract void RenderText(Character character);
     }
 }

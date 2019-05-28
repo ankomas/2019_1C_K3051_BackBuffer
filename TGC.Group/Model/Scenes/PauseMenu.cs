@@ -48,18 +48,18 @@ namespace TGC.Group.Model.Scenes
         }
         private void InitInput()
         {
-            pressed[GameInput._Enter] = () => {
+            pressed[GameInput.Accept] = () => {
                 Decide();
                 pointer = Pointer.UP;
             };
-            pressed[GameInput._Escape] = () => {
+            pressed[GameInput.GoBack] = () => {
                 onReturnToGameCallback();
                 pointer = Pointer.UP;
             };
-            pressed[GameInput._Up] = () => {
+            pressed[GameInput.Up] = () => {
                 pointer = Pointer.UP;
             };
-            pressed[GameInput._Down] = () => {
+            pressed[GameInput.Down] = () => {
                 pointer = Pointer.DOWN;
             };
         }

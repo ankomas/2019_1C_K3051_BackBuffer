@@ -67,9 +67,9 @@ namespace TGC.Group.Model.Scenes
             skyBox.Init();
             Camera = new TgcCamera();
 
-            pressed[GameInput._Down] = () => pointer = Pointer.DOWN;
-            pressed[GameInput._Up] = () => pointer = Pointer.UP;
-            pressed[GameInput._Enter] = fireAction;
+            pressed[GameInput.Down] = () => pointer = Pointer.DOWN;
+            pressed[GameInput.Up] = () => pointer = Pointer.UP;
+            pressed[GameInput.Accept] = fireAction;
         }
 
         private void InitFonts()

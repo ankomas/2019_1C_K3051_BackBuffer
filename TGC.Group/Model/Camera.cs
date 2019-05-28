@@ -110,27 +110,27 @@ namespace TGC.Group.Model
         }
         private TGCVector3 GetInputTraslation(TGCVector3 moveVector)
         {
-            if (GameInput.Up.IsDown(Input))
+            if (GameInput._Up.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 0, -1) * MovementSpeed;
             }
 
-            if (GameInput.Down.IsDown(Input))
+            if (GameInput._Down.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 0, 1) * MovementSpeed;
             }
 
-            if (GameInput.Right.IsDown(Input))
+            if (GameInput._Right.IsDown(Input))
             {
                 moveVector += new TGCVector3(-1, 0, 0) * MovementSpeed;
             }
 
-            if (GameInput.Left.IsDown(Input))
+            if (GameInput._Left.IsDown(Input))
             {
                 moveVector += new TGCVector3(1, 0, 0) * MovementSpeed;
             }
 
-            if (GameInput.Float.IsDown(Input))
+            if (GameInput._Float.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 1, 0) * MovementSpeed;
             }

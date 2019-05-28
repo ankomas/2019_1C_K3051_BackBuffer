@@ -77,7 +77,7 @@ namespace TGC.Group.Model.Scenes
                         bubble.Scaling = bubbleDefaultScale;
                         item.Icon.Scaling = item.DefaultScale;
                     }
-                    item.Icon.Position = bubble.Position + new TGCVector2(7, 19);
+                    CenterIconToCurrentBubble(item.Icon);
                     drawer.DrawSprite(bubble);
                     drawer.DrawSprite(item.Icon);
                     ++i;
@@ -88,7 +88,13 @@ namespace TGC.Group.Model.Scenes
                 drawer.EndDrawSprite();
             }
         }
-
+        private void CenterIconToCurrentBubble(CustomSprite icon)
+        {
+            icon.Position = bubble.Position + new TGCVector2(
+                (bubble.Bitmap.Width * bubble.Scaling.X - icon.Bitmap.Width * icon.Scaling.X) / 2,
+                (bubble.Bitmap.Height * bubble.Scaling.Y - icon.Bitmap.Height * icon.Scaling.Y) / 2
+                );
+        }
         private bool cursorOverBubble()
         {
             return Cursor.Position.X >= this.bubble.Position.X &&

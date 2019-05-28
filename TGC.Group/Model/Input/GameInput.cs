@@ -9,21 +9,22 @@ namespace TGC.Group.Model.Input
 {
     public class GameInput
     {
-        public static readonly GameInput Up = new GameInput(new List<Key> {Key.Up, Key.W});
-        public static readonly GameInput Down = new GameInput(new List<Key>{Key.Down, Key.S});
-        public static readonly GameInput Left = new GameInput(new List<Key>{Key.Left, Key.A});
-        public static readonly GameInput Right = new GameInput(new List<Key>{Key.Right, Key.D});
-        public static readonly GameInput Float = new GameInput(new List<Key>{Key.Space});
-        public static readonly GameInput Escape = new GameInput(new List<Key>{Key.Escape});
-        public static readonly GameInput Enter = new GameInput(new List<Key>{Key.Return}, new List<MouseButtons> {MouseButtons.BUTTON_LEFT});
-        public static readonly GameInput Inventory = new GameInput(new List<Key>{Key.I, Key.Tab});
-        public static readonly GameInput Statistic = new GameInput(new List<Key>{Key.F});
+        public static readonly GameInput _Up = new GameInput(new List<Key> {Key.Up, Key.W});
+        public static readonly GameInput _Down = new GameInput(new List<Key>{Key.Down, Key.S});
+        public static readonly GameInput _Left = new GameInput(new List<Key>{Key.Left, Key.A});
+        public static readonly GameInput _Right = new GameInput(new List<Key>{Key.Right, Key.D});
+        public static readonly GameInput _Float = new GameInput(new List<Key>{Key.Space});
+        public static readonly GameInput _Escape = new GameInput(new List<Key>{Key.Escape});
+        public static readonly GameInput _Enter = new GameInput(new List<Key>{Key.Return}, new List<MouseButtons> {MouseButtons.BUTTON_LEFT});
+        public static readonly GameInput _Inventory = new GameInput(new List<Key>{Key.I, Key.Tab});
+        public static readonly GameInput _Statistic = new GameInput(new List<Key>{Key.F});
 
-        public static readonly List<object> _Up = new List<object> { Key.Up, Key.W };
-        public static readonly List<object> _Down = new List<object> { Key.Down, Key.S };
-        public static readonly List<object> _Enter = new List<object> { Key.Return, MouseButtons.BUTTON_LEFT };
-        public static readonly List<object> _Escape = new List<object> { Key.Escape };
-        public static readonly List<object> _Inventory = new List<object> { Key.I, Key.Tab };
+        public static readonly List<object> Up = new List<object> { Key.Up, Key.W };
+        public static readonly List<object> Down = new List<object> { Key.Down, Key.S };
+        public static readonly List<object> Accept = new List<object> { Key.Return, MouseButtons.BUTTON_LEFT };
+        public static readonly List<object> Inventory = new List<object> { Key.I, Key.Tab };
+        public static readonly List<object> GoBack = new List<object> { Key.Escape };
+        public static readonly List<object> Pause = new List<object> { Key.P };
 
         private readonly IEnumerable<Key> keys;
         private readonly IEnumerable<MouseButtons> buttons;
