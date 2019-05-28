@@ -214,6 +214,9 @@ namespace TGC.Group.Model.Scenes
             craftingScene.Render();
 
             statsIndicators.Render(this.GameState.character);
+            
+            this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch\nCraft: click the crafter",
+                300, 300, Color.NavajoWhite);
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {
