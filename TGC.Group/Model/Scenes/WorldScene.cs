@@ -75,7 +75,7 @@ namespace TGC.Group.Model.Scenes
             
             World = new World(new TGCVector3(0, 0, 0));
             
-            pressed[Key.Escape] = () => {
+            pressed[Key.P] = () => {
                 onPauseCallback();
             };
 
@@ -98,13 +98,13 @@ namespace TGC.Group.Model.Scenes
         }
         private void TurnExploreCommandsOn()
         {
-            pressed[GameInput._Inventory] = OpenInventory;
-            pressed[GameInput._Enter] = () => aimFired = true;
+            pressed[GameInput.Inventory] = OpenInventory;
+            pressed[GameInput.Accept] = () => aimFired = true;
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[GameInput._Inventory] = CloseInventory;
-            pressed[GameInput._Enter] = () => {};
+            pressed[GameInput.Inventory] = CloseInventory;
+            pressed[GameInput.Accept] = () => {};
         }
         private void OpenInventory()
         {

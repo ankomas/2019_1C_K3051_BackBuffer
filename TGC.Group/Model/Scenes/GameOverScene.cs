@@ -29,7 +29,7 @@ namespace TGC.Group.Model.Scenes
         {
             Uses3DCamera = false;
 
-            pressed[GameInput._Enter] = () => {
+            pressed[GameInput.Accept] = () => {
                 onGoToStartScreenCallback();
             };
 
@@ -67,7 +67,7 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
-            darknessTransparency = Math.Min(darknessTransparency + 200f * elapsedTime, maxDarknessTransparency);
+            darknessTransparency = Math.Min(darknessTransparency + 100f * elapsedTime, maxDarknessTransparency);
 
             if (darknessTransparency == maxDarknessTransparency)
                 letterTransparency = Math.Min(letterTransparency + 200f * elapsedTime, 255);

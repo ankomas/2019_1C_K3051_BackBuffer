@@ -56,7 +56,7 @@ namespace TGC.Group.Model.Scenes
 
             SetState(StateID.CLOSED);
             
-            this.pressed[GameInput._Enter] = () => itemHighlighted?.Use(character);
+            this.pressed[GameInput.Accept] = () => itemHighlighted?.Use(character);
         }
         private void SetState(StateID newStateID)
         {

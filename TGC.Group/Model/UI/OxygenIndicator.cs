@@ -10,12 +10,12 @@ namespace TGC.Group.Model.UI
         {
         }
 
-        protected override void renderEffect(Character character)
+        protected override void RenderEffect(Character character)
         {
-            renderEffect(character.ActualStats.Oxygen, character.MaxStats.Oxygen);
+            RenderEffect(character.ActualStats.Oxygen, character.MaxStats.Oxygen);
         }
 
-        protected override void renderText(Character character)
+        protected override void RenderText(Character character)
         {
             double o2Level = Math.Floor(character.ActualStats.Oxygen);
 

@@ -37,11 +37,8 @@ namespace TGC.Group.Model.Scenes.Crafter
         private StateID stateID, nextStateID;
 
         private TGCVector2 bubbleDefaultScale = new TGCVector2(.5f, .5f);
-        public CrafterScene(TgcD3dInput input, WorldScene gameScene, ShipScene shipScene) : base()
-        {
-            this.gameScene = gameScene;
-            this.shipScene = shipScene;
-            
+        public CrafterScene() : base()
+        {   
             this.InitPDA();
             this.InitDarknessCover();
             this.InitCursor();
@@ -55,7 +52,7 @@ namespace TGC.Group.Model.Scenes.Crafter
 
             this.SetState(StateID.IN);
             
-            this.pressed[GameInput._Enter] = () =>
+            this.pressed[GameInput.Accept] = () =>
             {
                 if (this.itemHighlighted == null) return;
                 if (!this.Character.CanCraft(this.itemHighlighted)) return;
@@ -71,7 +68,7 @@ namespace TGC.Group.Model.Scenes.Crafter
 
             this.stateID = newStateID;
             this.updateLogic = newState.updateLogic;
-            pressed[GameInput._Inventory] = () => this.SetNextState(newState.nextStateID);
+            pressed[GameInput.Inventory] = () => this.SetNextState(newState.nextStateID);
         }
         private void SetNextState(StateID newStateID)
         {

@@ -29,6 +29,7 @@ namespace TGC.Group.Model
         public float RotationSpeed { get; set; }
 
         private bool ConsideringInput = true;
+        private bool manual = false;
 
         public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
@@ -85,6 +86,8 @@ namespace TGC.Group.Model
         }
         void MoveNormally(float elapsedTime)
         {
+            if (manual) return;
+
             cameraRotation = CalculateCameraRotation();
 
             Position = CalculateTranslation(elapsedTime, cameraRotation);
@@ -107,27 +110,27 @@ namespace TGC.Group.Model
         }
         private TGCVector3 GetInputTranslation(TGCVector3 moveVector)
         {
-            if (GameInput.Up.IsDown(Input))
+            if (GameInput._Up.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 0, -1) * MovementSpeed;
             }
 
-            if (GameInput.Down.IsDown(Input))
+            if (GameInput._Down.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 0, 1) * MovementSpeed;
             }
 
-            if (GameInput.Right.IsDown(Input))
+            if (GameInput._Right.IsDown(Input))
             {
                 moveVector += new TGCVector3(-1, 0, 0) * MovementSpeed;
             }
 
-            if (GameInput.Left.IsDown(Input))
+            if (GameInput._Left.IsDown(Input))
             {
                 moveVector += new TGCVector3(1, 0, 0) * MovementSpeed;
             }
 
-            if (GameInput.Float.IsDown(Input))
+            if (GameInput._Float.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 1, 0) * MovementSpeed;
             }
@@ -141,6 +144,14 @@ namespace TGC.Group.Model
         public void ConsiderInput()
         {
             ConsideringInput = true;
+        }
+        public void UseManually()
+        {
+            manual = true;
+        }
+        public void StopUsingManually()
+        {
+            manual = false;
         }
     }
 }

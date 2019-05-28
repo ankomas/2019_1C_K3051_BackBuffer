@@ -21,14 +21,14 @@ namespace TGC.Group.Model.UI
 
         public void init()
         {
-            this.oxygenIndicator.init();
-            this.lifeIndicator.init();
+            this.oxygenIndicator.Init();
+            this.lifeIndicator.Init();
         }
 
         public void Render(Character character)
         {
-            this.oxygenIndicator.render(character);
-            this.lifeIndicator.render(character);
+            this.oxygenIndicator.Render(character);
+            this.lifeIndicator.Render(character);
         }
     }
 }

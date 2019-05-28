@@ -18,6 +18,7 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Direct3D;
 using TGC.Group.Model.Player;
 using TGC.Group.TGCUtils;
+using TGC.Group.Model.Scenes.Crafter;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -31,17 +32,20 @@ namespace TGC.Group.Model.Scenes
         private Callback onPauseCallback = () => {};
         private TransitionCallback onGoToWaterCallback = (gameState) => {};
         private InventoryScene inventoryScene;
-        //private Scene subScene;
-        //private CrafterScene crafterScene;
+        private CraftingScene craftingScene;
 
         Microsoft.DirectX.Direct3D.Effect effect;
         TgcScene crafterTgcScene;
         TgcMesh crafterMesh, shipMesh, hatchMesh;
         List<Thing> selectableThings = new List<Thing>();
-        Drawer2D drawer2D = new Drawer2D(); 
+        Thing crafter, hatch;
+        Drawer2D drawer2D = new Drawer2D();
 
         TgcText2D DrawText = new TgcText2D();
         string debug;
+
+        TGCVector3 targertPosition;
+        TGCVector3 targetLookAt;
 
         public ShipScene(GameState gameState) : base(gameState)
         {
@@ -84,8 +88,10 @@ namespace TGC.Group.Model.Scenes
 
             hatchMesh.Position = new TGCVector3(600, 700, 450);
 
-            selectableThings.Add(new Thing(crafterMesh, "Crafter", "Start crafting", () => {}));
-            selectableThings.Add(new Thing(hatchMesh, "Hatch", "Exit ship", () => onGoToWaterCallback(this.GameState)));
+            crafter = new Thing(crafterMesh, "Crafter", "Start crafting", OpenCrafter);
+            hatch = new Thing(hatchMesh, "Hatch", "Exit ship", () => onGoToWaterCallback(this.GameState));
+            selectableThings.Add(crafter);
+            selectableThings.Add(hatch);
 
             walls.Init();
             //Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
@@ -93,8 +99,15 @@ namespace TGC.Group.Model.Scenes
             inventoryScene = new InventoryScene();
 
             RegisterSubscene(inventoryScene);
+            initCraftingScene();
 
             TurnExploreCommandsOn();
+
+            pressed[Key.P] = () =>
+            {
+                onPauseCallback();
+            };
+            pressed[GameInput.GoBack] = CloseCrafter;
         }
         private void TryToInteractWithSelectableThing()
         {
@@ -108,12 +121,13 @@ namespace TGC.Group.Model.Scenes
         }
         private void TurnExploreCommandsOn()
         {
-            pressed[GameInput._Inventory] = OpenInventory;
-            pressed[GameInput._Enter] = TryToInteractWithSelectableThing;
+            pressed[GameInput.Inventory] = OpenInventory;
+            pressed[GameInput.Accept] = TryToInteractWithSelectableThing;
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[GameInput._Inventory] = CloseInventory;
+            pressed[GameInput.Inventory] = CloseInventory;
+            pressed[GameInput.Accept] = () => {};
         }
         public void ResetCamera()
         {
@@ -128,6 +142,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void OpenInventory()
         {
+            cursor = null;
             TurnExploreCommandsOff();
             ((Camera)Camera).IgnoreInput();
             inventoryScene.Open(this.GameState.character);
@@ -154,14 +169,11 @@ namespace TGC.Group.Model.Scenes
         }
         public override void Update(float elapsedTime)
         {
-            if (Input.keyPressed(Key.Escape))
-            {
-                onPauseCallback();
-            }
-
             this.GameState.character.UpdateStats(new Stats(elapsedTime * 7, 0));
 
             inventoryScene.Update(elapsedTime);
+            craftingScene.Update(elapsedTime);
+            //if (uh) Camera.SetCamera(craftingScene.ShipCamera.Position, craftingScene.ShipCamera.LookAt);
 
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
         }
@@ -176,24 +188,32 @@ namespace TGC.Group.Model.Scenes
                 thing.Render();
                 if (thing.Looked)
                 {
-                    thing.mesh.BoundingBox.Render();
                     dialogBox.Clear();
-                    dialogBox.AddLine(thing.name);
-                    dialogBox.AddLine("------------");
-                    dialogBox.AddLine(thing.actionDescription);
-                    dialogBox.Render();
-                    cursor = hand;
+                    if (cursor != null) 
+                    {
+                        thing.mesh.BoundingBox.Render();
+                        dialogBox.AddLineSmall(thing.name);
+                        dialogBox.AddLineSmall("------------");
+                        dialogBox.AddLineSmall(thing.actionDescription);
+                        dialogBox.Render();
+                        cursor = hand;
+                    }
                 }
             }
 
-            drawer2D.BeginDrawSprite();
-            drawer2D.DrawSprite(cursor);
-            drawer2D.EndDrawSprite();
+            if(cursor != null)
+            {
+                drawer2D.BeginDrawSprite();
+                drawer2D.DrawSprite(cursor);
+                drawer2D.EndDrawSprite();
+
+                cursor = aim;
+            }
 
             inventoryScene.Render();
-            statsIndicators.Render(this.GameState.character);
+            craftingScene.Render();
 
-            cursor = aim;
+            statsIndicators.Render(this.GameState.character);
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {
@@ -205,23 +225,23 @@ namespace TGC.Group.Model.Scenes
             this.onPauseCallback = onPauseCallback;
             return this;
         }
-        //private void initCrafterScene()
-        //{
-        //    this.crafterScene = new CrafterScene(Input, this.GameScene, this);
-        //}
-        //private void OpenCrafter()
-        //{
-        //    ((Camera)this.Camera).IgnoreInput();
-        //    subScene = this.crafterScene;
-        //    Input.update();
-        //    TurnExploreCommandsOff();
-        //}
-        //public void CloseCrafter()
-        //{
-        //    subScene = Scene.Empty;
-        //    TurnExploreCommandsOn();
-        //    ((Camera)Camera).ConsiderInput();
-        //}
+        private void initCraftingScene()
+        {
+            craftingScene = new CraftingScene();
+            RegisterSubscene(craftingScene);
+        }
+        private void OpenCrafter()
+        {
+            cursor = null;
+            TurnExploreCommandsOff();
+            craftingScene.Open(this.GameState.character, ((Camera)Camera), this.crafter.Position);
+        }
+        public void CloseCrafter()
+        {
+            cursor = hand;
+            TurnExploreCommandsOn();
+            craftingScene.Close();
+        }
     }
 
     class Thing
