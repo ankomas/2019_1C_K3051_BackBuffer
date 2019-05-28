@@ -151,12 +151,15 @@
     <Compile Include="Model\Scenes\Crafter\CrafterScene.cs" />
     <Compile Include="Model\Scenes\Crafter\CrafterScene.Structure.cs" />
     <Compile Include="Model\Scenes\GameOverScene.cs" />
+    <Compile Include="Model\Scenes\GameplayScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.Structure.cs" />
     <Compile Include="Model\Scenes\ShipScene.cs" />
+    <Compile Include="Model\Scenes\WorldScene.cs" />
     <Compile Include="Model\Segment.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\IRigidBodyFactory.cs" />
     <Compile Include="Model\UI\CircularIndicator.cs" />
+    <Compile Include="Model\UI\DialogBox.cs" />
     <Compile Include="Model\UI\StatsIndicators.cs" />
     <Compile Include="Model\UI\LifeIndicator.cs" />
     <Compile Include="Model\UI\OxygenIndicator.cs" />
@@ -171,7 +174,6 @@
     <Compile Include="Model\Elements\Element.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\Camera.cs" />
-    <Compile Include="Model\Scenes\GameScene.cs" />
     <Compile Include="Model\Scenes\Scene.cs" />
     <Compile Include="Model\Scenes\StartMenu.cs" />
     <Compile Include="Model\World.cs" />

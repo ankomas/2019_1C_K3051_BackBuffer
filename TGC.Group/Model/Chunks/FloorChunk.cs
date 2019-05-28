@@ -40,12 +40,12 @@ namespace TGC.Group.Model.Chunks
         
         private static List<Element> CreateFishes(List<Segment> segments, int divisions)
         {
-            return segments.SelectMany(segment => segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 750), FishFactory.Instance)).ToList();
+            return segments.SelectMany(segment => segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 1200), FishFactory.Instance)).ToList();
         }
 
         private static List<Element> CreateCorals(Segment segment, int divisions)
         {
-            return segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 25), CoralFactory.Instance).ToList();
+            return segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 100), CoralFactory.Instance).ToList();
         }
 
         private void CreateFloor(TGCVector3 origin)

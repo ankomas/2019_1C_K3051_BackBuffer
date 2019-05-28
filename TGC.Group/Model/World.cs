@@ -1,4 +1,6 @@
 ﻿using System;
+using System.CodeDom;
+using Microsoft.DirectX.Direct3D;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +24,9 @@ namespace TGC.Group.Model
 {
     internal class World
     {
-        public static readonly int RenderRadius = (int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
+        public static readonly int RenderRadius = 7;//(int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
         public static readonly int UpdateRadius = RenderRadius;
-        private const int InteractionRadius = 490000; // Math.pow(700, 2)
+        private const int InteractionRadius = 1000000; // Math.pow(1000, 2)
         
         private readonly Dictionary<TGCVector3, Chunk> chunks;
         private List<Chunk> chunksToUpdate = new List<Chunk>();
@@ -51,70 +53,6 @@ namespace TGC.Group.Model
             chunks.Add(new TGCVector3(initialPoint), initialChunk);
             entities.AddRange(initialChunk.Init());
             shark = SharkFactory.Create(new TGCVector3(30, 0, -2000));
-
-            /*
-            string path = "../../../Shaders/Fede.fx", compilationErrors;
-            try
-            {
-                effect = Effect.FromFile(D3DDevice.Instance.Device, path, null, null, ShaderFlags.None, null, out compilationErrors);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Error al cargar shader: " + path + ". Errores: Ni lo cargó xd");
-            }
-
-            if (effect == null)
-            {
-                throw new Exception("Error al cargar shader: " + path + ". Errores: " + compilationErrors);
-            }
-
-            foreach (var e in this.entities)
-            {
-                e.Mesh.Effect = effect;
-                e.Mesh.Technique = "FedeTechnique";
-            }
-            */
-        }
-
-        //todo: need refactor
-        private void AddHeightMap()
-        {
-            Floor = new TgcSimpleTerrain();
-            Floor.loadHeightmap(Game.Default.MediaDirectory + "Heightmap3.jpg", 1000, 65, 
-                new TGCVector3(0,-100,0));
-            Floor.loadTexture(Game.Default.MediaDirectory + Game.Default.TexturaTierra);
-            AquaticPhysics.Instance.Add(CreateSurfaceFromHeighMap(Floor.getData()));
-
-        }
-
-        //todo: need refactor
-        public RigidBody CreateSurfaceFromHeighMap(CustomVertex.PositionTextured[] triangleDataVB)
-        {
-            
-            var triangleMesh = new TriangleMesh();
-            int i = 0;
-            TGCVector3 vector0;
-            TGCVector3 vector1;
-            TGCVector3 vector2;
-
-            while (i < triangleDataVB.Length)
-            {
-                vector0 = new TGCVector3(triangleDataVB[i].X, triangleDataVB[i].Y, triangleDataVB[i].Z);
-                vector1 = new TGCVector3(triangleDataVB[i + 1].X, triangleDataVB[i + 1].Y, triangleDataVB[i + 1].Z);
-                vector2 = new TGCVector3(triangleDataVB[i + 2].X, triangleDataVB[i + 2].Y, triangleDataVB[i + 2].Z);
-
-                i = i + 3;
-
-                triangleMesh.AddTriangle(vector0.ToBulletVector3(), vector1.ToBulletVector3(),
-                    vector2.ToBulletVector3());
-            }
-
-            CollisionShape meshCollisionShape = new BvhTriangleMeshShape(triangleMesh, true);
-            var meshMotionState = new DefaultMotionState();
-            var meshRigidBodyInfo = new RigidBodyConstructionInfo(0, meshMotionState, meshCollisionShape);
-            RigidBody meshRigidBody = new RigidBody(meshRigidBodyInfo);
-            return meshRigidBody;
-            
             
         }
 
@@ -132,76 +70,37 @@ namespace TGC.Group.Model
         private List<Chunk> GetChunksByRadius(TGCVector3 origin, int radius)
         {
             var toUpdate = new ConcurrentBag<Chunk>();
-            var intOrigin = new TGCVector3(
-                (int) Math.Floor(origin.X / Chunk.DefaultSize.X),
-                (int) Math.Floor(origin.Y/Chunk.DefaultSize.Y), 
-                (int) Math.Floor(origin.Z/Chunk.DefaultSize.Z));
 
             var yFloor = Chunk.underSeaLimit;
             var yTop = Chunk.surface;
 
-            var xRange = Enumerable.Range(-radius, radius * 2 + 1);
-            var yRange = Enumerable.Range(yFloor, Math.Abs(yFloor) + yTop + 1);
-            var zRange = Enumerable.Range(-radius, radius * 2 + 1);
-
             var vectors = new HashSet<TGCVector3>();
 
             var trueOrigin = new TGCVector3(
-                Chunk.DefaultSize.X * (int) Math.Round(origin.X / Chunk.DefaultSize.X),
-                Chunk.DefaultSize.Y * (int) Math.Round(origin.Y / Chunk.DefaultSize.Y),
-                Chunk.DefaultSize.Z * (int) Math.Round(origin.Z / Chunk.DefaultSize.Z));
+                Chunk.DefaultSize.X * (int) (Math.Round(origin.X / Chunk.DefaultSize.X)+radius),
+                Chunk.DefaultSize.Y * (int) (Math.Round(origin.Y / Chunk.DefaultSize.Y)),
+                Chunk.DefaultSize.Z * (int) (Math.Round(origin.Z / Chunk.DefaultSize.Z)+radius));
 
-            var zaCube = new Cube(trueOrigin, (int)Math.Floor(radius*Chunk.DefaultSize.X));
+            var zaCube = new Cube(trueOrigin, (int)Math.Floor(radius*Chunk.DefaultSize.X), (int)Math.Floor(radius*Chunk.DefaultSize.Y));
             
-            var ySegments = Segment.GenerateSegments(new TGCVector3(zaCube.PMin.X, (int)Math.Floor(Chunk.DefaultSize.Y * yFloor), zaCube.PMin.Z),
+            var ySegments = Segment.GenerateSegments(
+                new TGCVector3(zaCube.PMin.X, (int)Math.Floor(Chunk.DefaultSize.Y * yFloor), zaCube.PMin.Z),
                 new TGCVector3(zaCube.PMax.X, (int)Math.Floor(Chunk.DefaultSize.Y * yTop), zaCube.PMax.Z), 
                 Math.Abs(yFloor) + Math.Abs(yTop));
             
             var xzCubes = ySegments.ConvertAll(segment => segment.Cube)
-                .SelectMany(cube => Segment.GenerateXzCubes(cube.PMin, cube.PMax, radius * 2    ));
+                .SelectMany(cube => Segment.GenerateXzCubes(cube.PMin, cube.PMax, -radius*2, radius*2));
 
             foreach (var xzCube in xzCubes)
             {
                 vectors.Add(xzCube.PMin);
-                vectors.Add(new TGCVector3(xzCube.PMin.X, xzCube.PMin.Y, xzCube.PMax.Z));
-                vectors.Add(new TGCVector3(xzCube.PMax.X, xzCube.PMin.Y, xzCube.PMin.Z));
-                vectors.Add(new TGCVector3(xzCube.PMax.X, xzCube.PMin.Y, xzCube.PMax.Z));
             }
-            /*
-            foreach (var x in xRange)
-            {
-                foreach (var y in yRange)
-                {
-                    foreach (var z in zRange)
-                    {
-                        vectors.Add(
-                                new TGCVector3(
-                                    Chunk.DefaultSize.X * (intOrigin.X + x),
-                                    Chunk.DefaultSize.Y * (intOrigin.Y + y),
-                                    Chunk.DefaultSize.Z * (intOrigin.Z + z))
-                            );
-                    }
-                }
-            }
-            */
 
             foreach (var position in vectors)
             {
                 toUpdate.Add(chunks.ContainsKey(position) ? chunks[position] : AddChunk(position));
             }            
-            /*for (var j = yFloor; j <= yTop; j++)
-            {
-                for (var k = -radius; k <= radius; k++)
-                {
-                    var position = new TGCVector3(
-                        Chunk.DefaultSize.X * (intOrigin.X + i),
-                        Chunk.DefaultSize.Y * (intOrigin.Y + j),
-                        Chunk.DefaultSize.Z * (intOrigin.Z + k));
-                    
-                    toUpdate.Add(chunks.ContainsKey(position) ? chunks[position] : AddChunk(position));
-                }
-            }*/
-
+            
             return toUpdate.ToList();
         }
 
@@ -228,9 +127,12 @@ namespace TGC.Group.Model
             
             var elements = new List<Element>();
             var updateCube = new Cube(camera.Position, (int)Math.Floor((UpdateRadius+1)*Chunk.DefaultSize.X));
+            
+            var allElements = new List<Element>();
                 
-            elements.AddRange(elementsInCube(entities, updateCube));
-            elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
+
+            elements.AddRange(elementsInCube(this.entities, updateCube));
+            //elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
 
             elements.ForEach(element => element.Update(camera));
             toUpdate.ForEach(chunk => chunk.Update(camera));
@@ -239,9 +141,12 @@ namespace TGC.Group.Model
             
             shark.Update(camera, character);
 
-            elementsUpdated = elements.Count;
+            this.elementsUpdated = elements.Count;
+            
+            allElements.AddRange(elements);
+            allElements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
 
-            SelectableElement = GetSelectableElement(camera, elements);
+            SelectableElement = GetSelectableElement(camera, allElements);
         }
 
         public void Render(TgcCamera camera, TgcFrustum frustum)

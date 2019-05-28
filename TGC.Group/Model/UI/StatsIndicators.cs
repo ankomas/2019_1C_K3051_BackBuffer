@@ -25,7 +25,7 @@ namespace TGC.Group.Model.UI
             this.lifeIndicator.init();
         }
 
-        public void render(Character character)
+        public void Render(Character character)
         {
             this.oxygenIndicator.render(character);
             this.lifeIndicator.render(character);

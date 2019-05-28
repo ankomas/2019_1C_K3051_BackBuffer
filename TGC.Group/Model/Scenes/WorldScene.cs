@@ -26,10 +26,11 @@ using TGC.Group.Model.Utils;
 using Chunk = TGC.Group.Model.Chunks.Chunk;
 using Element = TGC.Group.Model.Elements.Element;
 using Vector3 = BulletSharp.Math.Vector3;
+using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Scenes
 {
-    class GameScene : Scene
+    class WorldScene : GameplayScene
     {
         private readonly TgcText2D DrawText = new TgcText2D();
         private World World { get; }
@@ -41,38 +42,28 @@ namespace TGC.Group.Model.Scenes
         string baseDir = "../../../res/";
 
         public delegate void Callback();
-        Callback onPauseCallback = () => {}, onGetIntoShipCallback = () => {}, onGameOverCallback = () => {};
+        Callback onPauseCallback = () => {}, onGameOverCallback = () => {};
+        TransitionCallback onGetIntoShipCallback = (gameState) => {};
 
-        Scene subScene;
         InventoryScene inventoryScene;
 
         TgcSkyBox skyBoxUnderwater, skyBoxOutside;
-        CustomSprite waterVision, mask, aim, hand, cursor, dialogBox;
+        CustomSprite waterVision, mask, dialogBox;
         Drawer2D drawer = new Drawer2D();
         string dialogName, dialogDescription;
-        private Character character = new Character();
-        internal Character Character { get { return character; } }
+        internal Character Character { get { return this.GameState.character; } }
 
         private bool gaveOxygenTank = false; //TODO remove
         private bool aimFired = false;
 
-        delegate void InteractionLogic(float elapsedTime);
-
-        InteractionLogic currentInteractionLogic, newUpdateLogic;
-
-        delegate void RenderLogic();
-
-        RenderLogic stateDependentRenderLogic, newRenderLogic;
-
-        private StatsIndicators statsIndicators;
-        
-        public GameScene(TgcD3dInput input, string mediaDir) : base(input)
+        TgcMesh skb;
+        public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
 
             this.World = new World(new TGCVector3(0, 0, 0));
 
-            SetCamera(input);
+            SetCamera(Input);
 
             IncrementFarPlane(3f);
             SetClampTextureAddressing();
@@ -80,18 +71,9 @@ namespace TGC.Group.Model.Scenes
             InitSkyBoxes();
             InitWaterVision();
             InitMask();
-            InitAim();
-            InitHand();
             InitDialogBox();
-            InitStatsIndicator();
-
-            this.statsIndicators.init();
             
             World = new World(new TGCVector3(0, 0, 0));
-
-            cursor = aim;
-
-            subScene = Scene.Empty;
             
             pressed[Key.Escape] = () => {
                 onPauseCallback();
@@ -106,9 +88,14 @@ namespace TGC.Group.Model.Scenes
                 this.BoundingBox = !this.BoundingBox;
             };
 
+            RegisterSubscene(inventoryScene);
+
             TurnExploreCommandsOn();
         }
-
+        public void ResetCamera()
+        {
+            SetCamera(Input);
+        }
         private void TurnExploreCommandsOn()
         {
             pressed[GameInput._Inventory] = OpenInventory;
@@ -116,16 +103,22 @@ namespace TGC.Group.Model.Scenes
         }
         private void TurnExploreCommandsOff()
         {
-            pressed[GameInput._Inventory] = pressed[GameInput._Enter] = () => { };
+            pressed[GameInput._Inventory] = CloseInventory;
+            pressed[GameInput._Enter] = () => {};
         }
         private void OpenInventory()
         {
             ((Camera)Camera).IgnoreInput();
-            subScene = inventoryScene;
+            inventoryScene.Open(this.GameState.character);
             Input.update();
             TurnExploreCommandsOff();
         }
-
+        public void CloseInventory()
+        {
+            inventoryScene.Close();
+            TurnExploreCommandsOn();
+            ((Camera)Camera).ConsiderInput();
+        }
         private void IncrementFarPlane(float scale)
         {
             D3DDevice.Instance.Device.Transform.Projection =
@@ -148,7 +141,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void InitInventoryScene()
         {
-            inventoryScene = new InventoryScene(Input, this);
+            inventoryScene = new InventoryScene();
         }
         private void InitWaterVision()
         {
@@ -161,17 +154,6 @@ namespace TGC.Group.Model.Scenes
             mask = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Mask);
             Screen.FitSpriteToScreen(mask);
         }
-        private void InitAim()
-        {
-            aim = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Aim);
-            Screen.CenterSprite(aim);
-        }
-        private void InitHand()
-        {
-            hand = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Hand);
-            hand.Scaling = new TGCVector2(.75f, .75f);
-            Screen.CenterSprite(hand);
-        }
         private void InitDialogBox()
         {
             dialogBox = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackRectangle);
@@ -179,14 +161,6 @@ namespace TGC.Group.Model.Scenes
             dialogBox.Color = Color.FromArgb(188, dialogBox.Color.R, dialogBox.Color.G, dialogBox.Color.B);
             Screen.CenterSprite(dialogBox);
             dialogBox.Position = new TGCVector2(dialogBox.Position.X + 120, dialogBox.Position.Y + 80);
-        }
-        private void InitStatsIndicator()
-        {
-            Vector2 niceOffset = new Vector2(Screen.Width * 0.1f, Screen.Height * 0.05f);
-            int baseX0 = (int)(niceOffset.X);
-            int baseY0 = (int)(Screen.Height - (StatsIndicators.OxygenMeterSize + niceOffset.Y));
-
-            statsIndicators = new StatsIndicators(baseX0, baseY0);
         }
         private void InitSkyBoxes()
         {
@@ -267,7 +241,7 @@ namespace TGC.Group.Model.Scenes
             {
                 if (element.GetType() == typeof(Ship))
                 {
-                    onGetIntoShipCallback();
+                    onGetIntoShipCallback(this.GameState);
                 }
                 else
                 {
@@ -282,40 +256,35 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
-            if (this.character.IsDead())
+            if (this.GameState.character.IsDead())
             {
                 onGameOverCallback();
             }
             
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
 
-            this.World.Update((Camera) this.Camera, this.character);
+            this.World.Update((Camera) this.Camera, this.GameState.character);
 
             var item = manageSelectableElement(this.World.SelectableElement); // Imsportant: get this AFTER updating the world
 
             //TODO refactor
             if (item != null)
             { 
-                this.character.GiveItem(item);
+                this.GameState.character.GiveItem(item);
                 if (this.goldRate.HasToSpawn())
                 {
-                    this.character.GiveItem(new Gold());
+                    this.GameState.character.GiveItem(new Gold());
                 }
             }
 
             skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
 
-            this.character.UpdateStats(this.Camera.Position.Y < 0
+            this.GameState.character.UpdateStats(this.Camera.Position.Y < 0
                 ? new Stats(-elapsedTime, 0)
-                : new Stats(elapsedTime * 7, 0));
+                : new Stats(elapsedTime * (this.GameState.character.MaxStats.Oxygen/2.5f), 0));
 
-            if(Camera.Position.Y > skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2)
-            {
-                character.UpdateStats(new Stats(character.MaxStats.Oxygen, 0));
-            }
-
-            subScene.Update(elapsedTime);
+            inventoryScene.Update(elapsedTime);
             aimFired = false;
         }
 
@@ -323,7 +292,7 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
-            if(Camera.Position.Y < 0)
+            if (Camera.Position.Y < 0)
             {
                 this.skyBoxUnderwater.Render();
             }
@@ -336,8 +305,7 @@ namespace TGC.Group.Model.Scenes
 
             if (this.BoundingBox)
             {
-                //this.World.RenderBoundingBox(this.Camera);
-                this.statistics(300, 0, Color.GreenYellow);
+                this.World.RenderBoundingBox(this.Camera);
             }
 
             drawer.BeginDrawSprite();
@@ -349,8 +317,7 @@ namespace TGC.Group.Model.Scenes
             }
             drawer.EndDrawSprite();
 
-            subScene.Render();
-
+            inventoryScene.Render();
 
             if (dialogName != "")
             {
@@ -362,35 +329,7 @@ namespace TGC.Group.Model.Scenes
             drawer.DrawSprite(mask);
             drawer.EndDrawSprite();
             
-            this.statsIndicators.render(this.character);
-        }
-
-        private void statistics(int x, int y, Color color)
-        {
-            this.DrawText.drawText("Objects updated = " + this.World.elementsUpdated, x, y, color);
-            this.DrawText.drawText("Objects rendered = " + this.World.elementsRendered, x , y+30, color);
-            this.DrawText.drawText("Position = " + tgcString(this.Camera.Position) + relativePosition(this.Camera.Position), x , y+60, color);
-            this.DrawText.drawText("Origins = " + tgcv3ToString(this.World.renderedOrigins), x , y+90, color);
-
-        }
-
-        private string relativePosition(TGCVector3 cameraPosition)
-        {
-            return "(" + Math.Floor(cameraPosition.X / Chunk.DefaultSize.X) + ","
-                   + Math.Floor(cameraPosition.Y / Chunk.DefaultSize.Y) + ","
-                   + Math.Floor(cameraPosition.Z / Chunk.DefaultSize.Z) + ")";
-        }
-
-        private string tgcv3ToString(List<TGCVector3> worldRenderedOrigins)
-        {
-            var res = "";
-            worldRenderedOrigins.ForEach(tgc3 => res=res+tgcString(tgc3)+ " " + relativePosition(tgc3) + "\n");
-            return res;
-        }
-
-        private string tgcString(TGCVector3 tgc3)
-        {
-            return "x-"+tgc3.X + "-y-" + tgc3.Y + "-z-" + tgc3.Z;
+            this.statsIndicators.Render(this.GameState.character);
         }
 
         public override void Dispose()
@@ -398,31 +337,20 @@ namespace TGC.Group.Model.Scenes
             this.World.Dispose();
         }
 
-        public GameScene OnPause(Callback onPauseCallback)
+        public WorldScene OnPause(Callback onPauseCallback)
         {
             this.onPauseCallback = onPauseCallback;
             return this;
         }
-        public GameScene OnGetIntoShip(Callback onGetIntoShipCallback)
+        public WorldScene OnGetIntoShip(TransitionCallback onGetIntoShipCallback)
         {
             this.onGetIntoShipCallback = onGetIntoShipCallback;
             return this;
         }
-        public GameScene OnGameOver(Callback onGameOverCallback)
+        public WorldScene OnGameOver(Callback onGameOverCallback)
         {
             this.onGameOverCallback = onGameOverCallback;
             return this;
-        }
-        public void CloseInventory()
-        {
-            subScene = Scene.Empty;
-            TurnExploreCommandsOn();
-            ((Camera)Camera).ConsiderInput();
-        }
-        public override void ReactToInput()
-        {
-            base.ReactToInput();
-            subScene.ReactToInput();
         }
     }
 }
