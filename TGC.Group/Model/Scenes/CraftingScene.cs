@@ -36,12 +36,11 @@ namespace TGC.Group.Model.Scenes
         Updater updater = (e) => {};
 
         private Character Character;
-        public Camera ShipCamera;
-        private TGCVector3 targetPosition, initialPosition, initialLookAt;
+        public CameraFPSGravity ShipCamera;
+        private TGCVector3 targetPosition, targetLookAt, initialPosition, initialLookAt;
         public ICrafteable ItemHighlighted { get; set; }
         private Items.Crafter crafter = new Items.Crafter();
         private List<bool> selectedItems = new List<bool>();
-        private bool opened = false;
 
         public CraftingScene()
         {
@@ -213,7 +212,7 @@ namespace TGC.Group.Model.Scenes
                 dist.Length() < 1 ?
                 targetPosition : currentPosition + normalDirection * elapsedTime * 1000;
 
-            ShipCamera.SetCamera(newPosition, ShipCamera.LookAt);
+            ShipCamera.SetCamera(newPosition, targetLookAt);
 
             if(newPosition == targetPosition)
             {
@@ -225,14 +224,9 @@ namespace TGC.Group.Model.Scenes
         }
         private void CraftCommandsOn()
         {
-            Console.WriteLine("Craft on");
-
             pressed[GameInput.Accept] = () =>
             {
-                Console.WriteLine("Craft");
                 int index = this.selectedItems.IndexOf(true);
-
-                Console.WriteLine("index: " + index);
 
                 if (index == -1) return;
 
@@ -240,25 +234,20 @@ namespace TGC.Group.Model.Scenes
 
                 if (!this.Character.CanCraft(item)) return;
 
-                Console.WriteLine("can craft");
-
                 selectedItems = selectedItems.ConvertAll(_ => false);
                 StartCrafting(item);
             };
         }
         private void TakeCraftedItemCommandsOn()
         {
-            Console.WriteLine("Take on");
             pressed[GameInput.Accept] = () =>
             {
-                Console.WriteLine("Take");
-                if (true)
+                if (aboutToTake)
                 {
                     this.crafter.Craft(crafted, this.Character);
                     this.Character.GiveItem(this.crafter.CraftedItem);
                     this.crafter.CraftedItem = null;
                     this.crafted = null;
-                    Console.WriteLine("Call 2");
                     CraftCommandsOn();
                 }
             };
@@ -278,11 +267,11 @@ namespace TGC.Group.Model.Scenes
 
             var newPosition =
                 dist.Length() < 1 ?
-                targetPosition : currentPosition + normalDirection * elapsedTime * 1000;
+                initialPosition : currentPosition + normalDirection * elapsedTime * 1000;
 
-            ShipCamera.SetCamera(newPosition, ShipCamera.LookAt);
+            ShipCamera.SetCamera(newPosition, targetLookAt);
 
-            if (newPosition == targetPosition)
+            if (newPosition == initialPosition)
             {
                 ShipCamera.StopUsingManually();
                 updater = (e) => {};
@@ -290,27 +279,25 @@ namespace TGC.Group.Model.Scenes
             }
         }
 
-        public void Open(Character character, Camera shipCamera, TGCVector3 crafterPosition)
+        public void Open(Character character, CameraFPSGravity shipCamera, TGCVector3 crafterPosition)
         {
             Console.WriteLine("Open");
 
             this.Character = character;
             this.ShipCamera = shipCamera;
             this.initialPosition = shipCamera.Position;
-            this.initialLookAt = crafterPosition;
+            this.initialLookAt = shipCamera.LookAt;
             this.targetPosition = crafterPosition + new TGCVector3(0, 0, 250);
+            this.targetLookAt = crafterPosition;
 
             ShipCamera.UseManually();
 
             ShipCamera.SetCamera(ShipCamera.Position, crafterPosition);
 
             updater = BeginningAnimation;
-
-            this.opened = true;
         }
         public void Close()
         {
-            if(!this.opened) return;
             ShipCamera.SetCamera(ShipCamera.Position, this.initialLookAt);
             updater = EndAnimation;
             renderer = () => {};
