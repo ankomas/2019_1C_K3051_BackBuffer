@@ -135,12 +135,17 @@ namespace TGC.Group.Model.Scenes
         {
             SetCamera(Input);
         }
+        //private void SetCamera(TgcD3dInput input)
+        //{
+        //    var position = new TGCVector3(675, 1000, 900);
+        //    var rigidBody = new CapsuleFactory().Create(position, 100, 60);
+        //    AquaticPhysics.Instance.Add(rigidBody);
+        //    this.Camera = new Camera(position, input, rigidBody);
+        //}
         private void SetCamera(TgcD3dInput input)
         {
             var position = new TGCVector3(675, 1000, 900);
-            var rigidBody = new CapsuleFactory().Create(position, 100, 60);
-            AquaticPhysics.Instance.Add(rigidBody);
-            this.Camera = new Camera(position, input, rigidBody);
+            this.Camera = new CameraFPSGravity(position, input);
         }
         private void OpenInventory()
         {
@@ -159,7 +164,7 @@ namespace TGC.Group.Model.Scenes
         {
             TGCVector3 dist = thing.Position - Camera.Position;
 
-            bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 6000;
+            bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 500;
 
             dist.Normalize();
 
@@ -172,10 +177,9 @@ namespace TGC.Group.Model.Scenes
         public override void Update(float elapsedTime)
         {
             this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
-            //AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
+            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
-            //if (uh) Camera.SetCamera(craftingScene.ShipCamera.Position, craftingScene.ShipCamera.LookAt);
 
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
         }
@@ -238,7 +242,7 @@ namespace TGC.Group.Model.Scenes
         {
             cursor = null;
             TurnExploreCommandsOff();
-            craftingScene.Open(this.GameState.character, ((Camera)Camera), this.crafter.Position);
+            craftingScene.Open(this.GameState.character, ((CameraFPSGravity)Camera), this.crafter.Position);
         }
         public void CloseCrafter()
         {

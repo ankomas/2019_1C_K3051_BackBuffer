@@ -11,6 +11,8 @@ namespace TGC.Group.Model
 {
     public class CameraFPSGravity : TgcCamera
     {
+        private bool manual = false;
+
         private readonly Point mouseCenter;
         private TGCMatrix cameraRotation;
         private TGCVector3 initialDirectionView;
@@ -42,6 +44,8 @@ namespace TGC.Group.Model
 
         public override void UpdateCamera(float elapsedTime)
         {
+            if (manual) return;
+
             cameraRotation = CalculateCameraRotation();
 
             Position += TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, CalculateCameraRotationY());
@@ -99,6 +103,13 @@ namespace TGC.Group.Model
 
             return moveVector;
         }
-
+        public void UseManually()
+        {
+            manual = true;
+        }
+        public void StopUsingManually()
+        {
+            manual = false;
+        }
     }
 }

@@ -90,7 +90,7 @@ float4 main_pixel(PixelInput input) : COLOR
 
 	float finalTransparency = max(transparency, max(lowCircleTransparency.a, highCircleTransparency.a));
 
-	return float4(1 - oxygen, oxygen, blueIntensity, finalTransparency);
+	return float4(1 - oxygen, oxygen, blueIntensity, (oxygen > 0) * finalTransparency);
 }
 
 float4 main_pixel2(PixelInput input) : COLOR
