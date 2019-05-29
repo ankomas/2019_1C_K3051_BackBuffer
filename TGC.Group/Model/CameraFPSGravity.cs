@@ -12,6 +12,7 @@ namespace TGC.Group.Model
     public class CameraFPSGravity : TgcCamera
     {
         private bool manual = false;
+        private bool ConsideringInput = true;
 
         private readonly Point mouseCenter;
         private TGCMatrix cameraRotation;
@@ -48,34 +49,38 @@ namespace TGC.Group.Model
 
             cameraRotation = CalculateCameraRotation();
 
-            Position += TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, CalculateCameraRotationY());
+            var newPos = Position + TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, CalculateCameraRotationY());
+            if (InsideBoundsX(newPos)) Position = new TGCVector3(newPos.X, Position.Y, Position.Z);
+            if (InsideBoundsZ(newPos)) Position = new TGCVector3(Position.X, Position.Y, newPos.Z);
 
             LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
 
             UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
 
-            Cursor.Position = mouseCenter;
+            if (ConsideringInput) Cursor.Position = mouseCenter;
+
             base.SetCamera(Position, LookAt, UpVector);
         }
 
         public TGCMatrix CalculateCameraRotation()
         {
-            leftrightRot += Input.XposRelative * RotationSpeed;
-            updownRot = FastMath.Clamp(updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
+            if(ConsideringInput)
+            {
+                leftrightRot += Input.XposRelative * RotationSpeed;
+                updownRot = FastMath.Clamp(updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
+            }
 
             return TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
         }
         public TGCMatrix CalculateCameraRotationY()
         {
-            leftrightRot += Input.XposRelative * RotationSpeed;
+            if (ConsideringInput)
+                leftrightRot += Input.XposRelative * RotationSpeed;
 
             return TGCMatrix.RotationY(leftrightRot);
         }
-
-        private TGCVector3 CalculateInputTranslation()
+        private TGCVector3 GetInputTranslation(TGCVector3 moveVector)
         {
-            var moveVector = TGCVector3.Empty;
-
             if (GameInput._Up.IsDown(Input))
             {
                 moveVector += new TGCVector3(0, 0, -1) * MovementSpeed;
@@ -103,6 +108,16 @@ namespace TGC.Group.Model
 
             return moveVector;
         }
+
+        private TGCVector3 CalculateInputTranslation()
+        {
+            var moveVector = TGCVector3.Empty;
+
+            if (ConsideringInput)
+                moveVector = GetInputTranslation(moveVector);
+
+            return moveVector;
+        }
         public void UseManually()
         {
             manual = true;
@@ -110,6 +125,22 @@ namespace TGC.Group.Model
         public void StopUsingManually()
         {
             manual = false;
+        }
+        private bool InsideBoundsX(TGCVector3 pos)
+        {
+            return true;
+        }
+        private bool InsideBoundsZ(TGCVector3 pos)
+        {
+            return true;
+        }
+        public void IgnoreInput()
+        {
+            ConsideringInput = false;
+        }
+        public void ConsiderInput()
+        {
+            ConsideringInput = true;
         }
     }
 }

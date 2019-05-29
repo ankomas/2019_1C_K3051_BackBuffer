@@ -151,13 +151,14 @@ namespace TGC.Group.Model.Scenes
         {
             cursor = null;
             TurnExploreCommandsOff();
-            ((Camera)Camera).IgnoreInput();
+            ((CameraFPSGravity)Camera).IgnoreInput();
             inventoryScene.Open(this.GameState.character);
         }
         private void CloseInventory()
         {
+            cursor = aim;
             TurnExploreCommandsOn();
-            ((Camera)Camera).ConsiderInput();
+            ((CameraFPSGravity)Camera).ConsiderInput();
             inventoryScene.Close();
         }
         private void TellIfCameraIsLookingAtThing(Thing thing)
@@ -222,6 +223,10 @@ namespace TGC.Group.Model.Scenes
             statsIndicators.Render(this.GameState.character);     
             this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
                 300, 300, Color.NavajoWhite);
+
+            this.drawText.drawText("Camera:", 800, 100, Color.Red);
+            this.drawText.drawText("X: " + Camera.Position.X, 800, 130, Color.Red);
+            this.drawText.drawText("Z: " + Camera.Position.Z, 800, 160, Color.Red);
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {
