@@ -8,7 +8,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Text;
-using TGC.Group.Model.Entities;
+using TGC.Group.Model.Movements;
 using TGC.Group.Model.Player;
 using Matrix = Microsoft.DirectX.Matrix;
 
@@ -18,41 +18,34 @@ namespace TGC.Group.Model.Elements
     public class Shark : Entity
     {
         private static readonly TgcText2D DrawText = new TgcText2D();
-        private MovementToEntity MovementToCamera;
         private bool dead;
 
-        public Shark(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
-        {
-            MovementToCamera = new MovementToEntity(
-                new Vector3(1f, 0f, 0f),
-                FastMath.PI / 100f, 
-                10f
-                );
-        }
-
+        public Shark(TgcMesh model, RigidBody rigidBody, Movement movement) : base(model, rigidBody, movement) { }
 
         public override void Update(Camera camera, Character character)
         {
+            TryToAttack(camera, character);
+
+            base.Update(camera, character);
+        }
+
+        private void TryToAttack(Camera camera, Character character)
+        {
             var difference = camera.Position.ToBulletVector3() - RigidBody.CenterOfMassPosition;
 
-            var sharkBody = (CapsuleShapeX)RigidBody.CollisionShape;
-            var cameraBody = (CapsuleShape)camera.RigidBody.CollisionShape;
+            var sharkBody = (CapsuleShapeX) RigidBody.CollisionShape;
+            var cameraBody = (CapsuleShape) camera.RigidBody.CollisionShape;
 
             if (VerifyCollision(difference, sharkBody, cameraBody))
             {
                 character.Hit(10);
             }
-
-            difference.Normalize();
-           
-            MovementToCamera.Move(Mesh, RigidBody, camera.Position, difference);
-            
-            base.Update(camera, character);
         }
+
 
         private bool VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
         {
-            var epsilon = 10f;
+            var epsilon = 30f;
             return FastMath.Pow2(difference.X) <=
                 FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) * epsilon &&
                 FastMath.Pow2(difference.Y) <=

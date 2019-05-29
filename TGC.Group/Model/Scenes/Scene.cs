@@ -5,6 +5,7 @@ using TGC.Core.Direct3D;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
 using System.Collections.Generic;
+using TGC.Core.BoundingVolumes;
 using static TGC.Core.Input.TgcD3dInput;
 
 namespace TGC.Group.Model.Scenes
@@ -34,7 +35,7 @@ namespace TGC.Group.Model.Scenes
         }
 
         abstract public void Update(float elapsedTime);
-        abstract public void Render();
+        abstract public void Render(TgcFrustum frustum);
         virtual public void Dispose() {}
         protected void ClearScreen()
         {
@@ -84,12 +85,17 @@ namespace TGC.Group.Model.Scenes
         {
             subscenes.Add(subscene);
         }
+
+        public void Render()
+        {
+            this.Render(null);
+        }
     }
 
     class EmptyScene : Scene
     {
         public EmptyScene() : base() {}
-        public override void Render() {}
+        public override void Render(TgcFrustum frustum) {}
         public override void Update(float elapsedTime) {}
     }
 

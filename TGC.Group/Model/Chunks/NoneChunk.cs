@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TGC.Core.Mathematica;
+using TGC.Group.Model.Elements;
 
 namespace TGC.Group.Model.Chunks
 {
@@ -11,9 +12,9 @@ namespace TGC.Group.Model.Chunks
         {
         }
         
-        public override IEnumerable<Entity> Init()
+        public override IEnumerable<Element> Init()
         {
-            return Enumerable.Empty<Entity>();
+            return Enumerable.Empty<Element>();
         }
 
         public override void Update(Camera camera)

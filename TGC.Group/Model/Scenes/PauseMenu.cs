@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Input;
 using TGC.Core.Text;
 using TGC.Core.Mathematica;
@@ -67,7 +68,7 @@ namespace TGC.Group.Model.Scenes
         {
             
         }
-        public override void Render()
+        public override void Render(TgcFrustum frustum)
         {
             preRender();
 

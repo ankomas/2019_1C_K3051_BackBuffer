@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
 using TGC.Group.Model.Input;
@@ -42,7 +43,7 @@ namespace TGC.Group.Model.Scenes
             updateLogic(elapsedTime);
 
         }
-        public override void Render()
+        public override void Render(TgcFrustum frustum)
         {
             if (stateID == StateID.CLOSED) return;
 
@@ -50,6 +51,9 @@ namespace TGC.Group.Model.Scenes
             drawer.DrawSprite(darknessCover);
             drawer.DrawSprite(PDA);
             drawer.EndDrawSprite();
+
+            this.itemHighlighted = null;
+            
             if (stateID == StateID.OPENED)
             {
                 bool hovering = false;

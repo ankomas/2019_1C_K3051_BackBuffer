@@ -12,9 +12,9 @@ namespace TGC.Group.Model.Resources.Meshes
         private static readonly TgcMesh Shark = new TgcSceneLoader()
                         .loadSceneFromFile(Game.Default.MediaDirectory + "shark-TgcScene.xml").Meshes[0];
 
-        public static List<TgcMesh> All()
+        public static TgcMesh Get()
         {
-            return new List<TgcMesh> { Shark };
+            return Shark;
         }
     }
 }

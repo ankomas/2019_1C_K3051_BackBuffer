@@ -9,6 +9,7 @@ using TGC.Group.Model.Items;
 using TGC.Group.Model.Input;
 using TGC.Core.Text;
 using System.Drawing;
+using TGC.Core.BoundingVolumes;
 using TGC.Group.TGCUtils;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.UI;
@@ -40,6 +41,8 @@ namespace TGC.Group.Model.Scenes
         public ICrafteable ItemHighlighted { get; set; }
         private Items.Crafter crafter = new Items.Crafter();
         private List<bool> selectedItems = new List<bool>();
+
+        private bool opened = false;
 
         public CraftingScene()
         {
@@ -84,7 +87,7 @@ namespace TGC.Group.Model.Scenes
                 (bubble.Bitmap.Height * bubble.Scaling.Y - icon.Bitmap.Height * icon.Scaling.Y) / 2
                 );
         }
-        public override void Render()
+        public void Render()
         {
             renderer();
         }
@@ -93,6 +96,11 @@ namespace TGC.Group.Model.Scenes
         {
             updater(elapsedTime);
         }
+        public override void Render(TgcFrustum frustum)
+        {
+            this.Render();
+        }
+
         private void MainUpdate(float elapsedTime)
         {
             cursor.Position = new TGCVector2(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
@@ -297,9 +305,12 @@ namespace TGC.Group.Model.Scenes
             ShipCamera.SetCamera(ShipCamera.Position, crafterPosition);
 
             updater = BeginningAnimation;
+
+            this.opened = true;
         }
         public void Close()
         {
+            if(!this.opened) return;
             ShipCamera.SetCamera(ShipCamera.Position, this.initialLookAt);
             updater = EndAnimation;
             renderer = () => {};

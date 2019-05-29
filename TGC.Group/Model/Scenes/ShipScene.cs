@@ -9,6 +9,7 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.BoundingVolumes;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Text;
 using TGC.Group.Model.Elements.RigidBodyFactories;
@@ -75,7 +76,9 @@ namespace TGC.Group.Model.Scenes
 
             shipMesh = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "new-ship-2-TgcScene.xml").Meshes[0];
-
+            var shipRigidBody = new BoxFactory().Create(shipMesh.BoundingBox);
+            AquaticPhysics.Instance.Add(shipRigidBody);
+            
             hatchMesh = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "hatch-TgcScene.xml").Meshes[0];
 
@@ -156,7 +159,7 @@ namespace TGC.Group.Model.Scenes
         {
             TGCVector3 dist = thing.Position - Camera.Position;
 
-            bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 600;
+            bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 6000;
 
             dist.Normalize();
 
@@ -168,15 +171,15 @@ namespace TGC.Group.Model.Scenes
         }
         public override void Update(float elapsedTime)
         {
-            this.GameState.character.UpdateStats(new Stats(elapsedTime * 7, 0));
-
+            this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
+            //AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
             //if (uh) Camera.SetCamera(craftingScene.ShipCamera.Position, craftingScene.ShipCamera.LookAt);
 
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
         }
-        public override void Render()
+        public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
@@ -212,7 +215,9 @@ namespace TGC.Group.Model.Scenes
             inventoryScene.Render();
             craftingScene.Render();
 
-            statsIndicators.Render(this.GameState.character);
+            statsIndicators.Render(this.GameState.character);     
+            this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
+                300, 300, Color.NavajoWhite);
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {

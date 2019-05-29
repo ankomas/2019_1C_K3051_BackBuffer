@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Input;
 using TGC.Core.Text;
 using TGC.Group.Model.Input;
@@ -45,7 +46,7 @@ namespace TGC.Group.Model.Scenes
 
             darknessCover.Color = Color.FromArgb(0, 0, 0, 0);
         }
-        public override void Render()
+        private void Render()
         {
             preRender();
 
@@ -73,6 +74,12 @@ namespace TGC.Group.Model.Scenes
 
             darknessCover.Color = Color.FromArgb((int)darknessTransparency, 255, 0, 0);
         }
+
+        public override void Render(TgcFrustum frustum)
+        {
+            this.Render();
+        }
+
         public GameOverScene OnGoToStartScreen(Callback onGoToStartScreenCallback)
         {
             this.onGoToStartScreenCallback = onGoToStartScreenCallback;

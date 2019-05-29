@@ -113,15 +113,14 @@
     <Compile Include="Model\CollisionManager.cs" />
     <Compile Include="Model\Elements\ElementFactories\ElementFactory.cs" />
     <Compile Include="Model\Elements\ElementFactories\FishFactory.cs" />
-    <Compile Include="Model\Elements\Shark.cs" />
     <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\Coral.cs" />
     <Compile Include="Model\Elements\ElementFactories\CoralFactory.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\CapsuleFactory.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\BoxFactory.cs" />
     <Compile Include="Model\Elements\Ship.cs" />
-    <Compile Include="Model\Entities\MovementToEntity.cs" />
-    <Compile Include="Model\Elements\WaterSurface.cs" />
+    <Compile Include="Model\Entities\Shark\Shark.cs" />
+    <Compile Include="Model\Entities\Shark\SharkFactory.cs" />
     <Compile Include="Model\Input\GameInput.cs" />
     <Compile Include="Model\AquaticPhysics.cs" />
     <Compile Include="Model\Items\Consumables\IConsumable.cs" />
@@ -137,6 +136,10 @@
     <Compile Include="Model\Items\Recipes\Ingredient.cs" />
     <Compile Include="Model\Items\Recipes\Recipe.cs" />
     <Compile Include="Model\Items\Type\ItemType.cs" />
+    <Compile Include="Model\Movements\EscapeFromPosition.cs" />
+    <Compile Include="Model\Movements\Movement.cs" />
+    <Compile Include="Model\Movements\RandomMovement.cs" />
+    <Compile Include="Model\Movements\MovementToPosition.cs" />
     <Compile Include="Model\Player\Character.cs" />
     <Compile Include="Model\Player\Equipment.cs" />
     <Compile Include="Model\Player\Inventory.cs" />
@@ -251,6 +254,9 @@
     <Content Include="res\subnautica-portada.png" />
     <Content Include="Shaders\Fede.fx" />
     <Content Include="Shaders\Oxygen.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\Entities\Fish" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

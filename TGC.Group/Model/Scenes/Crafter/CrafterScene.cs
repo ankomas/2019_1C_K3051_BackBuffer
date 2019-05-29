@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
 using TGC.Group.Model.Items;
@@ -43,7 +44,12 @@ namespace TGC.Group.Model.Scenes.Crafter
             updateLogic(elapsedTime);
         }
 
-        public override void Render()
+        public override void Render(TgcFrustum frustum)
+        {
+            this.Render();
+        }
+
+        private void Render()
         {
             this.drawer.BeginDrawSprite();
             //this.drawer.DrawSprite(this.PDA);

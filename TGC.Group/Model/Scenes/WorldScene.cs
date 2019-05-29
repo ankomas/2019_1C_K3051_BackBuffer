@@ -17,8 +17,15 @@ using TGC.Core.Direct3D;
 using Key = Microsoft.DirectX.DirectInput.Key;
 using Screen = TGC.Group.Model.Utils.Screen;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using BulletSharp;
+using TGC.Core.BoundingVolumes;
 using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
+using Chunk = TGC.Group.Model.Chunks.Chunk;
+using Element = TGC.Group.Model.Elements.Element;
+using Vector3 = BulletSharp.Math.Vector3;
 using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Scenes
@@ -50,6 +57,8 @@ namespace TGC.Group.Model.Scenes
         private bool aimFired = false;
 
         TgcMesh skb;
+        private TGCVector3 initialCameraPosition = new TGCVector3(300, -100, 200);
+
         public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
@@ -198,7 +207,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = new TGCVector3(30, 30, 200);
+            var position = this.initialCameraPosition;
             var rigidBody = new CapsuleFactory().Create(position, 100, 60);
             AquaticPhysics.Instance.Add(rigidBody);
             Camera = new Camera(position, input, rigidBody);
@@ -246,6 +255,7 @@ namespace TGC.Group.Model.Scenes
 
             return item;
         }
+
         public override void Update(float elapsedTime)
         {
             if (this.GameState.character.IsDead())
@@ -254,8 +264,6 @@ namespace TGC.Group.Model.Scenes
             }
             
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
-
-            CollisionManager.CheckCollitions(this.World.GetCollisionables());
 
             this.World.Update((Camera) this.Camera, this.GameState.character);
 
@@ -276,13 +284,13 @@ namespace TGC.Group.Model.Scenes
 
             this.GameState.character.UpdateStats(this.Camera.Position.Y < 0
                 ? new Stats(-elapsedTime, 0)
-                : new Stats(elapsedTime * 7, 0));
+                : new Stats(elapsedTime * (this.GameState.character.MaxStats.Oxygen/2.5f), 0));
 
             inventoryScene.Update(elapsedTime);
             aimFired = false;
         }
 
-        public override void Render()
+        public override void Render(TgcFrustum frustum)
         {
             ClearScreen();
 
@@ -295,7 +303,7 @@ namespace TGC.Group.Model.Scenes
                 this.skyBoxOutside.Render();
             }
 
-            this.World.Render(this.Camera);
+            this.World.Render(this.Camera, frustum);
 
             if (this.BoundingBox)
             {
@@ -324,6 +332,12 @@ namespace TGC.Group.Model.Scenes
             drawer.EndDrawSprite();
             
             this.statsIndicators.Render(this.GameState.character);
+        }
+
+        public new void Render()
+        {
+            if (GameModel.frustum != null) 
+                this.Render(GameModel.frustum);
         }
 
         public override void Dispose()
