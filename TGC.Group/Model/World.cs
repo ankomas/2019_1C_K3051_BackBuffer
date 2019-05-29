@@ -24,7 +24,7 @@ namespace TGC.Group.Model
 {
     internal class World
     {
-        public static readonly int RenderRadius = 5;//(int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
+        public static readonly int RenderRadius = 7;//(int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
         public static readonly int UpdateRadius = RenderRadius;
         private const int InteractionRadius = 1000000; // Math.pow(1000, 2)
         

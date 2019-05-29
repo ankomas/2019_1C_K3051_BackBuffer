@@ -76,7 +76,9 @@ namespace TGC.Group.Model.Scenes
 
             shipMesh = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "new-ship-2-TgcScene.xml").Meshes[0];
-
+            var shipRigidBody = new BoxFactory().Create(shipMesh.BoundingBox);
+            AquaticPhysics.Instance.Add(shipRigidBody);
+            
             hatchMesh = new TgcSceneLoader()
                 .loadSceneFromFile(Game.Default.MediaDirectory + "hatch-TgcScene.xml").Meshes[0];
 
@@ -135,7 +137,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = new TGCVector3(675, 1000, 900);
+            var position = new TGCVector3(200, 1000, 100);
             var rigidBody = new CapsuleFactory().Create(position, 100, 60);
             AquaticPhysics.Instance.Add(rigidBody);
             this.Camera = new Camera(position, input, rigidBody);
@@ -157,7 +159,7 @@ namespace TGC.Group.Model.Scenes
         {
             TGCVector3 dist = thing.Position - Camera.Position;
 
-            bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 600;
+            bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 6000;
 
             dist.Normalize();
 
@@ -170,7 +172,7 @@ namespace TGC.Group.Model.Scenes
         public override void Update(float elapsedTime)
         {
             this.GameState.character.UpdateStats(new Stats(elapsedTime * 7, 0));
-            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
+            //AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
             //if (uh) Camera.SetCamera(craftingScene.ShipCamera.Position, craftingScene.ShipCamera.LookAt);
