@@ -15,7 +15,7 @@ struct PixelInput
 	float4 Color: COLOR;
 };
 
-VertexOutput main_vertex(VertexInput input)
+VertexOutput propagate_vertex(VertexInput input)
 {
 	VertexOutput output;
 	output.Position = input.Position;
@@ -72,8 +72,8 @@ float modulus(float num, float base)
 
 extern uniform float oxygen;
 
-uniform float stripeRadialStart = 0.32;
-uniform float stripeRadialEnd = 0.5;
+uniform float stripeRadialStart = 0.30;
+uniform float stripeRadialEnd = 0.48;
 
 float edgeTransparency(float2 absolutePos, float2 circleOrigin, float circleRadius)
 {
@@ -88,7 +88,7 @@ float edgeTransparency(float2 absolutePos, float2 circleOrigin, float circleRadi
 	return transparency;
 }
 
-float4 new_pixel(PixelInput input) : COLOR
+float4 main_pixel(PixelInput input) : COLOR
 {
 	float2 absolutePos = input.Color.rg;
 	float2 center = float2(0.5, 0.5);
@@ -131,6 +131,18 @@ float4 main_pixel2(PixelInput input) : COLOR
 	return float4(k, k, k, isLowerEqThanZero(radialDist - 0.3) * (120.0 / 255.0));
 }
 
+float4 main_pixel0(PixelInput input) : COLOR
+{
+	float2 absolutePos = input.Color.rg;
+	float2 center = float2(0.5, 0.5);
+	float2 pos = absolutePos - center;
+	float radialDist = length(pos);
+	float radius = 0.5;
+	float transparency = pow(0.95 + cos(radialDist * (PI / (radius * 2))), 30);
+
+	return float4(0, 0, 0, isLowerEqThan(radialDist, radius) * saturate(transparency) * 0.8);
+}
+
 float4 main_pixel_debug_coords(PixelInput input) : COLOR
 {
 	float2 xy = input.Color.rg;
@@ -141,12 +153,17 @@ technique OxygenTechnique
 {
 	pass Pass_0
 	{
-		VertexShader = compile vs_3_0 main_vertex();
-		PixelShader = compile ps_3_0 new_pixel();
+		VertexShader = compile vs_3_0 propagate_vertex();
+		PixelShader  = compile ps_3_0 main_pixel0();
+	}
+	pass Pass_0
+	{
+		VertexShader = compile vs_3_0 propagate_vertex();
+		PixelShader  = compile ps_3_0 main_pixel();
 	}
 	pass Pass_1
 	{
-		VertexShader = compile vs_3_0 main_vertex();
-		PixelShader = compile ps_3_0 main_pixel2();
+		VertexShader = compile vs_3_0 propagate_vertex();
+		PixelShader  = compile ps_3_0 main_pixel2();
 	}
 };

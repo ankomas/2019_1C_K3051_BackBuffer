@@ -95,7 +95,6 @@ namespace TGC.Group.Model.UI
 
         public void Render(Character character)
         {
-            RenderBlackCircle();
             RenderEffect(character);
             RenderText(character);
         }
@@ -112,12 +111,17 @@ namespace TGC.Group.Model.UI
             /**********OXYGEN METER SHADER***********/
             this.effect.Begin(FX.None);
             this.effect.BeginPass(0);
+            D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
+            D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
+            D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
+            this.effect.EndPass();
+            this.effect.BeginPass(1);
             this.effect.SetValue("oxygen", actualStat / maxStat);
             D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
             this.effect.EndPass();
-            //this.effect.BeginPass(1);
+            //this.effect.BeginPass(2);
             //D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
             //D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
             //D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
