@@ -109,7 +109,6 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             };
-            pressed[GameInput.GoBack] = CloseCrafter;
         }
         private void TryToInteractWithSelectableThing()
         {
@@ -248,6 +247,7 @@ namespace TGC.Group.Model.Scenes
             cursor = null;
             TurnExploreCommandsOff();
             craftingScene.Open(this.GameState.character, ((CameraFPSGravity)Camera), this.crafter.Position);
+            pressed[GameInput.GoBack] = CloseCrafter;
         }
         public void CloseCrafter()
         {

@@ -117,11 +117,11 @@ namespace TGC.Group.Model.UI
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
             this.effect.EndPass();
-            this.effect.BeginPass(1);
-            D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
-            D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
-            D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
-            this.effect.EndPass();
+            //this.effect.BeginPass(1);
+            //D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
+            //D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
+            //D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
+            //this.effect.EndPass();
             this.effect.End();
             /****************************************/
         }

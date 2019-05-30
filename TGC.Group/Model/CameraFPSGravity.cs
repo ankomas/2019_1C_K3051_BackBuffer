@@ -128,11 +128,16 @@ namespace TGC.Group.Model
         }
         private bool InsideBoundsX(TGCVector3 pos)
         {
-            return true;
+            return pos.X < 1540 && pos.X > -236
+                && pos.X > 170 - (pos.Z - (-297)) * (1.6);
         }
         private bool InsideBoundsZ(TGCVector3 pos)
         {
-            return true;
+            return pos.Z > -297 && pos.Z < 1298
+                && pos.Z > 500 - (pos.X - (-236)) * (1.6)
+                && pos.Z > 500 - ((1540) - pos.X) * (1.6)
+                && pos.Z < 500 + (pos.X - (-236)) * (1.6)
+                && pos.Z < 500 + ((1540) - pos.X) * (1.6);
         }
         public void IgnoreInput()
         {
