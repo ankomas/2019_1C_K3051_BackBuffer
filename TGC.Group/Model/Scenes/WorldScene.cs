@@ -209,6 +209,7 @@ namespace TGC.Group.Model.Scenes
         {
             var position = this.initialCameraPosition;
             var rigidBody = new CapsuleFactory().Create(position, 100, 60);
+            rigidBody.ActivationState = ActivationState.DisableDeactivation;
             AquaticPhysics.Instance.Add(rigidBody);
             Camera = new Camera(position, input, rigidBody);
         }

@@ -7,7 +7,9 @@ using TGC.Core.Camara;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.Text;
 using TGC.Group.Model.Input;
+using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model
 {
@@ -30,6 +32,7 @@ namespace TGC.Group.Model
 
         private bool ConsideringInput = true;
         private bool manual = false;
+        private TgcText2D drawer;
 
         public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
@@ -44,6 +47,7 @@ namespace TGC.Group.Model
             updownRot = 0;
             Cursor.Hide();
             currentUpdateLogic = MoveNormally;
+            drawer = new TgcText2D();;
         }
 
         private static Point GetMouseCenter()
