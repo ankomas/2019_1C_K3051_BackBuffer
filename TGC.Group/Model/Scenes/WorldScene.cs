@@ -50,7 +50,7 @@ namespace TGC.Group.Model.Scenes
 
         TgcMesh skb;
         private TGCVector3 initialCameraPosition = new TGCVector3(300, -100, 200);
-
+        
         public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
@@ -58,7 +58,7 @@ namespace TGC.Group.Model.Scenes
             World = new World(new TGCVector3(0, 0, 0));
 
             SetCamera(Input);
-
+            
             IncrementFarPlane(3f);
             SetClampTextureAddressing();
             InitInventoryScene();
@@ -85,9 +85,11 @@ namespace TGC.Group.Model.Scenes
             RegisterSubscene(inventoryScene);
 
             TurnExploreCommandsOn();
+            
         }
         public void ResetCamera()
         {
+            AquaticPhysics.Instance.Remove(Camera.RigidBody); 
             SetCamera(Input);
         }
         private void TurnExploreCommandsOn()
@@ -199,11 +201,9 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = initialCameraPosition;
-            var rigidBody = new CapsuleFactory().Create(position, 100, 60);
-            rigidBody.ActivationState = ActivationState.DisableDeactivation;
-            AquaticPhysics.Instance.Add(rigidBody);
-            Camera = new Camera(position, input, rigidBody);
+            Camera = CameraFactory.Create(initialCameraPosition, input);
+            AquaticPhysics.Instance.Add(Camera.RigidBody);
+
         }
         private IItem manageSelectableElement(Element element)
         {
@@ -255,6 +255,8 @@ namespace TGC.Group.Model.Scenes
                 onGameOverCallback();
             }
             
+            GameState.character.Update(Camera);
+            
             World.Update(Camera, GameState.character);
 
             var item = manageSelectableElement(World.SelectableElement); // Imsportant: get this AFTER updating the world
@@ -284,6 +286,8 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
+            GameState.character.Render();
+            
             if (Camera.Position.Y < 0)
             {
                 skyBoxUnderwater.Render();

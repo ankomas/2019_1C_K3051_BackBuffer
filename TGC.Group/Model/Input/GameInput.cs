@@ -25,6 +25,7 @@ namespace TGC.Group.Model.Input
         public static readonly List<object> Inventory = new List<object> { Key.I, Key.Tab };
         public static readonly List<object> GoBack = new List<object> { Key.Escape };
         public static readonly List<object> Pause = new List<object> { Key.P };
+        public static readonly List<object> Attack = new List<object> { MouseButtons.BUTTON_RIGHT };
 
         private readonly IEnumerable<Key> keys;
         private readonly IEnumerable<MouseButtons> buttons;

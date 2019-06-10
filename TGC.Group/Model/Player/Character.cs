@@ -7,6 +7,7 @@ using TGC.Group.Model.Items;
 using TGC.Group.Model.Items.Consumables;
 using TGC.Group.Model.Items.Equipment;
 using TGC.Group.Model.Items.Recipes;
+using TGC.Group.Model.Items.Type;
 using Element = TGC.Group.Model.Elements.Element;
 
 namespace TGC.Group.Model.Player
@@ -20,6 +21,8 @@ namespace TGC.Group.Model.Player
         public Stats ActualStats { get; }
         public Inventory Inventory { get; } = new Inventory(30);
 
+        public Weapon Weapon { get; set; } 
+        
         private Equipment equipment = new Equipment();
         
         public Character()
@@ -46,7 +49,14 @@ namespace TGC.Group.Model.Player
 
         public void GiveItem(IItem item)
         {
-            this.Inventory.AddItem(item);
+            if (item.type == ItemType.WEAPON)
+            {
+                this.Weapon = (Weapon) item;
+            }
+            else
+            {
+                this.Inventory.AddItem(item);   
+            }
         }
 
         public void Equip(IEquipable equipable)
@@ -80,5 +90,16 @@ namespace TGC.Group.Model.Player
         {
             return item.Recipe.CanCraft(this.Inventory.AsIngredients());
         }
+
+        public void Update(Camera camera)
+        {
+            this.Weapon?.Update(camera);            
+        }
+
+        public void Render()
+        {
+            Weapon?.Render();
+        }
+
     }
 }

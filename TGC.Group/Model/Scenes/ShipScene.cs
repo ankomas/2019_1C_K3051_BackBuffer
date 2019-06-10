@@ -49,8 +49,6 @@ namespace TGC.Group.Model.Scenes
         TGCVector3 targertPosition;
         TGCVector3 targetLookAt;
         
-        public InfinityGauntlet Gauntlet { get; set; }
-        
         public ShipScene(GameState gameState) : base(gameState)
         {
             this.backgroundColor = Color.DarkOrange;
@@ -97,8 +95,6 @@ namespace TGC.Group.Model.Scenes
             selectableThings.Add(crafter);
             selectableThings.Add(hatch);
 
-            Gauntlet = new InfinityGauntlet();
-            
             walls.Init();
             SetCamera();
             AquaticPhysics.Instance.Add(Camera.RigidBody);
@@ -179,12 +175,13 @@ namespace TGC.Group.Model.Scenes
 
         public override void UpdateGameplay(float elapsedTime)
         {
+            
             this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
             
-            Gauntlet.Update(Camera);
+            GameState.character.Update(Camera);
         }
 
         public override void Render(TgcFrustum tgcFrustum)
@@ -192,7 +189,8 @@ namespace TGC.Group.Model.Scenes
             ClearScreen();
 
             shipMesh.Render();
-            Gauntlet.Render();
+            
+            GameState.character.Render();
             
             foreach (var thing in selectableThings)
             {

@@ -128,7 +128,6 @@
     <Compile Include="Model\Items\Consumables\IConsumable.cs" />
     <Compile Include="Model\Items\Crafter.cs" />
     <Compile Include="Model\Items\Equipment\IEquipable.cs" />
-    <Compile Include="Model\Items\Equipment\InfinityGauntlet.cs" />
     <Compile Include="Model\Items\Equipment\OxygenTank.cs" />
     <Compile Include="Model\Items\Fish.cs" />
     <Compile Include="Model\Items\Gold.cs" />
@@ -139,6 +138,8 @@
     <Compile Include="Model\Items\Recipes\Ingredient.cs" />
     <Compile Include="Model\Items\Recipes\Recipe.cs" />
     <Compile Include="Model\Items\Type\ItemType.cs" />
+    <Compile Include="Model\Items\Weapons\InfinityGauntlet.cs" />
+    <Compile Include="Model\Items\Weapons\IWeapon.cs" />
     <Compile Include="Model\Movements\EscapeFromPosition.cs" />
     <Compile Include="Model\Movements\Movement.cs" />
     <Compile Include="Model\Movements\RandomMovement.cs" />
