@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BulletSharp;
 using TGC.Core.Camara;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
@@ -16,6 +17,7 @@ using TGC.Group.Model.Elements.RigidBodyFactories;
 using TGC.Group.Model.Input;
 using TGC.Core.SceneLoader;
 using TGC.Core.Direct3D;
+using TGC.Group.Model.Items;
 using TGC.Group.Model.Player;
 using TGC.Group.TGCUtils;
 using TGC.Group.Model.Scenes.Crafter;
@@ -46,7 +48,9 @@ namespace TGC.Group.Model.Scenes
 
         TGCVector3 targertPosition;
         TGCVector3 targetLookAt;
-
+        
+        public InfinityGauntlet Gauntlet { get; set; }
+        
         public ShipScene(GameState gameState) : base(gameState)
         {
             this.backgroundColor = Color.DarkOrange;
@@ -95,6 +99,8 @@ namespace TGC.Group.Model.Scenes
             selectableThings.Add(crafter);
             selectableThings.Add(hatch);
 
+            Gauntlet = new InfinityGauntlet();
+            
             walls.Init();
             //Camera = new CameraFPSGravity(walls.Center + new TGCVector3(0, 400, 0), Input);
             SetCamera(Input);
@@ -111,6 +117,7 @@ namespace TGC.Group.Model.Scenes
             };
             pressed[GameInput.GoBack] = CloseCrafter;
         }
+
         private void TryToInteractWithSelectableThing()
         {
             foreach (Thing thing in selectableThings)
@@ -135,18 +142,21 @@ namespace TGC.Group.Model.Scenes
         {
             SetCamera(Input);
         }
-        //private void SetCamera(TgcD3dInput input)
-        //{
-        //    var position = new TGCVector3(675, 1000, 900);
-        //    var rigidBody = new CapsuleFactory().Create(position, 100, 60);
-        //    AquaticPhysics.Instance.Add(rigidBody);
-        //    this.Camera = new Camera(position, input, rigidBody);
-        //}
+        private void SetCamera(TgcD3dInput input)
+        {
+            var position = new TGCVector3(675, 1000, 900);
+            var rigidBody = new CapsuleFactory().Create(position, 100, 60);
+            rigidBody.ActivationState = ActivationState.DisableDeactivation;
+            AquaticPhysics.Instance.Add(rigidBody);
+            this.Camera = new Camera(position, input, rigidBody);
+        }
+        /*
         private void SetCamera(TgcD3dInput input)
         {
             var position = new TGCVector3(675, 1000, 900);
             this.Camera = new CameraFPSGravity(position, input);
         }
+        */
         private void OpenInventory()
         {
             cursor = null;
@@ -176,19 +186,23 @@ namespace TGC.Group.Model.Scenes
         }
         public override void Update(float elapsedTime)
         {
-            this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
+            ((Camera)Camera).Update(elapsedTime);
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
+            this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
-
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
+            
+            Gauntlet.Update((Camera)Camera);
+         
         }
         public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
             shipMesh.Render();
-
+            Gauntlet.Render();
+            
             foreach (var thing in selectableThings)
             {
                 thing.Render();

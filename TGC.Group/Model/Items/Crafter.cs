@@ -12,7 +12,7 @@ namespace TGC.Group.Model.Items
 
         public static List<ICrafteable> Crafteables { get; } = new List<ICrafteable>
         {
-            new OxygenTank(), new GreenPotion()
+            new OxygenTank(), new GreenPotion(), new InfinityGauntlet()
         };
 
         public List<ICrafteable> CrafteablesBy(List<Ingredient> ingredients)

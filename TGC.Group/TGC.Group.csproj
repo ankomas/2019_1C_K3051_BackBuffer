@@ -126,6 +126,7 @@
     <Compile Include="Model\Items\Consumables\IConsumable.cs" />
     <Compile Include="Model\Items\Crafter.cs" />
     <Compile Include="Model\Items\Equipment\IEquipable.cs" />
+    <Compile Include="Model\Items\Equipment\InfinityGauntlet.cs" />
     <Compile Include="Model\Items\Equipment\OxygenTank.cs" />
     <Compile Include="Model\Items\Fish.cs" />
     <Compile Include="Model\Items\Gold.cs" />
