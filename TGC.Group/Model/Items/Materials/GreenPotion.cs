@@ -22,7 +22,7 @@ namespace TGC.Group.Model.Items.Materials
 
         public override ItemType type { get; } = ItemType.MATERIAL;
         public override CustomSprite Icon { get; }
-        public override List<TgcMesh> Meshes => MeshesForShip.O2Mesh;
+        public override List<TgcMesh> Meshes => MeshesForShip.PotionMesh;
         public override TGCVector2 DefaultScale { get; } = new TGCVector2(.15f, .15f);
         public Stats stats { get; } = new Stats(0, 100);
 
