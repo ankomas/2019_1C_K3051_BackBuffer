@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BulletSharp;
 using TGC.Core.Direct3D;
 using TGC.Core.Geometry;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using TGC.Core.Mathematica;
+using TGC.Core.Terrain;
 using TGC.Core.Textures;
 using TGC.Group.Model.Elements;
 using TGC.Group.Model.Elements.ElementFactories;
@@ -15,10 +18,13 @@ namespace TGC.Group.Model.Chunks
 {
     public class FloorChunk : Chunk
     {
-        private static readonly TgcTexture FloorTexture =TgcTexture.createTexture(D3DDevice.Instance.Device,Game.Default.MediaDirectory + Game.Default.TexturaTierra);
+        private static readonly TgcTexture FloorTexture = TgcTexture.createTexture(D3DDevice.Instance.Device,Game.Default.MediaDirectory + Game.Default.TexturaTierra);
+        private static readonly string FloorHeightmap = Game.Default.MediaDirectory + "\\Heightmap";
+
+        
         public RigidBody FloorRigidBody { get; set; }
 
-        public TgcPlane Floor { get; set; }
+        public TgcSimpleTerrain Floor { get; set; }
         
         private List<Segment> segments;
         private int divisions;
@@ -30,12 +36,13 @@ namespace TGC.Group.Model.Chunks
 
             this.divisions = (int)(DefaultSize.X / 100);
 
-            var corals = CreateCorals(segments[0], divisions);
+            CreateFloor(origin);
+            
+            var corals = CreateCorals(segments[0], divisions, Floor);
             AddElementsToPhysicsWorld(corals);
             this.Elements.AddRange(corals);
-            
+
             segments.Remove(segments[0]);
-            CreateFloor(origin);
         }
         
         private static List<Element> CreateFishes(List<Segment> segments, int divisions)
@@ -43,18 +50,39 @@ namespace TGC.Group.Model.Chunks
             return segments.SelectMany(segment => segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 1200), FishFactory.Instance)).ToList();
         }
 
-        private static List<Element> CreateCorals(Segment segment, int divisions)
+        private static List<Element> CreateCorals(Segment segment, int divisions, TgcSimpleTerrain floor)
         {
-            return segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 100), CoralFactory.Instance).ToList();
+            var corals = segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 100), CoralFactory.Instance)
+                .ToList();
+            corals.ForEach(coral => coral.yPosition(floor.HeightmapData));
+            return corals;
         }
 
         private void CreateFloor(TGCVector3 origin)
         {
-            
+            /*   
             Floor = new TgcPlane(origin, DefaultSize, TgcPlane.Orientations.XZplane, FloorTexture);
             FloorRigidBody = new BoxFactory().CreatePlane(Floor);
             AquaticPhysics.Instance.Add(FloorRigidBody);
+            */
+            var imgSize = 64;
+            var scaleXz = DefaultSize.X / imgSize + 0.25f * DefaultSize.X/1000;
+            var xCenter = origin.X + DefaultSize.X / 2 + imgSize * 2.0f / scaleXz;
+            var zCenter = origin.Z + DefaultSize.Z / 2 + imgSize * 2.0f / scaleXz;
+            
+            Floor = new TgcSimpleTerrain();
+            
+            Floor.loadHeightmap(getHeightmap(origin), scaleXz, 1f, new TGCVector3(xCenter / scaleXz, origin.Y, zCenter / scaleXz));
+            Floor.loadTexture(Game.Default.MediaDirectory + Game.Default.TexturaTierra);
+        }
 
+        private string getHeightmap(TGCVector3 origin)
+        {
+            var x = Math.Abs(origin.X) % (DefaultSize.X * 2) < DefaultSize.X ? "1" : "2";
+            
+            var z = Math.Abs(origin.Z) % (DefaultSize.Z * 2) < DefaultSize.Z ? "1" : "2";
+
+            return FloorHeightmap + x + z + ".jpg";
         }
 
         public override IEnumerable<Element> Init()
@@ -66,7 +94,7 @@ namespace TGC.Group.Model.Chunks
 
         public override void Render()
         {
-            Floor.updateValues();
+            //Floor.updateValues();
             Floor.Render();
             base.Render();
         }

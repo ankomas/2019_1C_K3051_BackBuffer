@@ -19,6 +19,7 @@ using Screen = TGC.Group.Model.Utils.Screen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BulletSharp;
 using TGC.Core.BoundingVolumes;
 using TGC.Group.Model.UI;
@@ -59,11 +60,12 @@ namespace TGC.Group.Model.Scenes
         TgcMesh skb;
         private TGCVector3 initialCameraPosition = new TGCVector3(300, -100, 200);
 
+        private bool loaded = false;
+        private bool loading = false;
+
         public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
-
-            this.World = new World(new TGCVector3(0, 0, 0));
 
             SetCamera(Input);
 
@@ -75,7 +77,7 @@ namespace TGC.Group.Model.Scenes
             InitMask();
             InitDialogBox();
             
-            World = new World(new TGCVector3(0, 0, 0));
+            this.World = new World(new TGCVector3(0, 0, 0));
             
             pressed[Key.P] = () => {
                 onPauseCallback();
@@ -258,6 +260,23 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
+            if (!loaded)
+            {
+                if (this.loading)
+                {
+                    return;
+                }
+
+
+                preload();
+
+                //TODO loading scene
+                
+                this.loading = true;
+
+                return;
+            }
+
             if (this.GameState.character.IsDead())
             {
                 onGameOverCallback();
@@ -290,9 +309,27 @@ namespace TGC.Group.Model.Scenes
             aimFired = false;
         }
 
+        private void preload()
+        {
+            var preloadRadius = World.UpdateRadius;
+            
+            Task.Run(() =>
+            {
+                this.World.preLoad(TGCVector3.Empty, preloadRadius);
+                this.loaded = true;
+            });
+        }
+
         public override void Render(TgcFrustum frustum)
         {
             ClearScreen();
+
+            if (!this.loaded)
+            {
+                //TODO loading screen
+                this.DrawText.drawText("Loading", 300, 300, Color.FromArgb(255, 255-10, 255-70, 255-164));
+                return;
+            }
 
             if (Camera.Position.Y < 0)
             {

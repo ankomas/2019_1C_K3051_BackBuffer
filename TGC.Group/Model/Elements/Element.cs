@@ -1,4 +1,6 @@
-﻿using BulletSharp;
+﻿using System;
+using System.Linq;
+using BulletSharp;
 using BulletSharp.Math;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
@@ -7,6 +9,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Utils;
+using Chunk = TGC.Group.Model.Chunks.Chunk;
 
 namespace TGC.Group.Model.Elements
 {
@@ -87,6 +90,21 @@ namespace TGC.Group.Model.Elements
             var aabb = (TgcBoundingAxisAlignBox) getCollisionVolume();
             var cube = new Cube(aabb.PMin, aabb.PMax);
             return cube;
+        }
+
+        public void yPosition(int[,] floorHeightmapData)
+        {
+            var x = this.Mesh.Position.X % Chunk.DefaultSize.X;
+            var z = this.Mesh.Position.Z % Chunk.DefaultSize.Z;
+
+            var length = floorHeightmapData.GetLength(0);
+            
+            var xScale = length / Chunk.DefaultSize.X;
+            var zScale = length / Chunk.DefaultSize.Z;
+
+            var y = floorHeightmapData[(int)Math.Abs(x * xScale), (int)Math.Abs(z * zScale)];
+            
+            this.PhysicsBody.Translate(new Vector3(0, y, 0));
         }
     }
 }
