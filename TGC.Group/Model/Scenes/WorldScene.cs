@@ -28,6 +28,7 @@ using Chunk = TGC.Group.Model.Chunks.Chunk;
 using Element = TGC.Group.Model.Elements.Element;
 using Vector3 = BulletSharp.Math.Vector3;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Resources;
 
 namespace TGC.Group.Model.Scenes
 {

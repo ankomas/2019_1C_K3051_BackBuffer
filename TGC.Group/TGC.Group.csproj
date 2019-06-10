@@ -144,6 +144,7 @@
     <Compile Include="Model\Player\Equipment.cs" />
     <Compile Include="Model\Player\Inventory.cs" />
     <Compile Include="Model\Player\Stats.cs" />
+    <Compile Include="Model\Resources\FloorRepository.cs" />
     <Compile Include="Model\Resources\Meshes\CoralMeshes.cs" />
     <Compile Include="Model\Resources\Meshes\FishMeshes.cs" />
     <Compile Include="Model\Resources\Meshes\SharkMesh.cs" />

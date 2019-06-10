@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using BulletSharp;
 using TGC.Core.Direct3D;
 using TGC.Core.Geometry;
@@ -11,6 +12,7 @@ using TGC.Core.Textures;
 using TGC.Group.Model.Elements;
 using TGC.Group.Model.Elements.ElementFactories;
 using TGC.Group.Model.Elements.RigidBodyFactories;
+using TGC.Group.Model.Resources;
 using TGC.Group.Model.Utils;
 using Element = TGC.Group.Model.Elements.Element;
 
@@ -18,10 +20,6 @@ namespace TGC.Group.Model.Chunks
 {
     public class FloorChunk : Chunk
     {
-        private static readonly TgcTexture FloorTexture = TgcTexture.createTexture(D3DDevice.Instance.Device,Game.Default.MediaDirectory + Game.Default.TexturaTierra);
-        private static readonly string FloorHeightmap = Game.Default.MediaDirectory + "\\Heightmap";
-
-        
         public RigidBody FloorRigidBody { get; set; }
 
         public TgcSimpleTerrain Floor { get; set; }
@@ -36,7 +34,7 @@ namespace TGC.Group.Model.Chunks
 
             this.divisions = (int)(DefaultSize.X / 100);
 
-            CreateFloor(origin);
+            this.Floor = FloorRepository.getFloor(origin);
             
             var corals = CreateCorals(segments[0], divisions, Floor);
             AddElementsToPhysicsWorld(corals);
@@ -57,34 +55,7 @@ namespace TGC.Group.Model.Chunks
             corals.ForEach(coral => coral.yPosition(floor.HeightmapData));
             return corals;
         }
-
-        private void CreateFloor(TGCVector3 origin)
-        {
-            /*   
-            Floor = new TgcPlane(origin, DefaultSize, TgcPlane.Orientations.XZplane, FloorTexture);
-            FloorRigidBody = new BoxFactory().CreatePlane(Floor);
-            AquaticPhysics.Instance.Add(FloorRigidBody);
-            */
-            var imgSize = 64;
-            var scaleXz = DefaultSize.X / imgSize + 0.25f * DefaultSize.X/1000;
-            var xCenter = origin.X + DefaultSize.X / 2 + imgSize * 2.0f / scaleXz;
-            var zCenter = origin.Z + DefaultSize.Z / 2 + imgSize * 2.0f / scaleXz;
-            
-            Floor = new TgcSimpleTerrain();
-            
-            Floor.loadHeightmap(getHeightmap(origin), scaleXz, 1f, new TGCVector3(xCenter / scaleXz, origin.Y, zCenter / scaleXz));
-            Floor.loadTexture(Game.Default.MediaDirectory + Game.Default.TexturaTierra);
-        }
-
-        private string getHeightmap(TGCVector3 origin)
-        {
-            var x = Math.Abs(origin.X) % (DefaultSize.X * 2) < DefaultSize.X ? "1" : "2";
-            
-            var z = Math.Abs(origin.Z) % (DefaultSize.Z * 2) < DefaultSize.Z ? "1" : "2";
-
-            return FloorHeightmap + x + z + ".jpg";
-        }
-
+        
         public override IEnumerable<Element> Init()
         {
             var fishes = CreateFishes(this.segments, this.divisions);

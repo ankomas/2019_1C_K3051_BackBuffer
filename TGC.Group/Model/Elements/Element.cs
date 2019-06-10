@@ -103,8 +103,11 @@ namespace TGC.Group.Model.Elements
             var zScale = length / Chunk.DefaultSize.Z;
 
             var y = floorHeightmapData[(int)Math.Abs(x * xScale), (int)Math.Abs(z * zScale)];
+
+            var cube = asCube();
+            var despl = ((cube.PMax - cube.PMin).X + (cube.PMax - cube.PMin).Z) / 2;
             
-            this.PhysicsBody.Translate(new Vector3(0, y, 0));
+            this.PhysicsBody.Translate(new Vector3(-despl, y, -despl));
         }
     }
 }
