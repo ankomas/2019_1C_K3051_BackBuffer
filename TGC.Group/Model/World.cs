@@ -30,8 +30,8 @@ namespace TGC.Group.Model
             Math.Min((int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X), 5);
         public static readonly int UpdateRadius = RenderRadius;
         private const int InteractionRadius = 1000000; // Math.pow(1000, 2)
-        
-        private readonly Dictionary<TGCVector3, Chunk> chunks;
+
+        public readonly Dictionary<TGCVector3, Chunk> chunks;
         private List<Chunk> chunksToUpdate = new List<Chunk>();
         private List<Element> elementsToUpdate = new List<Element>();
         public Element SelectableElement { get; private set; }

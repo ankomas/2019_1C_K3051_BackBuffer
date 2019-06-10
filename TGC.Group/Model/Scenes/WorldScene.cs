@@ -328,7 +328,10 @@ namespace TGC.Group.Model.Scenes
             if (!this.loaded)
             {
                 //TODO loading screen
-                this.DrawText.drawText("Loading", 300, 300, Color.FromArgb(255, 255-10, 255-70, 255-164));
+                this.DrawText.drawText("Loading...", 300, 300, Color.FromArgb(255, 255-10, 255-70, 255-164));
+                this.DrawText.drawText("Floors: " + FloorRepository.Floors.Count, 300, 330, Color.FromArgb(255, 255-10, 255-70, 255-164));
+                this.DrawText.drawText("Chunnks: " + this.World.chunks.Count, 300, 360, Color.FromArgb(255, 255-10, 255-70, 255-164));
+
                 return;
             }
 

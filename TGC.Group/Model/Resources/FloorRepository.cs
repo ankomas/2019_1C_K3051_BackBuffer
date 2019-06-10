@@ -17,7 +17,7 @@ namespace TGC.Group.Model.Resources
     {
         private static readonly string FloorTexture = Game.Default.MediaDirectory + Game.Default.TexturaTierra;
         private static readonly string FloorHeightmap = Game.Default.MediaDirectory + "\\Heightmap";
-        private static ConcurrentDictionary<TGCVector3, TgcSimpleTerrain> Floors = new ConcurrentDictionary<TGCVector3, TgcSimpleTerrain>();
+        public static ConcurrentDictionary<TGCVector3, TgcSimpleTerrain> Floors = new ConcurrentDictionary<TGCVector3, TgcSimpleTerrain>();
         private static bool preLoading = false;
 
         public static TgcSimpleTerrain getFloor(TGCVector3 position)
