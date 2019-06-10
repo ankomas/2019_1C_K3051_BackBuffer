@@ -66,7 +66,7 @@ namespace TGC.Group.Model.Scenes
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir +  "skybox-front.jpg" );
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back , baseDir +  "skybox-back.jpg"  );
             skyBox.Init();
-            Camera = new TgcCamera();
+            Camera = CameraFactory.Create(TGCVector3.Empty, Input);
 
             pressed[GameInput.Down] = () => pointer = Pointer.DOWN;
             pressed[GameInput.Up] = () => pointer = Pointer.UP;

@@ -36,7 +36,7 @@ namespace TGC.Group.Model.Scenes
         Updater updater = (e) => {};
 
         private Character Character;
-        public CameraFPSGravity ShipCamera;
+        public Camera ShipCamera;
         private TGCVector3 targetPosition, targetLookAt, initialPosition, initialLookAt;
         public ICrafteable ItemHighlighted { get; set; }
         private Items.Crafter crafter = new Items.Crafter();
@@ -279,7 +279,7 @@ namespace TGC.Group.Model.Scenes
             }
         }
 
-        public void Open(Character character, CameraFPSGravity shipCamera, TGCVector3 crafterPosition)
+        public void Open(Character character, Camera shipCamera, TGCVector3 crafterPosition)
         {
             Console.WriteLine("Open");
 

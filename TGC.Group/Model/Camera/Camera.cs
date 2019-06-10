@@ -32,12 +32,7 @@ namespace TGC.Group.Model
 
         private bool ConsideringInput = true;
         private bool manual = false;
-        private TgcText2D drawer;
         
-        //todo: delete 
-        private float leftright = 0f;
-        private float updown = 0f;
-
         public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
             Input = input;
@@ -51,7 +46,6 @@ namespace TGC.Group.Model
             updownRot = 0;
             Cursor.Hide();
             currentUpdateLogic = MoveNormally;
-            drawer = new TgcText2D();;
         }
 
         private static Point GetMouseCenter()
