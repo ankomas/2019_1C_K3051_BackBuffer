@@ -60,6 +60,16 @@ float isGreaterEqThan(float a, float b)
 	return isGreaterEqThanZero(a - b);
 }
 
+float isLowerThan(float a, float b)
+{
+	return isLowerThanZero(a - b);
+}
+
+float isGreaterThan(float a, float b)
+{
+	return isGreaterThanZero(a - b);
+}
+
 bool eq(float4 a, float4 b)
 {
 	return abs(a - b) < 0.05;
@@ -88,7 +98,7 @@ float edgeTransparency(float2 absolutePos, float2 circleOrigin, float circleRadi
 	return transparency;
 }
 
-float4 main_pixel(PixelInput input) : COLOR
+float4 main_ring(PixelInput input) : COLOR
 {
 	float2 absolutePos = input.Color.rg;
 	float2 center = float2(0.5, 0.5);
@@ -121,26 +131,32 @@ float4 main_pixel(PixelInput input) : COLOR
 	return float4(1 - oxygen, oxygen, blueIntensity, isGreaterThanZero(oxygen) * finalTransparency);
 }
 
-float4 main_pixel2(PixelInput input) : COLOR
+float makeCircle(float2 absolutePos, float2 center, float radius)
 {
-	float2 absolutePos = input.Color.rg;
-	float2 center = float2(0.5, 0.5);
-	float2 pos = absolutePos - center;
-	float radialDist = sqrt(pow(pos.x, 2) + pow(pos.y, 2));
-	float k = radialDist * 2.5;
-	return float4(k, k, k, isLowerEqThanZero(radialDist - 0.3) * (120.0 / 255.0));
-}
-
-float4 main_pixel0(PixelInput input) : COLOR
-{
-	float2 absolutePos = input.Color.rg;
-	float2 center = float2(0.5, 0.5);
-	float2 pos = absolutePos - center;
-	float radialDist = length(pos);
-	float radius = 0.5;
+	float radialDist = length(absolutePos - center);
 	float transparency = pow(0.95 + cos(radialDist * (PI / (radius * 2))), 30);
 
-	return float4(0, 0, 0, isLowerEqThan(radialDist, radius) * saturate(transparency) * 0.8);
+	return isLowerEqThan(radialDist, radius) * saturate(transparency);
+}
+
+float4 main_inner_circle(PixelInput input) : COLOR
+{
+	float  radius = 0.29;
+	float2 center = float2(0.5, 0.5);
+	float2 position = input.Color.rg;
+	float  saturation = makeCircle(position, center, radius);
+
+	float3 color = float3(0.1 + isLowerEqThanZero(oxygen) * 0.3 * 0.5, 0.2, 0.2);
+	float light = 1 - (position.y - center.x - radius) / (radius * 2);
+
+	return float4(color * light, saturation);
+}
+
+float4 main_outter_circle(PixelInput input) : COLOR
+{
+	float saturation = makeCircle(input.Color.rg, float2(0.5, 0.5), 0.5);
+
+	return float4(0 + isLowerEqThanZero(oxygen) * 0.3, 0, 0, saturation * 0.8);
 }
 
 float4 main_pixel_debug_coords(PixelInput input) : COLOR
@@ -153,17 +169,14 @@ technique OxygenTechnique
 {
 	pass Pass_0
 	{
-		VertexShader = compile vs_3_0 propagate_vertex();
-		PixelShader  = compile ps_3_0 main_pixel0();
+		PixelShader  = compile ps_3_0 main_outter_circle();
 	}
 	pass Pass_0
 	{
-		VertexShader = compile vs_3_0 propagate_vertex();
-		PixelShader  = compile ps_3_0 main_pixel();
+		PixelShader  = compile ps_3_0 main_ring();
 	}
 	pass Pass_1
 	{
-		VertexShader = compile vs_3_0 propagate_vertex();
-		PixelShader  = compile ps_3_0 main_pixel2();
+		PixelShader  = compile ps_3_0 main_inner_circle();
 	}
 };

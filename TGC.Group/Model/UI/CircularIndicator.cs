@@ -23,8 +23,6 @@ namespace TGC.Group.Model.UI
         protected readonly int MeterX0;
         protected readonly int MeterY0;
 
-        private readonly CustomSprite blackCircle;
-
         private CustomVertex.TransformedColored[] vertices;
 
         protected readonly TgcText2D TextBig = new TgcText2D();
@@ -50,11 +48,6 @@ namespace TGC.Group.Model.UI
             this.MeterSize = meterSize;
             this.MeterX0 = meterX0;
             this.MeterY0 = meterY0;
-            
-            blackCircle = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackCircle);
-            blackCircle.Scaling = new TGCVector2(Scale(this.MeterSize, .295f), Scale(this.MeterSize, .295f));
-            blackCircle.Position = new TGCVector2(meterX0 - Scale(this.MeterSize, 3), meterY0 - Scale(this.MeterSize, 3));
-            blackCircle.Color = Color.FromArgb(188, 0, 0, 0);
             
             this.TextBig.changeFont(new System.Drawing.Font("Arial Narrow Bold", Scale(this.MeterSize, 25)));
             this.TextSmall.changeFont(new System.Drawing.Font("Arial Narrow Bold", Scale(this.MeterSize, 15)));
@@ -99,18 +92,12 @@ namespace TGC.Group.Model.UI
             RenderText(character);
         }
 
-        private void RenderBlackCircle()
-        {
-            Drawer.BeginDrawSprite();
-            Drawer.DrawSprite(this.blackCircle);
-            Drawer.EndDrawSprite();
-        }
-
         protected void RenderEffect(float actualStat, float maxStat)
         {
             /**********OXYGEN METER SHADER***********/
             this.effect.Begin(FX.None);
             this.effect.BeginPass(0);
+            this.effect.SetValue("oxygen", actualStat / maxStat);
             D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
@@ -121,11 +108,12 @@ namespace TGC.Group.Model.UI
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
             this.effect.EndPass();
-            //this.effect.BeginPass(2);
-            //D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
-            //D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
-            //D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
-            //this.effect.EndPass();
+            this.effect.BeginPass(2);
+            this.effect.SetValue("oxygen", actualStat / maxStat);
+            D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
+            D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
+            D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices.Length / 3, this.vertices);
+            this.effect.EndPass();
             this.effect.End();
             /****************************************/
         }
