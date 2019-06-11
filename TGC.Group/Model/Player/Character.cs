@@ -41,8 +41,7 @@ namespace TGC.Group.Model.Player
 
         public bool IsDead()
         {
-            //return this.ActualStats.Life <= 0;
-            return false;
+            return this.ActualStats.Life <= 0;
         }
 
         public void GiveItem(IItem item)
