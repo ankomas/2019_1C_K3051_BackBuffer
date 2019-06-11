@@ -72,60 +72,12 @@ VS_OUTPUT vs_main(VS_INPUT Input)
     return (Output);
 }
 
-// Ejemplo de un vertex shader que anima la posicion de los vertices
-// ------------------------------------------------------------------
-VS_OUTPUT vs_main2(VS_INPUT Input)
-{
-    VS_OUTPUT Output;
-
-    Output.RealPos = Input.Position;
-
-	// Animar posicion
-	/*Input.Position.x += sin(time)*30*sign(Input.Position.x);
-	Input.Position.y += cos(time)*30*sign(Input.Position.y-20);
-	Input.Position.z += sin(time)*30*sign(Input.Position.z);
-	*/
-
-	// Animar posicion
-    float Y = Input.Position.y;
-    float Z = Input.Position.z;
-    Input.Position.y = Y * cos(time) - Z * sin(time);
-    Input.Position.z = Z * cos(time) + Y * sin(time);
-
-	//Proyectar posicion
-    Output.Position = mul(Input.Position, matWorldViewProj);
-
-	//Propago las coordenadas de textura
-    Output.Texcoord = Input.Texcoord;
-
-	// Animar color
-    Input.Color.r = abs(sin(time));
-    Input.Color.g = abs(cos(time));
-
-	//Propago el color x vertice
-    Output.Color = Input.Color;
-
-    return (Output);
-}
-
-float frecuencia = 10;
 //Pixel Shader
 float4 ps_main(VS_OUTPUT Input) : COLOR0
 {
-    //float y = Input.Texcoord.y * screen_dy + cos(time * frecuencia);
-    //Input.Texcoord.y = y / screen_dy;
+    float y = Input.Texcoord.y * screen_dy + cos(time);
+    Input.Texcoord.y = y / screen_dy;
     return tex2D(diffuseMap, Input.Texcoord);
-}
-
-//Pixel Shader
-float4 ps_main2(float2 Texcoord : TEXCOORD0, float4 Color : COLOR0) : COLOR0
-{
-	// Obtener el texel de textura
-	// diffuseMap es el sampler, Texcoord son las coordenadas interpoladas
-    float4 fvBaseColor = tex2D(diffuseMap, Texcoord);
-	// combino color y textura
-	// en este ejemplo combino un 80% el color de la textura y un 20%el del vertice
-    return 0.8 * fvBaseColor + 0.2 * Color;
 }
 
 // ------------------------------------------------------------------
@@ -135,14 +87,5 @@ technique RenderScene
     {
         VertexShader = compile vs_3_0 vs_main();
         PixelShader = compile ps_3_0 ps_main();
-    }
-}
-
-technique RenderScene2
-{
-    pass Pass_0
-    {
-        VertexShader = compile vs_3_0 vs_main2();
-        PixelShader = compile ps_3_0 ps_main2();
     }
 }

@@ -113,9 +113,9 @@
     <Compile Include="Model\CollisionManager.cs" />
     <Compile Include="Model\Elements\ElementFactories\ElementFactory.cs" />
     <Compile Include="Model\Elements\ElementFactories\FishFactory.cs" />
-    <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\Coral.cs" />
     <Compile Include="Model\Elements\ElementFactories\CoralFactory.cs" />
+    <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\CapsuleFactory.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\BoxFactory.cs" />
     <Compile Include="Model\Elements\Ship.cs" />
@@ -272,7 +272,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\Elements\Effects" />
-    <Folder Include="Model\Entities\Fish" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,11 +1,8 @@
-﻿using System.Drawing;
-using BulletSharp;
+﻿using BulletSharp;
 using Microsoft.DirectX.Direct3D;
-using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
-using TGC.Group.Form;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Movements;
 
@@ -38,7 +35,10 @@ namespace TGC.Group.Model.Elements
 
         public override void Render()
         {
-            this.Mesh.Render();
+            this.Mesh.Technique = "RenderScene";
+            this.Mesh.Effect = movement;
+            this.Mesh.Effect.SetValue("time", GameModel.GlobalElapsedTime);
+            base.Render();
         }
 
         private MovementToApply Move(Camera camera)
