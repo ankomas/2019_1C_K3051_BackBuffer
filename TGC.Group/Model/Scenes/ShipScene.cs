@@ -250,6 +250,8 @@ namespace TGC.Group.Model.Scenes
         {
             cursor = null;
             TurnExploreCommandsOff();
+            pressed[GameInput.Inventory] = () => {};
+            inventoryScene.Close();
             craftingScene.Open(this.GameState.character, Camera, this.crafter);
             pressed[GameInput.GoBack] = CloseCrafter;
         }
