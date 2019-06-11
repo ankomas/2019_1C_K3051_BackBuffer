@@ -27,6 +27,7 @@ using Chunk = TGC.Group.Model.Chunks.Chunk;
 using Element = TGC.Group.Model.Elements.Element;
 using Vector3 = BulletSharp.Math.Vector3;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Chunks;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -47,6 +48,7 @@ namespace TGC.Group.Model.Scenes
 
         InventoryScene inventoryScene;
 
+        OrientationArrow orientationArrow = new OrientationArrow();
         TgcSkyBox skyBoxUnderwater, skyBoxOutside;
         CustomSprite waterVision, mask, dialogBox;
         Drawer2D drawer = new Drawer2D();
@@ -288,6 +290,8 @@ namespace TGC.Group.Model.Scenes
 
             inventoryScene.Update(elapsedTime);
             aimFired = false;
+
+            orientationArrow.Update(Camera.Position, InitialChunk.ShipInitialPosition, Camera.LookAt);
         }
 
         public override void Render(TgcFrustum frustum)
@@ -309,6 +313,7 @@ namespace TGC.Group.Model.Scenes
             {
                 this.World.RenderBoundingBox(this.Camera);
             }
+            this.orientationArrow.Render();
 
             drawer.BeginDrawSprite();
             //drawer.DrawSprite(waterVision);
@@ -330,8 +335,13 @@ namespace TGC.Group.Model.Scenes
             drawer.BeginDrawSprite();
             drawer.DrawSprite(mask);
             drawer.EndDrawSprite();
-            
             this.statsIndicators.Render(this.GameState.character);
+
+            //this.DrawText.drawText("Camera:", 800, 100, Color.Red);
+            //this.DrawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
+            //this.DrawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
+            //this.DrawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
+
         }
 
         public new void Render()

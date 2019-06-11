@@ -146,6 +146,7 @@
     <Compile Include="Model\Player\Stats.cs" />
     <Compile Include="Model\Resources\Meshes\CoralMeshes.cs" />
     <Compile Include="Model\Resources\Meshes\FishMeshes.cs" />
+    <Compile Include="Model\Resources\Meshes\MeshesForShip.cs" />
     <Compile Include="Model\Resources\Meshes\SharkMesh.cs" />
     <Compile Include="Model\Resources\Sprites\SpriteRepository.cs" />
     <Compile Include="Model\Scenes\Crafter\CrafterScene.cs" />
@@ -156,11 +157,19 @@
     <Compile Include="Model\Scenes\InventoryScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.Structure.cs" />
     <Compile Include="Model\Scenes\ShipScene.cs" />
+    <Compile Include="Model\Scenes\TrainingScene.cs" />
     <Compile Include="Model\Scenes\WorldScene.cs" />
     <Compile Include="Model\Segment.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\IRigidBodyFactory.cs" />
+    <Compile Include="Model\Things\Crafter.cs" />
+    <Compile Include="Model\Things\Hatch.cs" />
+    <Compile Include="Model\Things\LifeBelt.cs" />
+    <Compile Include="Model\Things\Seat.cs" />
+    <Compile Include="Model\Things\Ship.cs" />
+    <Compile Include="Model\Things\Thing.cs" />
     <Compile Include="Model\UI\CircularIndicator.cs" />
     <Compile Include="Model\UI\DialogBox.cs" />
+    <Compile Include="Model\UI\OrientationArrow.cs" />
     <Compile Include="Model\UI\StatsIndicators.cs" />
     <Compile Include="Model\UI\LifeIndicator.cs" />
     <Compile Include="Model\UI\OxygenIndicator.cs" />
@@ -252,11 +261,14 @@
     <Content Include="Media\cajaMadera4.jpg" />
     <Content Include="Media\LogoTGC-TgcScene.xml" />
     <Content Include="res\subnautica-portada.png" />
+    <Content Include="Shaders\Crafter.fx" />
     <Content Include="Shaders\Fede.fx" />
+    <Content Include="Shaders\OrientationArrow.fx" />
     <Content Include="Shaders\Oxygen.fx" />
+    <Content Include="Shaders\ShipAmbient.fx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\Entities\Fish" />
+    <Folder Include="Model\Entities\Fish\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
