@@ -99,6 +99,8 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             };
+            
+            GameState.character.Weapon = new InfinityGauntlet();
         }
 
         private void TryToInteractWithSelectableThing()

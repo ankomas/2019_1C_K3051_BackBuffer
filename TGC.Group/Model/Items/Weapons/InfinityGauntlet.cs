@@ -31,6 +31,8 @@ namespace TGC.Group.Model.Items
         private IEnumerable<Element> elementsToAttack = new List<Element>();
         public static Effect death = TGCShaders.Instance.LoadEffect(Game.Default.ShadersDirectory + "NoMeQuieroIrSrStark.fx");
 
+        private bool inAttack = false;
+
 
         
         private static TgcMesh CreateMesh()
@@ -66,16 +68,31 @@ namespace TGC.Group.Model.Items
 
         public override void Attack(World world, TgcD3dInput input)
         {
-            if (elementsToAttack.Any())
+            if (inAttack)
             {
                 elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
                 foreach (var element in elementsToAttack)
                 {
-                    element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
-                }   
+
+                    element.Mesh?.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack * 2);
+                }
+                
+                
+                if (elapsedTimeSinceAttack > 3)
+                {
+                    foreach (var element in elementsToAttack)
+                    {
+                        world.Remove(element);
+                    }
+
+                    elementsToAttack = new List<Element>();
+                    inAttack = false;
+                    elapsedTimeSinceAttack = 0;
+                }
+
             }
             
-            if (GameInput._Attack.IsDown(input))
+            if (GameInput._Attack.IsPressed(input))
             {
                 elapsedTime += GameModel.GlobalElapsedTime;
                 
@@ -84,14 +101,21 @@ namespace TGC.Group.Model.Items
                     Mesh.Position.Y + (float)random.NextDouble() / 8, 
                     Mesh.Position.Z + (float)random.NextDouble() / 8
                     );
-
-                if (elapsedTime > 2)
-                {
-                   elementsToAttack = world.elementsToUpdate.Take(world.elementsToUpdate.Count /2);
+                
+                if (!inAttack)
+                { 
+                   inAttack = true;
+                   elementsToAttack = world.elementsToUpdate.Take(world.elementsToUpdate.Count /1);
                    foreach (var element in elementsToAttack)
                    {
-                       element.Mesh.Effect = death;
-                       // world.Remove(element);
+                       if (element.Mesh != null)
+                       {
+                           element.Mesh.Technique = "RenderScene";
+                           element.Mesh.Effect = death;
+                           element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
+                       
+                       }
+                       
                    }
                    elapsedTime = 0;
 
