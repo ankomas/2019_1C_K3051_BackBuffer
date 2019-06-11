@@ -19,6 +19,8 @@ using Screen = TGC.Group.Model.Utils.Screen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using BulletSharp;
 using TGC.Core.BoundingVolumes;
 using TGC.Group.Model.UI;
@@ -27,6 +29,8 @@ using Chunk = TGC.Group.Model.Chunks.Chunk;
 using Element = TGC.Group.Model.Elements.Element;
 using Vector3 = BulletSharp.Math.Vector3;
 using TGC.Core.SceneLoader;
+using TGC.Group.Form;
+using TGC.Group.Model.Resources;
 using TGC.Group.Model.Chunks;
 
 namespace TGC.Group.Model.Scenes
@@ -61,11 +65,12 @@ namespace TGC.Group.Model.Scenes
         TgcMesh skb;
         private TGCVector3 initialCameraPosition = new TGCVector3(300, -100, 200);
 
+        private bool loaded = false;
+        private bool loading = false;
+
         public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
-
-            this.World = new World(new TGCVector3(0, 0, 0));
 
             SetCamera(Input);
 
@@ -77,7 +82,7 @@ namespace TGC.Group.Model.Scenes
             InitMask();
             InitDialogBox();
             
-            World = new World(new TGCVector3(0, 0, 0));
+            this.World = new World(new TGCVector3(0, 0, 0));
             
             pressed[Key.P] = () => {
                 onPauseCallback();
@@ -95,6 +100,8 @@ namespace TGC.Group.Model.Scenes
             RegisterSubscene(inventoryScene);
 
             TurnExploreCommandsOn();
+            
+            //this.loadIndicator.Init();
         }
         public void ResetCamera()
         {
@@ -260,6 +267,23 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
+            if (!loaded)
+            {
+                if (this.loading)
+                {
+                    return;
+                }
+
+
+                preload();
+
+                //TODO loading scene
+                
+                this.loading = true;
+
+                return;
+            }
+
             if (this.GameState.character.IsDead())
             {
                 onGameOverCallback();
@@ -294,9 +318,48 @@ namespace TGC.Group.Model.Scenes
             orientationArrow.Update(Camera.Position, InitialChunk.ShipInitialPosition, Camera.LookAt);
         }
 
+        private void preload()
+        {
+            var preloadRadius = World.UpdateRadius;
+            
+            var preloadWorld = new Task(() =>
+            {
+                this.World.preLoad(TGCVector3.Empty, preloadRadius);
+                this.loaded = true;
+            });
+            
+            preloadWorld.Start();
+        }
+
+        //private readonly NumberIndicator loadIndicator = new NumberIndicator(100, (Screen.Width-100)/2, (Screen.Height-100)/2);
+
         public override void Render(TgcFrustum frustum)
         {
             ClearScreen();
+
+            if (!this.loaded)
+            {
+                var oldColor = this.backgroundColor;
+                this.backgroundColor = Color.Black;
+                ClearScreen();
+                //TODO loading screen
+                /* indicator
+                var max = this.World.generating;
+                var progress = this.World.chunks.Count * 100 / (max != 0 ? max : 1);
+                
+                loadIndicator.Render(progress , 100);
+                loadIndicator.RenderText(progress);
+                */    
+                
+                var color = Color.DeepSkyBlue;
+                
+                this.DrawText.drawText("Loading...", 600, 300, color);
+                this.DrawText.drawText("Chunnks: " + this.World.chunks.Count + "/" + this.World.generating, 600, 330, color);
+                this.DrawText.drawText("Floors: " + FloorRepository.Floors.Count + "/" + FloorRepository.generating, 600, 360, color);
+                this.backgroundColor = oldColor;
+                
+                return;
+            }
 
             if (Camera.Position.Y < 0)
             {
