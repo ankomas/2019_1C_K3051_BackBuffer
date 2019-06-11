@@ -10,7 +10,7 @@ float centerZ;
 
 float screen_dx = 1024;
 float screen_dy = 768;
-float time = 1.0;
+float elapsedTime = 1.0;
 float frecuencia = 10;
 
 
@@ -49,8 +49,8 @@ VS_OUTPUT vs_main(VS_INPUT Input)
 {
     VS_OUTPUT Output;
 
-    //if(frac(Input.Position.x * time)  > 0.3)
-      //  Input.Position.x -= abs(Input.Position.x - centerX) * time / 5 ;
+    //if(frac(Input.Position.x * elapsedTime)  > 0.3)
+      //  Input.Position.x -= abs(Input.Position.x - centerX) * elapsedTime / 5 ;
 
     Output.RealPos = Input.Position;
 
@@ -70,7 +70,7 @@ VS_OUTPUT vs_main(VS_INPUT Input)
 //Pixel Shader
 float4 ps_main(VS_OUTPUT Input) : COLOR0
 {
-    if((frac(Input.RealPos.x * time) + 0.3 )* time > 1 || (frac(Input.RealPos.y * time ) + 0.2 )* time > 1)
+    if((frac(Input.RealPos.x * elapsedTime) + 0.3 )* elapsedTime > 1 || (frac(Input.RealPos.y * elapsedTime ) + 0.2 )* elapsedTime > 1)
         discard;
     return tex2D(diffuseMap, Input.Texcoord);
 }

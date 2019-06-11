@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Core.Shaders;
 using TGC.Group.Model.Elements;
 using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
@@ -24,8 +26,11 @@ namespace TGC.Group.Model.Items
         
         private static Random random = new Random();
 
-        private float transcurredTime = 0f;
+        private float elapsedTime = 0f;
+        private float elapsedTimeSinceAttack = 0f;
         private IEnumerable<Element> elementsToAttack = new List<Element>();
+        public static Effect death = TGCShaders.Instance.LoadEffect(Game.Default.ShadersDirectory + "NoMeQuieroIrSrStark.fx");
+        private bool inAttack = false;
 
 
         private static TgcMesh CreateMesh()
@@ -61,11 +66,33 @@ namespace TGC.Group.Model.Items
 
         public override void Attack(World world, TgcD3dInput input)
         {
-            
+            if (inAttack)
+            {
+                elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
+                foreach (var element in elementsToAttack)
+                {
+                    
+                    element.Mesh?.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack * 2);
+                }
+                
+                
+                if (elapsedTimeSinceAttack > 3)
+                {
+                    foreach (var element in elementsToAttack)
+                    {
+                        world.Remove(element);
+                    }
+
+                    elementsToAttack = new List<Element>();
+                    inAttack = false;
+                    elapsedTimeSinceAttack = 0;
+                }
+
+            }
             
             if (GameInput._Attack.IsDown(input))
             {
-                transcurredTime += GameModel.GlobalElapsedTime;
+                elapsedTime += GameModel.GlobalElapsedTime;
                 
                 Mesh.Position = new TGCVector3(
                     Mesh.Position.X + (float)random.NextDouble() / 8,
@@ -73,19 +100,28 @@ namespace TGC.Group.Model.Items
                     Mesh.Position.Z + (float)random.NextDouble() / 8
                     );
 
-                if (transcurredTime > 2)
-                {
-                   elementsToAttack = world.elementsToUpdate.Take(world.elementsToUpdate.Count /2);
+                if (elapsedTime > 1 & !inAttack)
+                { 
+                   inAttack = true;
+                   elementsToAttack = world.elementsToUpdate.Take(world.elementsToUpdate.Count /1);
                    foreach (var element in elementsToAttack)
-                   { 
-                        world.Remove(element);
+                   {
+                       if (element.Mesh != null)
+                       {
+                           element.Mesh.Technique = "RenderScene";
+                           element.Mesh.Effect = death;
+                           element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
+                       
+                       }
+                       
                    }
-                   transcurredTime = 0;
+                   elapsedTime = 0;
+
                 }
             }
             else
             {
-                transcurredTime = 0;
+                elapsedTime = 0;
             }
         }
 
