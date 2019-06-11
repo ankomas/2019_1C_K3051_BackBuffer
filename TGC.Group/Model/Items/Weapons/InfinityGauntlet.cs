@@ -7,6 +7,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
+using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.Scenes;
 using TGC.Group.TGCUtils;
@@ -43,6 +44,7 @@ namespace TGC.Group.Model.Items
         public override string Name { get; } = "Infinity Gauntlet";
         public override string Description { get; } = "GG";
         public override CustomSprite Icon { get; } = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.InfinityGauntlet);
+        public override List<TgcMesh> Meshes => MeshesForShip.InfinityGauntlet;
         public override TGCVector2 DefaultScale { get; } = new TGCVector2(.1f, .1f);
 
         public override void Update(Camera camera)

@@ -74,8 +74,9 @@ namespace TGC.Group.Model
 
             ResetGame();
 
+            //SetNextScene(new ShipScene(GameplayScene.InitialGameState));
+            //SetNextScene(new TrainingScene());
             SetNextScene(startMenu);
-
         }
 
         public override void Update()

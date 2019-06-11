@@ -21,12 +21,13 @@ using TGC.Group.Model.Items;
 using TGC.Group.Model.Player;
 using TGC.Group.TGCUtils;
 using TGC.Group.Model.Scenes.Crafter;
+using Effect = Microsoft.DirectX.Direct3D.Effect;
+using TGC.Group.Model.Things;
 
 namespace TGC.Group.Model.Scenes
 {
     class ShipScene : GameplayScene
     {
-        TgcSkyBox walls;
         float rotation = 0;
         private readonly TgcText2D drawText = new TgcText2D();
         TGCVector3 viewDirectionStart = new TGCVector3(-1, 0.25f, 0);
@@ -36,11 +37,12 @@ namespace TGC.Group.Model.Scenes
         private InventoryScene inventoryScene;
         private CraftingScene craftingScene;
 
-        Microsoft.DirectX.Direct3D.Effect effect;
-        TgcScene crafterTgcScene;
-        TgcMesh crafterMesh, shipMesh, hatchMesh;
         List<Thing> selectableThings = new List<Thing>();
-        Thing crafter, hatch;
+        Things.Hatch hatch;
+        Things.Crafter crafter;
+        Things.Ship ship;
+        Things.Seat seat;
+        Things.LifeBelt lifeBelt;
         Drawer2D drawer2D = new Drawer2D();
 
         TgcText2D DrawText = new TgcText2D();
@@ -48,59 +50,44 @@ namespace TGC.Group.Model.Scenes
 
         TGCVector3 targertPosition;
         TGCVector3 targetLookAt;
-        
         public ShipScene(GameState gameState) : base(gameState)
         {
             this.backgroundColor = Color.DarkOrange;
 
-            walls = new TgcSkyBox();
-            walls.SkyEpsilon = 0;
-            walls.Center = new TGCVector3(0, 500, 0);
-            walls.Size = new TGCVector3(500, 500, 1000);
+            ship = new Ship();
+            ship.Scale = new TGCVector3(8, 12, 16);
+            ship.Position = new TGCVector3(200, 700, -300);
 
-            string baseDir = "../../../res/";
-            walls.setFaceTexture(TgcSkyBox.SkyFaces.Back,  baseDir + "wall-1.jpg");
-            walls.setFaceTexture(TgcSkyBox.SkyFaces.Down,  baseDir + "wall-1.jpg");
-            walls.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "wall-1.jpg");
-            walls.setFaceTexture(TgcSkyBox.SkyFaces.Left,  baseDir + "wall-1.jpg");
-            walls.setFaceTexture(TgcSkyBox.SkyFaces.Right, baseDir + "wall-1.jpg");
-            walls.setFaceTexture(TgcSkyBox.SkyFaces.Up,    baseDir + "ceiling.jpg");
+            //var shipRigidBody = new BoxFactory().Create(shipMesh.BoundingBox);
+            //AquaticPhysics.Instance.Add(shipRigidBody);
+            lifeBelt = new Things.LifeBelt();
+            lifeBelt.Position = new TGCVector3(285, 1000, 250);
+            lifeBelt.RotateY(-(float)Math.PI * 0.1f);
 
-            string errors;
-            effect = Microsoft.DirectX.Direct3D.Effect.FromFile(D3DDevice.Instance.Device,
-                Game.Default.ShadersDirectory + "Crafter.fx",
-                null, null,
-                ShaderFlags.None, null, out errors
-                );
+            seat = new Things.Seat();
+            seat.Position = new TGCVector3(550, 710, 1440);
+            seat.RotateY((float)Math.PI / 2);
+            seat.Scale = new TGCVector3(2f, 2f, 2f);
 
-            crafterMesh = new TgcSceneLoader()
-                .loadSceneFromFile(Game.Default.MediaDirectory + "crafter-v8-TgcScene.xml").Meshes[0];
+            crafter = new Things.Crafter(OpenCrafter);
+            crafter.relativeScales = new List<float>(new float[3] {1, .6f, .38f});
+            crafter.relativePositions = new List<TGCVector3>(new TGCVector3[3] {
+                new TGCVector3(0, 0, 0),
+                new TGCVector3(42, 49, 30),
+                new TGCVector3(43, 177, 31)
+            });
+            crafter.Scale = new TGCVector3(.5f, .5f, .5f);
+            crafter.Position = new TGCVector3(560, 950, -250);
 
-            shipMesh = new TgcSceneLoader()
-                .loadSceneFromFile(Game.Default.MediaDirectory + "new-ship-2-TgcScene.xml").Meshes[0];
-            
-            hatchMesh = new TgcSceneLoader()
-                .loadSceneFromFile(Game.Default.MediaDirectory + "hatch-TgcScene.xml").Meshes[0];
+            hatch = new Things.Hatch(() => onGoToWaterCallback(this.GameState));
+            hatch.Position = new TGCVector3(600, 720, 450);
 
-            crafterMesh.Scale = new TGCVector3(.5f, .5f, .5f);
-            crafterMesh.Position = new TGCVector3(600, 950, -300);
-
-            shipMesh.Scale = new TGCVector3(16, 12, 16);
-            shipMesh.Position = new TGCVector3(-250, 700, -300);
-
-            hatchMesh.Position = new TGCVector3(600, 700, 450);
-
-            GameState.character.Weapon = new InfinityGauntlet();
-            
-            crafter = new Thing(crafterMesh, "Crafter", "Start crafting", OpenCrafter);
-            hatch = new Thing(hatchMesh, "Hatch", "Exit ship", () => onGoToWaterCallback(this.GameState));
-            selectableThings.Add(crafter);
-            selectableThings.Add(hatch);
-
-            walls.Init();
             SetCamera();
             AquaticPhysics.Instance.Add(Camera.RigidBody);
             
+            selectableThings.Add(crafter);
+            selectableThings.Add(hatch);
+
             inventoryScene = new InventoryScene();
 
             RegisterSubscene(inventoryScene);
@@ -112,7 +99,6 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             };
-            pressed[GameInput.GoBack] = CloseCrafter;
         }
 
         private void TryToInteractWithSelectableThing()
@@ -145,6 +131,7 @@ namespace TGC.Group.Model.Scenes
         private void SetCamera()
         {
             this.Camera = CameraFactory.Create(new TGCVector3(675, 1000, 900), Input);
+
         }
 
         private void OpenInventory()
@@ -156,13 +143,14 @@ namespace TGC.Group.Model.Scenes
         }
         private void CloseInventory()
         {
+            cursor = aim;
             TurnExploreCommandsOn();
             Camera.ConsiderInput();
             inventoryScene.Close();
         }
         private void TellIfCameraIsLookingAtThing(Thing thing)
         {
-            TGCVector3 dist = thing.Position - Camera.Position;
+            TGCVector3 dist = thing.Center - Camera.Position;
 
             bool isClose = Math.Abs(dist.Length()) - D3DDevice.Instance.ZNearPlaneDistance < 500;
 
@@ -190,19 +178,20 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
-            shipMesh.Render();
-            
             GameState.character.Render();
-            
+            ship.TellCameraPosition(new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+            ship.Render();
+
             foreach (var thing in selectableThings)
             {
+                thing.TellCameraPosition(new float[4]{ Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1});
                 thing.Render();
                 if (thing.Looked)
                 {
                     dialogBox.Clear();
-                    if (cursor != null) 
+                    if (cursor != null)
                     {
-                        thing.mesh.BoundingBox.Render();
+                        thing.BoundingBox.Render();
                         dialogBox.AddLineSmall(thing.name);
                         dialogBox.AddLineSmall("------------");
                         dialogBox.AddLineSmall(thing.actionDescription);
@@ -211,6 +200,15 @@ namespace TGC.Group.Model.Scenes
                     }
                 }
             }
+
+            lifeBelt.Position = new TGCVector3(285, 1000, 250);
+            lifeBelt.Render();
+            lifeBelt.Position = new TGCVector3(330, 1000, 100);
+            lifeBelt.Render();
+            lifeBelt.Position = new TGCVector3(375, 1000, -50);
+            lifeBelt.Render();
+
+            seat.Render();
 
             if(cursor != null)
             {
@@ -225,9 +223,13 @@ namespace TGC.Group.Model.Scenes
             craftingScene.Render();
 
             statsIndicators.Render(this.GameState.character);
-            
-            this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
-                300, 300, Color.NavajoWhite);
+            //this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
+            //    300, 300, Color.NavajoWhite);
+
+            //this.drawText.drawText("Camera:", 800, 100, Color.Red);
+            //this.drawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
+            //this.drawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
+            //this.drawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {
@@ -248,39 +250,15 @@ namespace TGC.Group.Model.Scenes
         {
             cursor = null;
             TurnExploreCommandsOff();
-            craftingScene.Open(this.GameState.character, Camera, this.crafter.Position);
+            craftingScene.Open(this.GameState.character, Camera, this.crafter);
+            pressed[GameInput.GoBack] = CloseCrafter;
         }
         public void CloseCrafter()
         {
             cursor = hand;
+            pressed[GameInput.GoBack] = () => {};
             TurnExploreCommandsOn();
             craftingScene.Close();
-        }
-    }
-
-    class Thing
-    {
-        public string debug;
-        public TgcMesh mesh;
-        public bool Looked = false;
-        public string name, actionDescription;
-        private ShipScene.Callback action = () => {};
-        public TGCVector3 Position => mesh.BoundingBox.PMin + TGCVector3.Multiply(mesh.BoundingBox.PMax - mesh.BoundingBox.PMin, 0.5f);
-
-        public Thing(TgcMesh mesh, string name, string actionDescription, ShipScene.Callback action)
-        {
-            this.mesh = mesh;
-            this.name = name;
-            this.actionDescription = actionDescription;
-            this.action = action;
-        }
-        public void Render()
-        {
-            mesh.Render();
-        }
-        public void ExecuteAction()
-        {
-            action();
         }
     }
 }

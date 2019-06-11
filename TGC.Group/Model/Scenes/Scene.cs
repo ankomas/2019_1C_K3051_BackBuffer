@@ -17,6 +17,7 @@ namespace TGC.Group.Model.Scenes
         protected CommandList pressed = new CommandList();
         protected CommandList down = new CommandList();
         private List<Scene> subscenes = new List<Scene>();
+        private List<CommandList.Command> toExecute = new List<CommandList.Command>();
 
         private static Scene emptySceneSingleInstance;
         public static Scene Empty => emptySceneSingleInstance ?? (emptySceneSingleInstance = new EmptyScene());
@@ -48,30 +49,35 @@ namespace TGC.Group.Model.Scenes
             {
                 if (Input.keyPressed(key))
                 {
-                    pressed[key]();
+                    toExecute.Add(pressed[key]);
                 }
             }
             foreach (Key key in down.keys)
             {
                 if (Input.keyDown(key))
                 {
-                    down[key]();
+                    toExecute.Add(down[key]);
                 }
             }
             foreach (MouseButtons button in pressed.mouseButtons)
             {
                 if (Input.buttonPressed(button))
                 {
-                    pressed[button]();
+                    toExecute.Add(pressed[button]);
                 }
             }
             foreach (MouseButtons button in down.mouseButtons)
             {
                 if (Input.buttonDown(button))
                 {
-                    down[button]();
+                    toExecute.Add(down[button]);
                 }
             }
+            foreach(CommandList.Command command in toExecute)
+            {
+                command();
+            }
+            toExecute.Clear();
         }
         public virtual void ReactToInput()
         {

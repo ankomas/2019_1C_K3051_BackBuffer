@@ -38,7 +38,8 @@ namespace TGC.Group.Model.Player
         public List<Ingredient> AsIngredients()
         {
             return this.Items
-                .ConvertAll(item => new Ingredient(item, this.Items.FindAll(item2 => item.Name == item2.Name).Count))
+                .ConvertAll(item => new Ingredient(item, this.Items.FindAll(item2 => 
+                item.Name == item2.Name).Count))
                 .Distinct()
                 .ToList();
         }
