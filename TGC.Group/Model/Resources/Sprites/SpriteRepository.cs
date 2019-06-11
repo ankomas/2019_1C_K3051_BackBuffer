@@ -25,7 +25,8 @@ namespace TGC.Group.Model.Resources.Sprites
         public static CustomBitmap OxygenTank = new CustomBitmap("../../../res/oxygen-tank.png", D3DDevice.Instance.Device);
         public static CustomBitmap GreenPotion = new CustomBitmap("../../../res/greenPotion.png", D3DDevice.Instance.Device);
         public static CustomBitmap Gold = new CustomBitmap("../../../res/gold.png", D3DDevice.Instance.Device);
-
+        public static CustomBitmap InfinityGauntlet = new CustomBitmap("../../../res/Infinity_Gauntlet.png", D3DDevice.Instance.Device);
+        
         public static CustomSprite CreateSpriteFromBitmap(CustomBitmap bitmap)
         {
             CustomSprite ret = new CustomSprite();

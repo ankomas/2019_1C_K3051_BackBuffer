@@ -7,7 +7,9 @@ using TGC.Core.Camara;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.Text;
 using TGC.Group.Model.Input;
+using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model
 {
@@ -16,10 +18,10 @@ namespace TGC.Group.Model
         public RigidBody RigidBody { get; }
 
         private readonly Point mouseCenter;
-        private TGCMatrix cameraRotation;
+        public TGCMatrix cameraRotation;
         private TGCVector3 initialDirectionView;
-        private float leftrightRot;
-        private float updownRot;
+        public float leftrightRot;
+        public float updownRot;
 
         delegate void CameraUpdateLogic(float elapsedTime);
         CameraUpdateLogic currentUpdateLogic;
@@ -30,7 +32,7 @@ namespace TGC.Group.Model
 
         private bool ConsideringInput = true;
         private bool manual = false;
-
+        
         public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
         {
             Input = input;
@@ -52,7 +54,7 @@ namespace TGC.Group.Model
             return new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
         }
 
-        public override void UpdateCamera(float elapsedTime)
+        public void Update(float elapsedTime)
         {
             currentUpdateLogic(elapsedTime);
         }
@@ -73,7 +75,8 @@ namespace TGC.Group.Model
             }
                 
             return TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
-        }
+        }       
+        
 
         private TGCVector3 CalculateInputTranslation()
         {
@@ -86,6 +89,7 @@ namespace TGC.Group.Model
         }
         void MoveNormally(float elapsedTime)
         {
+            
             if (manual) return;
 
             cameraRotation = CalculateCameraRotation();

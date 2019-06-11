@@ -103,7 +103,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
-    <Compile Include="Model\CameraFPSGravity.cs" />
+    <Compile Include="Model\Camera\Camera.cs" />
+    <Compile Include="Model\Camera\CameraFactory.cs" />
+    <Compile Include="Model\Camera\CameraFPSGravity.cs" />
     <Compile Include="Model\Chunks\AquaticChunk.cs" />
     <Compile Include="Model\Chunks\FloorChunk.cs" />
     <Compile Include="Model\Chunks\Chunk.cs" />
@@ -136,6 +138,8 @@
     <Compile Include="Model\Items\Recipes\Ingredient.cs" />
     <Compile Include="Model\Items\Recipes\Recipe.cs" />
     <Compile Include="Model\Items\Type\ItemType.cs" />
+    <Compile Include="Model\Items\Weapons\InfinityGauntlet.cs" />
+    <Compile Include="Model\Items\Weapons\IWeapon.cs" />
     <Compile Include="Model\Movements\EscapeFromPosition.cs" />
     <Compile Include="Model\Movements\Movement.cs" />
     <Compile Include="Model\Movements\RandomMovement.cs" />
@@ -185,7 +189,6 @@
     <Compile Include="TGCUtils\Drawer2D.cs" />
     <Compile Include="Model\Elements\Element.cs" />
     <Compile Include="Model\Entity.cs" />
-    <Compile Include="Model\Camera.cs" />
     <Compile Include="Model\Scenes\Scene.cs" />
     <Compile Include="Model\Scenes\StartMenu.cs" />
     <Compile Include="Model\World.cs" />

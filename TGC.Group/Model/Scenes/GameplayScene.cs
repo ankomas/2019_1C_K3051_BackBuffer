@@ -49,8 +49,12 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
-            throw new NotImplementedException();
+            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
+            Camera.Update(elapsedTime);
+            UpdateGameplay(elapsedTime);
         }
+
+        public abstract void UpdateGameplay(float elapsedTime);
 
         public GameplayScene WithGameState(GameState gameState)
         {
