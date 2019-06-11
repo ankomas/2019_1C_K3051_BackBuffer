@@ -21,6 +21,7 @@ namespace TGC.Group.Model
     public class GameModel : TgcExample
     {
         public static float GlobalElapsedTime;
+        public static float GlobalTime;
         private WorldScene gameScene;
         private StartMenu startMenu;
         private PauseMenu pauseMenu;
@@ -63,7 +64,7 @@ namespace TGC.Group.Model
             Scene.Input = Input;
 
             startMenu = new StartMenu()
-                    .onGameStart(() => SetNextScene(shipScene))
+                    .onGameStart(() => SetNextScene(this.shipScene))
                     .onGameExit(StopGame);
 
             pauseMenu = new PauseMenu()
@@ -82,6 +83,7 @@ namespace TGC.Group.Model
         public override void Update()
         {
             GlobalElapsedTime = ElapsedTime;
+            GlobalTime += ElapsedTime;
             
             if (hasToChangeScene()) CurrentScene = nextScene;
 

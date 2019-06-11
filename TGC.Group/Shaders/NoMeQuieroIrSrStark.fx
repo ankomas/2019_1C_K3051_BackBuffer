@@ -4,14 +4,8 @@ float4x4 matWorld; //Matriz de transformacion World
 float4x4 matWorldView; //Matriz World * View
 float4x4 matWorldViewProj; //Matriz World * View * Projection
 float4x4 matInverseTransposeWorld; //Matriz Transpose(Invert(World))
-float centerX;
-float centerY;
-float centerZ;
+float elapsedTime = 1.0;
 
-float screen_dx = 1024;
-float screen_dy = 768;
-float time = 1.0;
-float frecuencia = 10;
 
 
 //Textura para DiffuseMap
@@ -49,7 +43,7 @@ VS_OUTPUT vs_main(VS_INPUT Input)
 {
     VS_OUTPUT Output;
 
-    //if(frac(Input.Position.x * time)  > 0.3)
+    //if(frac(Input.Position.x * elapsedTime)  > 0.3)
       //  Input.Position.x -= abs(Input.Position.x - centerX) * time / 5 ;
 
     Output.RealPos = Input.Position;
@@ -70,7 +64,7 @@ VS_OUTPUT vs_main(VS_INPUT Input)
 //Pixel Shader
 float4 ps_main(VS_OUTPUT Input) : COLOR0
 {
-    if((frac(Input.RealPos.x * time) + 0.3 )* time > 1 || (frac(Input.RealPos.y * time ) + 0.2 )* time > 1)
+    if((frac(Input.RealPos.x * elapsedTime) + 0.3 )* time > 1 || (frac(Input.RealPos.y * elapsedTime ) + 0.2 )* elapsedTime > 1)
         discard;
     return tex2D(diffuseMap, Input.Texcoord);
 }

@@ -248,9 +248,11 @@ namespace TGC.Group.Model.Scenes
             {
                 onGameOverCallback();
             }
+
+            Cheats.ApplyCheats(this.GameState.character);
             
             GameState.character.Update(Camera);
-
+            
             World.Update(Camera, GameState.character);
             GameState.character.Attack(World, Input);
             
