@@ -270,6 +270,7 @@
     <Content Include="Shaders\FishMovement.fx" />
     <Content Include="Shaders\Crafter.fx" />
     <Content Include="Shaders\Fede.fx" />
+    <Content Include="Shaders\NoMeQuieroIrSrStark.fx" />
     <Content Include="Shaders\OrientationArrow.fx" />
     <Content Include="Shaders\Oxygen.fx" />
     <Content Include="Shaders\ShipAmbient.fx" />

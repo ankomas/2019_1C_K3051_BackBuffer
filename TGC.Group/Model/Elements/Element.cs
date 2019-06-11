@@ -16,7 +16,7 @@ namespace TGC.Group.Model.Elements
     public abstract class Element: Collisionable
     {
 
-        protected TgcMesh Mesh { get; }
+        public TgcMesh Mesh { get; }
         public RigidBody PhysicsBody { get; set; }
         public bool Selectable { get; set; }
 

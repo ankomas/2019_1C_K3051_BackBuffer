@@ -20,8 +20,10 @@ namespace TGC.Group.Model.Elements
         
         public Fish(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
         {
-            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 1f );
-            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.3f, 1f);
+            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 30f );
+            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.3f, 10f);
+            Mesh.Technique = "RenderScene";
+            Mesh.Effect = movement;
         }
 
         public override void Update(Camera camera)
@@ -34,9 +36,7 @@ namespace TGC.Group.Model.Elements
         }
 
         public override void Render()
-        {
-            this.Mesh.Technique = "RenderScene";
-            this.Mesh.Effect = movement;
+        { 
             this.Mesh.Effect.SetValue("time", GameModel.GlobalTime);
             base.Render();
         }
