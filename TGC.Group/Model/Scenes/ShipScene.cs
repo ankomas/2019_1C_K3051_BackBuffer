@@ -90,6 +90,8 @@ namespace TGC.Group.Model.Scenes
 
             hatchMesh.Position = new TGCVector3(600, 700, 450);
 
+            GameState.character.Weapon = new InfinityGauntlet();
+            
             crafter = new Thing(crafterMesh, "Crafter", "Start crafting", OpenCrafter);
             hatch = new Thing(hatchMesh, "Hatch", "Exit ship", () => onGoToWaterCallback(this.GameState));
             selectableThings.Add(crafter);

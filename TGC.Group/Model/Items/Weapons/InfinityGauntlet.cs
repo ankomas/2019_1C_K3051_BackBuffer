@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
@@ -17,6 +19,10 @@ namespace TGC.Group.Model.Items
         {
             new Ingredient(new Gold(), 1)
         });
+        
+        private static Random random = new Random();
+
+        private float transcurredTime = 0f;
 
 
         private static TgcMesh CreateMesh()
@@ -31,7 +37,7 @@ namespace TGC.Group.Model.Items
             icon.Scaling = DefaultScale;
             Icon = icon;
             Mesh.Scale = new TGCVector3(.035f,.035f,.035f);
-            
+
         }
 
         public override string Name { get; } = "Infinity Gauntlet";
@@ -51,12 +57,30 @@ namespace TGC.Group.Model.Items
 
         public override void Attack(World world, TgcD3dInput input)
         {
-            if (GameInput._Attack.IsPressed(input))
+            if (GameInput._Attack.IsDown(input))
             {
-                foreach (var element in world.elementsToUpdate.Take(world.elementsToUpdate.Count / 2 ))
-                { 
-                    world.Remove(element);
-                }   
+                transcurredTime += GameModel.GlobalElapsedTime;
+                
+                Mesh.Position = new TGCVector3(
+                    Mesh.Position.X + (float)random.NextDouble() / 8,
+                    Mesh.Position.Y + (float)random.NextDouble() / 8, 
+                    Mesh.Position.Z + (float)random.NextDouble() / 8
+                    );
+
+                if (transcurredTime > 2)
+                {
+                 
+                    foreach (var element in world.elementsToUpdate.Take(world.elementsToUpdate.Count / 2 ))
+                    { 
+                        world.Remove(element);
+                    }
+
+                    transcurredTime = 0;
+                }
+            }
+            else
+            {
+                transcurredTime = 0;
             }
         }
 

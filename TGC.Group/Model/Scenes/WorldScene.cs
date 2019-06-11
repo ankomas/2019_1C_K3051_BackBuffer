@@ -67,6 +67,7 @@ namespace TGC.Group.Model.Scenes
             InitMask();
             InitDialogBox();
             
+
             World = new World(new TGCVector3(0, 0, 0));
             
             pressed[Key.P] = () => {

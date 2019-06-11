@@ -80,12 +80,13 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
+            GlobalElapsedTime = ElapsedTime;
+            
             if (hasToChangeScene()) CurrentScene = nextScene;
 
             PreUpdate();
 
-            GlobalElapsedTime = ElapsedTime;
-            
+
             CurrentScene.ReactToInput();
 
             CurrentScene.Update(this.ElapsedTime);
