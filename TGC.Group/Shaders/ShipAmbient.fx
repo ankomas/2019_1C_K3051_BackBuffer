@@ -39,6 +39,7 @@ bool eq(float a, float b)
 extern uniform float4 lightPosition;
 extern uniform float normalDirection = 1;
 extern uniform float4 cameraPosition;
+extern uniform float isBelt = 0;
 
 VertexOutput main_vertex(VertexInput input)
 {
@@ -59,8 +60,12 @@ float4 main_pixel(VertexOutput input) : COLOR
 
 	float3 normal = normalize(input.Normal) * normalDirection;
 	float4 posToLight = normalize(lightPosition - pos);
-    float diffuseK = abs(dot(normal, posToLight.xyz));
-    float3 diffuseColor = float3(diffuseK, diffuseK, diffuseK);
+    float dotP = dot(normal, posToLight.xyz);
+    float diffuseK = saturate(dotP);
+    float absDiffuseK = abs(dotP);
+    float2 chooseK = { diffuseK, absDiffuseK };
+    float k = chooseK[isBelt];
+    float3 diffuseColor = float3(k, k, k);
 	
 	float4 lightToPos = posToLight * (-1);
 	float4 posToCamera = normalize(cameraPosition - pos);
