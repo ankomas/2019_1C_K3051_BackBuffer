@@ -20,6 +20,10 @@ namespace TGC.Group.Model.Resources.Meshes
         public static List<TgcMesh> LifeBeltMesh  => new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "life-belt-TgcScene.xml").Meshes;
         public static List<TgcMesh> O2Mesh => new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "o2Tank-TgcScene.xml").Meshes;
         public static List<TgcMesh> PotionMesh => new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "potion-TgcScene.xml").Meshes;
+
+        public static List<TgcMesh> InfinityGauntlet => new TgcSceneLoader()
+            .loadSceneFromFile(Game.Default.MediaDirectory + "infinity-gauntlet-TgcScene.xml").Meshes;
+
     }
 }
     
