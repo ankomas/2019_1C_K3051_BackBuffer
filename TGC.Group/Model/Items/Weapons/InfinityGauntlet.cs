@@ -5,6 +5,7 @@ using System.Linq;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Elements;
 using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Resources.Meshes;
@@ -24,6 +25,7 @@ namespace TGC.Group.Model.Items
         private static Random random = new Random();
 
         private float transcurredTime = 0f;
+        private IEnumerable<Element> elementsToAttack = new List<Element>();
 
 
         private static TgcMesh CreateMesh()
@@ -59,6 +61,8 @@ namespace TGC.Group.Model.Items
 
         public override void Attack(World world, TgcD3dInput input)
         {
+            
+            
             if (GameInput._Attack.IsDown(input))
             {
                 transcurredTime += GameModel.GlobalElapsedTime;
@@ -71,13 +75,12 @@ namespace TGC.Group.Model.Items
 
                 if (transcurredTime > 2)
                 {
-                 
-                    foreach (var element in world.elementsToUpdate.Take(world.elementsToUpdate.Count / 2 ))
-                    { 
+                   elementsToAttack = world.elementsToUpdate.Take(world.elementsToUpdate.Count /2);
+                   foreach (var element in elementsToAttack)
+                   { 
                         world.Remove(element);
-                    }
-
-                    transcurredTime = 0;
+                   }
+                   transcurredTime = 0;
                 }
             }
             else
