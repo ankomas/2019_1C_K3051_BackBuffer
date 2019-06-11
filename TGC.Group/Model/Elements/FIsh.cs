@@ -25,7 +25,6 @@ namespace TGC.Group.Model.Elements
         {
             EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 60f );
             RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.3f, 20f);
-            model.Effect = movement;
         }
 
         public override void Update(Camera camera)
@@ -39,7 +38,6 @@ namespace TGC.Group.Model.Elements
 
         public override void Render()
         {
-            this.Mesh.Effect.SetValue("time", GameModel.GlobalElapsedTime);
             this.Mesh.Render();
         }
 
