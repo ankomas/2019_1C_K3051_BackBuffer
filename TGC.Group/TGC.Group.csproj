@@ -121,6 +121,7 @@
     <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\CapsuleFactory.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\BoxFactory.cs" />
+    <Compile Include="Model\Elements\RigidBodyFactories\TriangleShapeFactory.cs" />
     <Compile Include="Model\Elements\Ship.cs" />
     <Compile Include="Model\Entities\Shark\Shark.cs" />
     <Compile Include="Model\Entities\Shark\SharkFactory.cs" />
