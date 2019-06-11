@@ -144,6 +144,7 @@
     <Compile Include="Model\Player\Equipment.cs" />
     <Compile Include="Model\Player\Inventory.cs" />
     <Compile Include="Model\Player\Stats.cs" />
+    <Compile Include="Model\Resources\FloorRepository.cs" />
     <Compile Include="Model\Resources\Meshes\CoralMeshes.cs" />
     <Compile Include="Model\Resources\Meshes\FishMeshes.cs" />
     <Compile Include="Model\Resources\Meshes\MeshesForShip.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="Model\Things\Thing.cs" />
     <Compile Include="Model\UI\CircularIndicator.cs" />
     <Compile Include="Model\UI\DialogBox.cs" />
+    <Compile Include="Model\UI\NumberIndicator.cs" />
     <Compile Include="Model\UI\OrientationArrow.cs" />
     <Compile Include="Model\UI\StatsIndicators.cs" />
     <Compile Include="Model\UI\LifeIndicator.cs" />
@@ -261,6 +263,7 @@
     <Content Include="Media\cajaMadera4.jpg" />
     <Content Include="Media\LogoTGC-TgcScene.xml" />
     <Content Include="res\subnautica-portada.png" />
+    <Content Include="Shaders\FishMovement.fx" />
     <Content Include="Shaders\Crafter.fx" />
     <Content Include="Shaders\Fede.fx" />
     <Content Include="Shaders\OrientationArrow.fx" />
@@ -268,7 +271,8 @@
     <Content Include="Shaders\ShipAmbient.fx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\Entities\Fish\" />
+    <Folder Include="Model\Elements\Effects" />
+    <Folder Include="Model\Entities\Fish" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

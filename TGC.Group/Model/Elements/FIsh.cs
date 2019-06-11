@@ -1,7 +1,11 @@
 ﻿using System.Drawing;
 using BulletSharp;
+using Microsoft.DirectX.Direct3D;
+using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Core.Shaders;
+using TGC.Group.Form;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Movements;
 
@@ -14,6 +18,9 @@ namespace TGC.Group.Model.Elements
         private bool runningAway;
         private RandomMovement RandomMov { get; set; }
         private EscapeFromPosition EscapeMov { get; set; }
+        
+        public static Effect movement = TGCShaders.Instance.LoadEffect(Game.Default.ShadersDirectory + "FishMovement.fx");
+        
         public Fish(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
         {
             EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 60f );
@@ -27,7 +34,11 @@ namespace TGC.Group.Model.Elements
             Mesh.Position = new TGCVector3(PhysicsBody.CenterOfMassPosition);
             Mesh.Rotation += movementToApply.AnglesToRotate;
             base.Update(camera);
+        }
 
+        public override void Render()
+        {
+            this.Mesh.Render();
         }
 
         private MovementToApply Move(Camera camera)
