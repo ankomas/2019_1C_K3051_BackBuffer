@@ -44,7 +44,6 @@ namespace TGC.Group.Model.Scenes
         private List<bool> hoveredItems = new List<bool>();
         private Things.Crafter physicalCrafter;
 
-        bool CTM = false;
         List<TgcMesh> crafted3DModel;
 
         public CraftingScene()
@@ -90,7 +89,7 @@ namespace TGC.Group.Model.Scenes
                 (bubble.Bitmap.Height * bubble.Scaling.Y - icon.Bitmap.Height * icon.Scaling.Y) / 2
                 );
         }
-        public void Render()
+        public new void Render()
         {
             renderer();
         }
@@ -194,11 +193,6 @@ namespace TGC.Group.Model.Scenes
                             ? Color.White
                             : Color.Black;
 
-                //item.Icon.Color =
-                //        this.Character.CanCraft(item)
-                //            ? Color.White
-                //            : Color.FromArgb(255, 40, 40, 40);
-
                 drawer.BeginDrawSprite();
                 drawer.DrawSprite(bubble);
                 drawer.DrawSprite(item.Icon);
@@ -230,8 +224,8 @@ namespace TGC.Group.Model.Scenes
             {
                 updater = MainUpdate;
                 renderer = MainRender;
-                Console.WriteLine("Call 1");
                 CraftCommandsOn();
+                if (crafted != null) TakeCraftedItemCommandsOn();
             }
         }
         private void CraftCommandsOn()
@@ -305,7 +299,6 @@ namespace TGC.Group.Model.Scenes
 
         public void Open(Character character, CameraFPSGravity shipCamera, Things.Crafter crafter)
         {
-            Console.WriteLine("Open");
             this.physicalCrafter = crafter;
             this.Character = character;
             this.ShipCamera = shipCamera;
