@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BulletSharp;
 using TGC.Core.Camara;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
@@ -16,6 +17,7 @@ using TGC.Group.Model.Elements.RigidBodyFactories;
 using TGC.Group.Model.Input;
 using TGC.Core.SceneLoader;
 using TGC.Core.Direct3D;
+using TGC.Group.Model.Items;
 using TGC.Group.Model.Player;
 using TGC.Group.TGCUtils;
 using TGC.Group.Model.Scenes.Crafter;
@@ -46,6 +48,8 @@ namespace TGC.Group.Model.Scenes
         TgcText2D DrawText = new TgcText2D();
         string debug;
 
+        TGCVector3 targertPosition;
+        TGCVector3 targetLookAt;
         public ShipScene(GameState gameState) : base(gameState)
         {
             this.backgroundColor = Color.DarkOrange;
@@ -56,7 +60,6 @@ namespace TGC.Group.Model.Scenes
 
             //var shipRigidBody = new BoxFactory().Create(shipMesh.BoundingBox);
             //AquaticPhysics.Instance.Add(shipRigidBody);
-
             lifeBelt = new Things.LifeBelt();
             lifeBelt.Position = new TGCVector3(285, 1000, 250);
             lifeBelt.RotateY(-(float)Math.PI * 0.1f);
@@ -79,10 +82,12 @@ namespace TGC.Group.Model.Scenes
             hatch = new Things.Hatch(() => onGoToWaterCallback(this.GameState));
             hatch.Position = new TGCVector3(600, 720, 450);
 
+            SetCamera();
+            AquaticPhysics.Instance.Add(Camera.RigidBody);
+            
             selectableThings.Add(crafter);
             selectableThings.Add(hatch);
 
-            SetCamera(Input);
             inventoryScene = new InventoryScene();
 
             RegisterSubscene(inventoryScene);
@@ -95,6 +100,7 @@ namespace TGC.Group.Model.Scenes
                 onPauseCallback();
             };
         }
+
         private void TryToInteractWithSelectableThing()
         {
             foreach (Thing thing in selectableThings)
@@ -117,32 +123,29 @@ namespace TGC.Group.Model.Scenes
         }
         public void ResetCamera()
         {
-            SetCamera(Input);
+            AquaticPhysics.Instance.Remove(Camera.RigidBody);
+            SetCamera();
+            AquaticPhysics.Instance.Add(Camera.RigidBody);
         }
-        //private void SetCamera(TgcD3dInput input)
-        //{
-        //    var position = new TGCVector3(675, 1000, 900);
-        //    var rigidBody = new CapsuleFactory().Create(position, 100, 60);
-        //    AquaticPhysics.Instance.Add(rigidBody);
-        //    this.Camera = new Camera(position, input, rigidBody);
-        //}
-        private void SetCamera(TgcD3dInput input)
+
+        private void SetCamera()
         {
-            var position = new TGCVector3(675, 1050, 900);
-            this.Camera = new CameraFPSGravity(position, input);
+            this.Camera = CameraFactory.Create(new TGCVector3(675, 1000, 900), Input);
+
         }
+
         private void OpenInventory()
         {
             cursor = null;
             TurnExploreCommandsOff();
-            ((CameraFPSGravity)Camera).IgnoreInput();
+            Camera.IgnoreInput();
             inventoryScene.Open(this.GameState.character);
         }
         private void CloseInventory()
         {
             cursor = aim;
             TurnExploreCommandsOn();
-            ((CameraFPSGravity)Camera).ConsiderInput();
+            Camera.ConsiderInput();
             inventoryScene.Close();
         }
         private void TellIfCameraIsLookingAtThing(Thing thing)
@@ -159,19 +162,23 @@ namespace TGC.Group.Model.Scenes
 
             thing.Looked = isClose && dot > 0.985;
         }
-        public override void Update(float elapsedTime)
+
+        public override void UpdateGameplay(float elapsedTime)
         {
+            
             this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
-            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
-
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
+            
+            GameState.character.Update(Camera);
         }
+
         public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
+            GameState.character.Render();
             ship.TellCameraPosition(new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
             ship.Render();
 
@@ -243,7 +250,7 @@ namespace TGC.Group.Model.Scenes
         {
             cursor = null;
             TurnExploreCommandsOff();
-            craftingScene.Open(this.GameState.character, ((CameraFPSGravity)Camera), this.crafter);
+            craftingScene.Open(this.GameState.character, Camera, this.crafter);
             pressed[GameInput.GoBack] = CloseCrafter;
         }
         public void CloseCrafter()
