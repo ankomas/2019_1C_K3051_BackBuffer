@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Input;
@@ -13,7 +11,6 @@ using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
-using TGC.Group.Model.Scenes;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
@@ -107,7 +104,7 @@ namespace TGC.Group.Model.Items
                    inAttack = true;
                    elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
                    elementsToAttack = world.elementsToUpdate
-                       .Take(world.elementsToUpdate.Count / 1)
+                       .Take(world.elementsToUpdate.Count / 2)
                        .Where(element => element.Mesh != null);
                    foreach (var element in elementsToAttack)
                    {
