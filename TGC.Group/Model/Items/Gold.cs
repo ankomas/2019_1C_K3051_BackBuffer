@@ -17,7 +17,7 @@ namespace TGC.Group.Model.Items
         public override CustomSprite Icon { get; }
         public sealed override TGCVector2 DefaultScale { get; } = new TGCVector2(.042f, .042f);
 
-        List<TgcMesh> _meshes = MeshesForShip.O2Mesh;
+        static List<TgcMesh> _meshes = MeshesForShip.O2Mesh;
         public override List<TgcMesh> Meshes => _meshes;
 
         public override void Use(Character character)

@@ -16,7 +16,7 @@ namespace TGC.Group.Model.Items
         public override string Description { get; } = "Looks delicious!";
         public override ItemType type { get; } = ItemType.CONSUMABLE;
         public override CustomSprite Icon { get; }
-        List<TgcMesh> _meshes = MeshesForShip.O2Mesh;
+        static List<TgcMesh> _meshes = MeshesForShip.O2Mesh;
         public override List<TgcMesh> Meshes => _meshes;
         public sealed override TGCVector2 DefaultScale { get; } = new TGCVector2(.1f, .05f);
 

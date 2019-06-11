@@ -13,15 +13,5 @@ namespace TGC.Group.Model.Things
         {
             SetAmbientShader();
         }
-
-
-        public override void Render()
-        {
-            foreach (var mesh in meshes)
-            {
-                mesh.Render();
-                Console.WriteLine("belt: " + mesh.Scale);
-            }
-        }
     }
 }
