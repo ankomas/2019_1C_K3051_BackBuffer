@@ -106,6 +106,7 @@
     <Compile Include="Model\Camera\Camera.cs" />
     <Compile Include="Model\Camera\CameraFactory.cs" />
     <Compile Include="Model\Camera\CameraFPSGravity.cs" />
+    <Compile Include="Model\Cheats.cs" />
     <Compile Include="Model\Chunks\AquaticChunk.cs" />
     <Compile Include="Model\Chunks\FloorChunk.cs" />
     <Compile Include="Model\Chunks\Chunk.cs" />

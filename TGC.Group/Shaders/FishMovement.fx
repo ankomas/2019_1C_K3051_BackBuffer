@@ -75,8 +75,8 @@ VS_OUTPUT vs_main(VS_INPUT Input)
 //Pixel Shader
 float4 ps_main(VS_OUTPUT Input) : COLOR0
 {
-    float y = Input.Texcoord.y * screen_dy + cos(time);
-    Input.Texcoord.y = y / screen_dy;
+    //float4 rgb = 0;
+    //return rgb;
     return tex2D(diffuseMap, Input.Texcoord);
 }
 
