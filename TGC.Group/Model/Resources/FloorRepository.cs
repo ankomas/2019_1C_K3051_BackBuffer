@@ -19,6 +19,7 @@ namespace TGC.Group.Model.Resources
         private static readonly string FloorHeightmap = Game.Default.MediaDirectory + "\\Heightmap";
         public static ConcurrentDictionary<TGCVector3, TgcSimpleTerrain> Floors = new ConcurrentDictionary<TGCVector3, TgcSimpleTerrain>();
         private static bool preLoading = false;
+        public static int generating;
 
         public static TgcSimpleTerrain getFloor(TGCVector3 position)
         {
@@ -44,7 +45,9 @@ namespace TGC.Group.Model.Resources
             var z = range.ToList().ConvertAll(num => num * Chunk.DefaultSize.Z + trueOrigin.Z);
             var xz = x.SelectMany(xx => z.ConvertAll(zz => new TGCVector3(xx, origin.Y, zz))).ToList();
             
-            xz.FindAll(xxzz => !Floors.ContainsKey(xxzz)).ForEach(xxzz => getFloor(xxzz));
+            var toGenerate = xz.FindAll(xxzz => !Floors.ContainsKey(xxzz));
+            generating += toGenerate.Count;
+            toGenerate.ForEach(xxzz => getFloor(xxzz));
             preLoading = false;
         }
 

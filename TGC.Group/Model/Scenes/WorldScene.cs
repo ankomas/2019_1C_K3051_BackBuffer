@@ -19,6 +19,7 @@ using Screen = TGC.Group.Model.Utils.Screen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BulletSharp;
 using TGC.Core.BoundingVolumes;
@@ -28,6 +29,7 @@ using Chunk = TGC.Group.Model.Chunks.Chunk;
 using Element = TGC.Group.Model.Elements.Element;
 using Vector3 = BulletSharp.Math.Vector3;
 using TGC.Core.SceneLoader;
+using TGC.Group.Form;
 using TGC.Group.Model.Resources;
 
 namespace TGC.Group.Model.Scenes
@@ -96,6 +98,8 @@ namespace TGC.Group.Model.Scenes
             RegisterSubscene(inventoryScene);
 
             TurnExploreCommandsOn();
+            
+            //this.loadIndicator.Init();
         }
         public void ResetCamera()
         {
@@ -314,12 +318,16 @@ namespace TGC.Group.Model.Scenes
         {
             var preloadRadius = World.UpdateRadius;
             
-            Task.Run(() =>
+            var preloadWorld = new Task(() =>
             {
                 this.World.preLoad(TGCVector3.Empty, preloadRadius);
                 this.loaded = true;
             });
+            
+            preloadWorld.Start();
         }
+
+        //private readonly NumberIndicator loadIndicator = new NumberIndicator(100, (Screen.Width-100)/2, (Screen.Height-100)/2);
 
         public override void Render(TgcFrustum frustum)
         {
@@ -327,11 +335,25 @@ namespace TGC.Group.Model.Scenes
 
             if (!this.loaded)
             {
+                var oldColor = this.backgroundColor;
+                this.backgroundColor = Color.Black;
+                ClearScreen();
                 //TODO loading screen
-                this.DrawText.drawText("Loading...", 300, 300, Color.FromArgb(255, 255-10, 255-70, 255-164));
-                this.DrawText.drawText("Floors: " + FloorRepository.Floors.Count, 300, 330, Color.FromArgb(255, 255-10, 255-70, 255-164));
-                this.DrawText.drawText("Chunnks: " + this.World.chunks.Count, 300, 360, Color.FromArgb(255, 255-10, 255-70, 255-164));
-
+                /* indicator
+                var max = this.World.generating;
+                var progress = this.World.chunks.Count * 100 / (max != 0 ? max : 1);
+                
+                loadIndicator.Render(progress , 100);
+                loadIndicator.RenderText(progress);
+                */    
+                
+                var color = Color.DeepSkyBlue;
+                
+                this.DrawText.drawText("Loading...", 600, 300, color);
+                this.DrawText.drawText("Chunnks: " + this.World.chunks.Count + "/" + this.World.generating, 600, 330, color);
+                this.DrawText.drawText("Floors: " + FloorRepository.Floors.Count + "/" + FloorRepository.generating, 600, 360, color);
+                this.backgroundColor = oldColor;
+                
                 return;
             }
 

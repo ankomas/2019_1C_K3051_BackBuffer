@@ -27,7 +27,11 @@ namespace TGC.Group.Model
     internal class World
     {
         public static readonly int RenderRadius = 
-            Math.Min((int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X), 5);
+            Math.Max(
+                Math.Min(
+                    (int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X), 
+                5), // maximum radius
+                1); // minimum radius
         public static readonly int UpdateRadius = RenderRadius;
         private const int InteractionRadius = 1000000; // Math.pow(1000, 2)
 
@@ -44,6 +48,7 @@ namespace TGC.Group.Model
 
         public int elementsUpdated;
         public int elementsRendered;
+        public int generating = 0;
         
         public World(TGCVector3 initialPoint)
         {
@@ -98,6 +103,8 @@ namespace TGC.Group.Model
             {
                 vectors.Add(xzCube.PMin);
             }
+
+            this.generating = vectors.Count;
 
             foreach (var position in vectors)
             {
