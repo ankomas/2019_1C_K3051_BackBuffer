@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms.VisualStyles;
 using BulletSharp;
+using TGC.Core.Input;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Items.Consumables;
@@ -94,6 +95,11 @@ namespace TGC.Group.Model.Player
         public void Update(Camera camera)
         {
             this.Weapon?.Update(camera);            
+        }
+
+        public void Attack(World world, TgcD3dInput input)
+        {
+            this.Weapon?.Attack(world, input);
         }
 
         public void Render()

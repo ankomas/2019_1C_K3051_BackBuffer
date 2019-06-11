@@ -256,9 +256,10 @@ namespace TGC.Group.Model.Scenes
             }
             
             GameState.character.Update(Camera);
-            
-            World.Update(Camera, GameState.character);
 
+            World.Update(Camera, GameState.character);
+            GameState.character.Attack(World, Input);
+            
             var item = manageSelectableElement(World.SelectableElement); // Imsportant: get this AFTER updating the world
 
             //TODO refactor

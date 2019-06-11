@@ -22,7 +22,7 @@ using Element = TGC.Group.Model.Elements.Element;
 
 namespace TGC.Group.Model
 {
-    internal class World
+    public class World
     {
         public static readonly int RenderRadius = 7;//(int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
         public static readonly int UpdateRadius = RenderRadius;
@@ -30,7 +30,7 @@ namespace TGC.Group.Model
         
         private readonly Dictionary<TGCVector3, Chunk> chunks;
         private List<Chunk> chunksToUpdate = new List<Chunk>();
-        private List<Element> elementsToUpdate = new List<Element>();
+        public List<Element> elementsToUpdate = new List<Element>();
         public Element SelectableElement { get; private set; }
 
         private readonly List<Element> entities;
@@ -133,7 +133,7 @@ namespace TGC.Group.Model
 
             elements.AddRange(elementsInCube(this.entities, updateCube));
             //elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
-
+            
             elements.ForEach(element => element.Update(camera));
             toUpdate.ForEach(chunk => chunk.Update(camera));
             

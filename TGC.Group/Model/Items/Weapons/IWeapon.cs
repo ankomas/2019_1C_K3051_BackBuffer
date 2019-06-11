@@ -1,4 +1,5 @@
 using Microsoft.DirectX.Direct3D;
+using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items.Recipes;
@@ -23,6 +24,8 @@ namespace TGC.Group.Model.Items
         {
             character.Weapon = this;
         }
+
+        public abstract void Attack(World world, TgcD3dInput input);
 
         public abstract void Update(Camera camera);
 

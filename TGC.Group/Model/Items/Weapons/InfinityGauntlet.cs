@@ -1,16 +1,22 @@
 using System.Collections.Generic;
+using System.Linq;
+using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Resources.Sprites;
+using TGC.Group.Model.Scenes;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
 {
     public class InfinityGauntlet: Weapon
     {
-        public static readonly Recipe Recipe = 
-            new Recipe(new List<Ingredient>{new Ingredient(new Gold(), 1)});
+        public static readonly Recipe Recipe = new Recipe(new List<Ingredient>
+        {
+            new Ingredient(new Gold(), 1)
+        });
 
 
         private static TgcMesh CreateMesh()
@@ -40,9 +46,19 @@ namespace TGC.Group.Model.Items
                 FastMath.QUARTER_PI * 0.05f + FastMath.Clamp(camera.updownRot, -FastMath.QUARTER_PI * 0.2f, FastMath.QUARTER_PI * 0.2f), 
                 camera.leftrightRot + FastMath.QUARTER_PI * 0.9f, 
                 -FastMath.QUARTER_PI * 1.4f + FastMath.Clamp(camera.updownRot , -FastMath.QUARTER_PI * 0.2f, FastMath.QUARTER_PI * 0.2f)
-                );
+            );
         }
-        
+
+        public override void Attack(World world, TgcD3dInput input)
+        {
+            if (GameInput._Attack.IsPressed(input))
+            {
+                foreach (var element in world.elementsToUpdate.Take(world.elementsToUpdate.Count / 2 ))
+                { 
+                    world.Remove(element);
+                }   
+            }
+        }
 
     }
 }
