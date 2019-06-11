@@ -35,6 +35,7 @@ namespace TGC.Group.Model.Chunks
             this.divisions = (int)(DefaultSize.X / 100);
 
             this.Floor = FloorRepository.getFloor(origin);
+            FloorRigidBody = TriangleShapeFactory.CreateFromHeighMap(Floor.getData());
             
             var corals = CreateCorals(segments[0], divisions, Floor);
             AddElementsToPhysicsWorld(corals);
@@ -59,6 +60,7 @@ namespace TGC.Group.Model.Chunks
         public override IEnumerable<Element> Init()
         {
             var fishes = CreateFishes(this.segments, this.divisions);
+            AquaticPhysics.Instance.Add(FloorRigidBody);
             AddElementsToPhysicsWorld(fishes);
             return fishes;
         }
