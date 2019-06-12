@@ -5,7 +5,9 @@ using TGC.Core.Direct3D;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
 using System.Collections.Generic;
+using BulletSharp;
 using TGC.Core.BoundingVolumes;
+using TGC.Core.Mathematica;
 using static TGC.Core.Input.TgcD3dInput;
 
 namespace TGC.Group.Model.Scenes
@@ -15,17 +17,18 @@ namespace TGC.Group.Model.Scenes
         protected CommandList pressed = new CommandList();
         protected CommandList down = new CommandList();
         private List<Scene> subscenes = new List<Scene>();
+        private List<CommandList.Command> toExecute = new List<CommandList.Command>();
 
         private static Scene emptySceneSingleInstance;
         public static Scene Empty => emptySceneSingleInstance ?? (emptySceneSingleInstance = new EmptyScene());
         protected Color backgroundColor = Color.Black;
         private bool _uses3DCamera = true;
         public bool Uses3DCamera { get { return _uses3DCamera; } protected set { _uses3DCamera = value; } }
-        private TgcCamera _camera = null;
-        public TgcCamera Camera
+        private Camera _camera = null;
+        public Camera Camera
         {
             set { _camera = value; }
-            get { return _camera ?? new TgcCamera(); }
+            get { return _camera ?? CameraFactory.Create(TGCVector3.Empty, Input); }
         }
         public static TgcD3dInput Input { get; set; }
 
@@ -33,7 +36,6 @@ namespace TGC.Group.Model.Scenes
         {
             if (Input == null) throw new System.Exception("Scene.Input not set yet");
         }
-
         abstract public void Update(float elapsedTime);
         abstract public void Render(TgcFrustum frustum);
         virtual public void Dispose() {}
@@ -47,30 +49,35 @@ namespace TGC.Group.Model.Scenes
             {
                 if (Input.keyPressed(key))
                 {
-                    pressed[key]();
+                    toExecute.Add(pressed[key]);
                 }
             }
             foreach (Key key in down.keys)
             {
                 if (Input.keyDown(key))
                 {
-                    down[key]();
+                    toExecute.Add(down[key]);
                 }
             }
             foreach (MouseButtons button in pressed.mouseButtons)
             {
                 if (Input.buttonPressed(button))
                 {
-                    pressed[button]();
+                    toExecute.Add(pressed[button]);
                 }
             }
             foreach (MouseButtons button in down.mouseButtons)
             {
                 if (Input.buttonDown(button))
                 {
-                    down[button]();
+                    toExecute.Add(down[button]);
                 }
             }
+            foreach(CommandList.Command command in toExecute)
+            {
+                command();
+            }
+            toExecute.Clear();
         }
         public virtual void ReactToInput()
         {

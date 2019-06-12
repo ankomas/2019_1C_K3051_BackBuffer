@@ -1,6 +1,4 @@
-﻿using BulletSharp;
-using Microsoft.DirectX.DirectInput;
-using System;
+﻿using Microsoft.DirectX.DirectInput;
 using System.Drawing;
 using System.Windows.Forms;
 using TGC.Core.Camara;
@@ -11,9 +9,10 @@ using TGC.Group.Model.Input;
 
 namespace TGC.Group.Model
 {
-    public class Camera : TgcCamera
+    public class CameraFPSGravity : TgcCamera
     {
-        public RigidBody RigidBody { get; }
+        private bool manual = false;
+        private bool ConsideringInput = true;
 
         private readonly Point mouseCenter;
         private TGCMatrix cameraRotation;
@@ -21,29 +20,21 @@ namespace TGC.Group.Model
         private float leftrightRot;
         private float updownRot;
 
-        delegate void CameraUpdateLogic(float elapsedTime);
-        CameraUpdateLogic currentUpdateLogic;
-
         private TgcD3dInput Input { get; }
         public float MovementSpeed { get; set; }
         public float RotationSpeed { get; set; }
 
-        private bool ConsideringInput = true;
-        private bool manual = false;
-
-        public Camera(TGCVector3 position, TgcD3dInput input, RigidBody rigidBody)
+        public CameraFPSGravity(TGCVector3 position, TgcD3dInput input)
         {
             Input = input;
             Position = position;
-            RigidBody = rigidBody;
             mouseCenter = GetMouseCenter();
             RotationSpeed = 0.1f;
-            MovementSpeed = 2000f * 30f;
+            MovementSpeed = 500f;
             initialDirectionView = new TGCVector3(0, 0, -1);
             leftrightRot = 0;
             updownRot = 0;
             Cursor.Hide();
-            currentUpdateLogic = MoveNormally;
         }
 
         private static Point GetMouseCenter()
@@ -54,14 +45,21 @@ namespace TGC.Group.Model
 
         public override void UpdateCamera(float elapsedTime)
         {
-            currentUpdateLogic(elapsedTime);
-        }
+            if (manual) return;
 
-        private TGCVector3 CalculateTranslation(float elapsedTime, TGCMatrix cameraRotation)
-        {
-            var normalizedTranslation =  TGCVector3.TransformNormal(CalculateInputTranslation(), cameraRotation);
-            RigidBody.LinearVelocity = normalizedTranslation.ToBulletVector3() * elapsedTime;
-            return new TGCVector3(RigidBody.CenterOfMassPosition);
+            cameraRotation = CalculateCameraRotation();
+
+            var newPos = Position + TGCVector3.TransformNormal(CalculateInputTranslation() * elapsedTime, CalculateCameraRotationY());
+            if (InsideBoundsX(newPos)) Position = new TGCVector3(newPos.X, Position.Y, Position.Z);
+            if (InsideBoundsZ(newPos)) Position = new TGCVector3(Position.X, Position.Y, newPos.Z);
+
+            LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
+
+            UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
+
+            if (ConsideringInput) Cursor.Position = mouseCenter;
+
+            base.SetCamera(Position, LookAt, UpVector);
         }
 
         public TGCMatrix CalculateCameraRotation()
@@ -71,42 +69,15 @@ namespace TGC.Group.Model
                 leftrightRot += Input.XposRelative * RotationSpeed;
                 updownRot = FastMath.Clamp(updownRot - Input.YposRelative * RotationSpeed, -FastMath.PI_HALF, FastMath.PI_HALF);
             }
-                
+
             return TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
         }
-
-        private TGCVector3 CalculateInputTranslation()
+        public TGCMatrix CalculateCameraRotationY()
         {
-            var moveVector = TGCVector3.Empty;
+            if (ConsideringInput)
+                leftrightRot += Input.XposRelative * RotationSpeed;
 
-            if(ConsideringInput)
-                moveVector = GetInputTranslation(moveVector);
-
-            return moveVector;
-        }
-        void MoveNormally(float elapsedTime)
-        {
-            if (manual) return;
-
-            cameraRotation = CalculateCameraRotation();
-
-            Position = CalculateTranslation(elapsedTime, cameraRotation);
-
-            LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
-
-            UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
-
-            if(ConsideringInput) Cursor.Position = mouseCenter;
-
-            base.SetCamera(Position, LookAt, UpVector);
-        }
-        public void Freeze()
-        {
-            currentUpdateLogic = (elapsedTime) => {};
-        }
-        public void Unfreeze()
-        {
-            currentUpdateLogic = MoveNormally;
+            return TGCMatrix.RotationY(leftrightRot);
         }
         private TGCVector3 GetInputTranslation(TGCVector3 moveVector)
         {
@@ -137,13 +108,15 @@ namespace TGC.Group.Model
 
             return moveVector;
         }
-        public void IgnoreInput()
+
+        private TGCVector3 CalculateInputTranslation()
         {
-            ConsideringInput = false;
-        }
-        public void ConsiderInput()
-        {
-            ConsideringInput = true;
+            var moveVector = TGCVector3.Empty;
+
+            if (ConsideringInput)
+                moveVector = GetInputTranslation(moveVector);
+
+            return moveVector;
         }
         public void UseManually()
         {
@@ -152,6 +125,27 @@ namespace TGC.Group.Model
         public void StopUsingManually()
         {
             manual = false;
+        }
+        private bool InsideBoundsX(TGCVector3 pos)
+        {
+            return pos.X < 1540 && pos.X > -236
+                && pos.X > 170 - (pos.Z - (-297)) * (1.6);
+        }
+        private bool InsideBoundsZ(TGCVector3 pos)
+        {
+            return pos.Z > -297 && pos.Z < 1298
+                && pos.Z > 500 - (pos.X - (-236)) * (1.6)
+                && pos.Z > 500 - ((1540) - pos.X) * (1.6)
+                && pos.Z < 500 + (pos.X - (-236)) * (1.6)
+                && pos.Z < 500 + ((1540) - pos.X) * (1.6);
+        }
+        public void IgnoreInput()
+        {
+            ConsideringInput = false;
+        }
+        public void ConsiderInput()
+        {
+            ConsideringInput = true;
         }
     }
 }

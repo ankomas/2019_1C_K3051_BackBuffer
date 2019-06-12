@@ -4,6 +4,8 @@ using Microsoft.DirectX.Direct3D;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 using BulletSharp;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
@@ -22,15 +24,20 @@ using Element = TGC.Group.Model.Elements.Element;
 
 namespace TGC.Group.Model
 {
-    internal class World
+    public class World
     {
-        public static readonly int RenderRadius = 7;//(int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X)+1;
+        public static readonly int RenderRadius = 
+            Math.Max(
+                Math.Min(
+                    (int)Math.Floor(D3DDevice.Instance.ZFarPlaneDistance/Chunk.DefaultSize.X), 
+                5), // maximum radius
+                1); // minimum radius
         public static readonly int UpdateRadius = RenderRadius;
         private const int InteractionRadius = 1000000; // Math.pow(1000, 2)
-        
-        private readonly Dictionary<TGCVector3, Chunk> chunks;
+
+        public readonly Dictionary<TGCVector3, Chunk> chunks;
         private List<Chunk> chunksToUpdate = new List<Chunk>();
-        private List<Element> elementsToUpdate = new List<Element>();
+        public List<Element> elementsToUpdate = new List<Element>();
         public Element SelectableElement { get; private set; }
 
         private readonly List<Element> entities;
@@ -41,6 +48,7 @@ namespace TGC.Group.Model
 
         public int elementsUpdated;
         public int elementsRendered;
+        public int generating = 0;
         
         public World(TGCVector3 initialPoint)
         {
@@ -96,6 +104,8 @@ namespace TGC.Group.Model
                 vectors.Add(xzCube.PMin);
             }
 
+            this.generating = vectors.Count;
+
             foreach (var position in vectors)
             {
                 toUpdate.Add(chunks.ContainsKey(position) ? chunks[position] : AddChunk(position));
@@ -133,7 +143,7 @@ namespace TGC.Group.Model
 
             elements.AddRange(elementsInCube(this.entities, updateCube));
             //elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
-
+            
             elements.ForEach(element => element.Update(camera));
             toUpdate.ForEach(chunk => chunk.Update(camera));
             
@@ -205,5 +215,11 @@ namespace TGC.Group.Model
                 chunk.Remove(selectableElement);
             }
         }
+
+        public void preLoad(TGCVector3 origin, int preloadRadius)
+        {
+            this.GetChunksByRadius(origin, preloadRadius);
+        }
     }
 }
+    

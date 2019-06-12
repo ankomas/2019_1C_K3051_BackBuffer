@@ -103,7 +103,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
-    <Compile Include="Model\CameraFPSGravity.cs" />
+    <Compile Include="Model\Camera\Camera.cs" />
+    <Compile Include="Model\Camera\CameraFactory.cs" />
+    <Compile Include="Model\Camera\CameraFPSGravity.cs" />
+    <Compile Include="Model\Cheats.cs" />
     <Compile Include="Model\Chunks\AquaticChunk.cs" />
     <Compile Include="Model\Chunks\FloorChunk.cs" />
     <Compile Include="Model\Chunks\Chunk.cs" />
@@ -113,11 +116,12 @@
     <Compile Include="Model\CollisionManager.cs" />
     <Compile Include="Model\Elements\ElementFactories\ElementFactory.cs" />
     <Compile Include="Model\Elements\ElementFactories\FishFactory.cs" />
-    <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\Coral.cs" />
     <Compile Include="Model\Elements\ElementFactories\CoralFactory.cs" />
+    <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\CapsuleFactory.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\BoxFactory.cs" />
+    <Compile Include="Model\Elements\RigidBodyFactories\TriangleShapeFactory.cs" />
     <Compile Include="Model\Elements\Ship.cs" />
     <Compile Include="Model\Entities\Shark\Shark.cs" />
     <Compile Include="Model\Entities\Shark\SharkFactory.cs" />
@@ -136,6 +140,8 @@
     <Compile Include="Model\Items\Recipes\Ingredient.cs" />
     <Compile Include="Model\Items\Recipes\Recipe.cs" />
     <Compile Include="Model\Items\Type\ItemType.cs" />
+    <Compile Include="Model\Items\Weapons\InfinityGauntlet.cs" />
+    <Compile Include="Model\Items\Weapons\IWeapon.cs" />
     <Compile Include="Model\Movements\EscapeFromPosition.cs" />
     <Compile Include="Model\Movements\Movement.cs" />
     <Compile Include="Model\Movements\RandomMovement.cs" />
@@ -144,8 +150,10 @@
     <Compile Include="Model\Player\Equipment.cs" />
     <Compile Include="Model\Player\Inventory.cs" />
     <Compile Include="Model\Player\Stats.cs" />
+    <Compile Include="Model\Resources\FloorRepository.cs" />
     <Compile Include="Model\Resources\Meshes\CoralMeshes.cs" />
     <Compile Include="Model\Resources\Meshes\FishMeshes.cs" />
+    <Compile Include="Model\Resources\Meshes\MeshesForShip.cs" />
     <Compile Include="Model\Resources\Meshes\SharkMesh.cs" />
     <Compile Include="Model\Resources\Sprites\SpriteRepository.cs" />
     <Compile Include="Model\Scenes\Crafter\CrafterScene.cs" />
@@ -156,11 +164,20 @@
     <Compile Include="Model\Scenes\InventoryScene.cs" />
     <Compile Include="Model\Scenes\InventoryScene.Structure.cs" />
     <Compile Include="Model\Scenes\ShipScene.cs" />
+    <Compile Include="Model\Scenes\TrainingScene.cs" />
     <Compile Include="Model\Scenes\WorldScene.cs" />
     <Compile Include="Model\Segment.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\IRigidBodyFactory.cs" />
+    <Compile Include="Model\Things\Crafter.cs" />
+    <Compile Include="Model\Things\Hatch.cs" />
+    <Compile Include="Model\Things\LifeBelt.cs" />
+    <Compile Include="Model\Things\Seat.cs" />
+    <Compile Include="Model\Things\Ship.cs" />
+    <Compile Include="Model\Things\Thing.cs" />
     <Compile Include="Model\UI\CircularIndicator.cs" />
     <Compile Include="Model\UI\DialogBox.cs" />
+    <Compile Include="Model\UI\NumberIndicator.cs" />
+    <Compile Include="Model\UI\OrientationArrow.cs" />
     <Compile Include="Model\UI\StatsIndicators.cs" />
     <Compile Include="Model\UI\LifeIndicator.cs" />
     <Compile Include="Model\UI\OxygenIndicator.cs" />
@@ -174,7 +191,6 @@
     <Compile Include="TGCUtils\Drawer2D.cs" />
     <Compile Include="Model\Elements\Element.cs" />
     <Compile Include="Model\Entity.cs" />
-    <Compile Include="Model\Camera.cs" />
     <Compile Include="Model\Scenes\Scene.cs" />
     <Compile Include="Model\Scenes\StartMenu.cs" />
     <Compile Include="Model\World.cs" />
@@ -252,11 +268,16 @@
     <Content Include="Media\cajaMadera4.jpg" />
     <Content Include="Media\LogoTGC-TgcScene.xml" />
     <Content Include="res\subnautica-portada.png" />
+    <Content Include="Shaders\FishMovement.fx" />
+    <Content Include="Shaders\Crafter.fx" />
     <Content Include="Shaders\Fede.fx" />
+    <Content Include="Shaders\NoMeQuieroIrSrStark.fx" />
+    <Content Include="Shaders\OrientationArrow.fx" />
     <Content Include="Shaders\Oxygen.fx" />
+    <Content Include="Shaders\ShipAmbient.fx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\Entities\Fish" />
+    <Folder Include="Model\Elements\Effects" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -18,9 +18,13 @@ namespace TGC.Group.Model.Input
         public static readonly GameInput _Enter = new GameInput(new List<Key>{Key.Return}, new List<MouseButtons> {MouseButtons.BUTTON_LEFT});
         public static readonly GameInput _Inventory = new GameInput(new List<Key>{Key.I, Key.Tab});
         public static readonly GameInput _Statistic = new GameInput(new List<Key>{Key.F});
-
+        public static readonly GameInput _Attack =
+            new GameInput(new List<Key>(), new List<MouseButtons>{MouseButtons.BUTTON_RIGHT});
+        
         public static readonly List<object> Up = new List<object> { Key.Up, Key.W };
         public static readonly List<object> Down = new List<object> { Key.Down, Key.S };
+        public static readonly List<object> Left = new List<object> { Key.Left, Key.L };
+        public static readonly List<object> Right = new List<object> { Key.Right, Key.D };
         public static readonly List<object> Accept = new List<object> { Key.Return, MouseButtons.BUTTON_LEFT };
         public static readonly List<object> Inventory = new List<object> { Key.I, Key.Tab };
         public static readonly List<object> GoBack = new List<object> { Key.Escape };
@@ -29,12 +33,13 @@ namespace TGC.Group.Model.Input
         private readonly IEnumerable<Key> keys;
         private readonly IEnumerable<MouseButtons> buttons;
 
+
         private GameInput(IEnumerable<Key> keys, IEnumerable<MouseButtons> buttons)
         {
             this.keys = keys;
             this.buttons = buttons;
         }
-        
+
         private GameInput(IEnumerable<Key> keys) : this(keys, Enumerable.Empty<MouseButtons>())
         {
 

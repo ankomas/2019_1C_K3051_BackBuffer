@@ -13,6 +13,7 @@ namespace TGC.Group.Model.Chunks
 {
     public class InitialChunk : Chunk
     {
+        public static readonly TGCVector3 ShipInitialPosition = new TGCVector3(0, 0, 0);
         public InitialChunk(TGCVector3 origin) : base(origin, AquaticPhysics.Instance)
         {
 
@@ -21,7 +22,8 @@ namespace TGC.Group.Model.Chunks
         public override IEnumerable<Element> Init()
         {
             var scene = new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "ship-TgcScene.xml");
-            scene.Meshes.ForEach(mesh => mesh.Scale = mesh.Scale*5);
+            scene.Meshes.ForEach(mesh => mesh.Position = ShipInitialPosition);
+            scene.Meshes.ForEach(mesh => mesh.Scale = mesh.Scale * 5);
 
             var sceneBoundingBox = scene.BoundingBox;
 

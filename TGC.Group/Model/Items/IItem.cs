@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items.Type;
 using TGC.Group.Model.Player;
 using TGC.Group.TGCUtils;
@@ -13,6 +15,7 @@ namespace TGC.Group.Model.Items
         public abstract ItemType type { get; }
 
         public abstract CustomSprite Icon { get; }
+        public abstract List<TgcMesh> Meshes { get; }
 
         public abstract TGCVector2 DefaultScale { get; }
 

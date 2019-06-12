@@ -1,17 +1,21 @@
 ﻿using System.Drawing;
-using TGC.Core.Input;
-using TGC.Core.Text;
-using TGC.Core.Mathematica;
-using TGC.Group.Model.Elements;
-using TGC.Group.Model.Input;
-using TGC.Core.Terrain;
+using BulletSharp;
 using Microsoft.DirectX;
-using TGC.Group.TGCUtils;
-using TGC.Group.Model.Resources.Sprites;
 using Microsoft.DirectX.Direct3D;
+using Microsoft.DirectX.DirectInput;
+using TGC.Core.BoundingVolumes;
+using TGC.Core.Direct3D;
+using TGC.Core.Input;
+using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
+using TGC.Core.Terrain;
+using TGC.Core.Text;
+using TGC.Group.Model.Elements;
+using TGC.Group.Model.Elements.RigidBodyFactories;
+using TGC.Group.Model.Input;
 using TGC.Group.Model.Items;
-using TGC.Group.Model.Items.Equipment;
 using TGC.Group.Model.Player;
+using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.Elements.RigidBodyFactories;
 using TGC.Core.Direct3D;
 using Key = Microsoft.DirectX.DirectInput.Key;
@@ -19,14 +23,19 @@ using Screen = TGC.Group.Model.Utils.Screen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using BulletSharp;
 using TGC.Core.BoundingVolumes;
 using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
-using Chunk = TGC.Group.Model.Chunks.Chunk;
+using TGC.Group.TGCUtils;
 using Element = TGC.Group.Model.Elements.Element;
 using Vector3 = BulletSharp.Math.Vector3;
 using TGC.Core.SceneLoader;
+using TGC.Group.Form;
+using TGC.Group.Model.Resources;
+using TGC.Group.Model.Chunks;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -43,30 +52,31 @@ namespace TGC.Group.Model.Scenes
 
         public delegate void Callback();
         Callback onPauseCallback = () => {}, onGameOverCallback = () => {};
-        TransitionCallback onGetIntoShipCallback = (gameState) => {};
+        TransitionCallback onGetIntoShipCallback = gameState => {};
 
         InventoryScene inventoryScene;
 
+        OrientationArrow orientationArrow = new OrientationArrow();
         TgcSkyBox skyBoxUnderwater, skyBoxOutside;
         CustomSprite waterVision, mask, dialogBox;
         Drawer2D drawer = new Drawer2D();
         string dialogName, dialogDescription;
-        internal Character Character { get { return this.GameState.character; } }
+        internal Character Character { get { return GameState.character; } }
 
         private bool gaveOxygenTank = false; //TODO remove
-        private bool aimFired = false;
+        private bool aimFired;
 
         TgcMesh skb;
         private TGCVector3 initialCameraPosition = new TGCVector3(300, -100, 200);
 
+        private bool loaded = false;
+        private bool loading = false;
         public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
 
-            this.World = new World(new TGCVector3(0, 0, 0));
-
             SetCamera(Input);
-
+            
             IncrementFarPlane(3f);
             SetClampTextureAddressing();
             InitInventoryScene();
@@ -75,7 +85,7 @@ namespace TGC.Group.Model.Scenes
             InitMask();
             InitDialogBox();
             
-            World = new World(new TGCVector3(0, 0, 0));
+            this.World = new World(new TGCVector3(0, 0, 0));
             
             pressed[Key.P] = () => {
                 onPauseCallback();
@@ -87,15 +97,18 @@ namespace TGC.Group.Model.Scenes
             //};
 
             pressed[Key.F] = () => {
-                this.BoundingBox = !this.BoundingBox;
+                BoundingBox = !BoundingBox;
             };
 
             RegisterSubscene(inventoryScene);
 
             TurnExploreCommandsOn();
+            
+            //this.loadIndicator.Init();
         }
         public void ResetCamera()
         {
+            AquaticPhysics.Instance.Remove(Camera.RigidBody); 
             SetCamera(Input);
         }
         private void TurnExploreCommandsOn()
@@ -110,8 +123,8 @@ namespace TGC.Group.Model.Scenes
         }
         private void OpenInventory()
         {
-            ((Camera)Camera).IgnoreInput();
-            inventoryScene.Open(this.GameState.character);
+            Camera.IgnoreInput();
+            inventoryScene.Open(GameState.character);
             Input.update();
             TurnExploreCommandsOff();
         }
@@ -119,7 +132,7 @@ namespace TGC.Group.Model.Scenes
         {
             inventoryScene.Close();
             TurnExploreCommandsOn();
-            ((Camera)Camera).ConsiderInput();
+            Camera.ConsiderInput();
         }
         private void IncrementFarPlane(float scale)
         {
@@ -207,11 +220,67 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            var position = this.initialCameraPosition;
-            var rigidBody = new CapsuleFactory().Create(position, 100, 60);
-            AquaticPhysics.Instance.Add(rigidBody);
-            Camera = new Camera(position, input, rigidBody);
+            Camera = CameraFactory.Create(initialCameraPosition, input);
+            AquaticPhysics.Instance.Add(Camera.RigidBody);
+
         }
+
+        public override void UpdateGameplay(float elapsedTime)
+        {
+            if (!loaded)
+            {
+                if (this.loading)
+                {
+                    return;
+                }
+
+
+                preload();
+
+                //TODO loading scene
+                
+                this.loading = true;
+
+                return;
+            }
+
+            if (this.GameState.character.IsDead())
+            {
+                onGameOverCallback();
+            }
+
+            Cheats.ApplyCheats(this.GameState.character);
+            
+            GameState.character.Update(Camera);
+
+            World.Update(Camera, GameState.character);
+            GameState.character.Attack(World, Input);
+            
+            var item = manageSelectableElement(World.SelectableElement); // Imsportant: get this AFTER updating the world
+
+            //TODO refactor
+            if (item != null)
+            { 
+                GameState.character.GiveItem(item);
+                if (goldRate.HasToSpawn())
+                {
+                    GameState.character.GiveItem(new Gold());
+                }
+            }
+
+            skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
+            skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
+
+            GameState.character.UpdateStats(Camera.Position.Y < 0
+                ? new Stats(-elapsedTime, 0)
+                : new Stats(elapsedTime * (GameState.character.MaxStats.Oxygen/2.5f), 0));
+
+            inventoryScene.Update(elapsedTime);
+            aimFired = false;
+
+            orientationArrow.Update(Camera.Position, InitialChunk.ShipInitialPosition, Camera.LookAt);
+        }
+
         private IItem manageSelectableElement(Element element)
         {
             dialogName = dialogDescription = "";
@@ -243,11 +312,11 @@ namespace TGC.Group.Model.Scenes
             {
                 if (element.GetType() == typeof(Ship))
                 {
-                    onGetIntoShipCallback(this.GameState);
+                    onGetIntoShipCallback(GameState);
                 }
                 else
                 {
-                    this.World.Remove(element);
+                    World.Remove(element);
                     item = element.item;
                     aimFired = false;   
                 }
@@ -256,59 +325,67 @@ namespace TGC.Group.Model.Scenes
             return item;
         }
 
-        public override void Update(float elapsedTime)
+        private void preload()
         {
-            if (this.GameState.character.IsDead())
-            {
-                onGameOverCallback();
-            }
+            var preloadRadius = World.UpdateRadius;
             
-            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
-
-            this.World.Update((Camera) this.Camera, this.GameState.character);
-
-            var item = manageSelectableElement(this.World.SelectableElement); // Imsportant: get this AFTER updating the world
-
-            //TODO refactor
-            if (item != null)
-            { 
-                this.GameState.character.GiveItem(item);
-                if (this.goldRate.HasToSpawn())
-                {
-                    this.GameState.character.GiveItem(new Gold());
-                }
-            }
-
-            skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
-            skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
-
-            this.GameState.character.UpdateStats(this.Camera.Position.Y < 0
-                ? new Stats(-elapsedTime, 0)
-                : new Stats(elapsedTime * (this.GameState.character.MaxStats.Oxygen/2.5f), 0));
-
-            inventoryScene.Update(elapsedTime);
-            aimFired = false;
+            var preloadWorld = new Task(() =>
+            {
+                this.World.preLoad(TGCVector3.Empty, preloadRadius);
+                this.loaded = true;
+            });
+            
+            preloadWorld.Start();
         }
+
+        //private readonly NumberIndicator loadIndicator = new NumberIndicator(100, (Screen.Width-100)/2, (Screen.Height-100)/2);
 
         public override void Render(TgcFrustum frustum)
         {
             ClearScreen();
 
+            GameState.character.Render();
+            
+            if (!this.loaded)
+            {
+                var oldColor = this.backgroundColor;
+                this.backgroundColor = Color.Black;
+                ClearScreen();
+                //TODO loading screen
+                /* indicator
+                var max = this.World.generating;
+                var progress = this.World.chunks.Count * 100 / (max != 0 ? max : 1);
+                
+                loadIndicator.Render(progress , 100);
+                loadIndicator.RenderText(progress);
+                */    
+                
+                var color = Color.DeepSkyBlue;
+                
+                this.DrawText.drawText("Loading...", 600, 300, color);
+                this.DrawText.drawText("Chunnks: " + this.World.chunks.Count + "/" + this.World.generating, 600, 330, color);
+                this.DrawText.drawText("Floors: " + FloorRepository.Floors.Count + "/" + FloorRepository.generating, 600, 360, color);
+                this.backgroundColor = oldColor;
+                
+                return;
+            }
+
             if (Camera.Position.Y < 0)
             {
-                this.skyBoxUnderwater.Render();
+                skyBoxUnderwater.Render();
             }
             else
             {
-                this.skyBoxOutside.Render();
+                skyBoxOutside.Render();
             }
 
-            this.World.Render(this.Camera, frustum);
+            World.Render(Camera, frustum);
 
-            if (this.BoundingBox)
+            if (BoundingBox)
             {
-                this.World.RenderBoundingBox(this.Camera);
+                World.RenderBoundingBox(Camera);
             }
+            this.orientationArrow.Render();
 
             drawer.BeginDrawSprite();
             //drawer.DrawSprite(waterVision);
@@ -330,19 +407,24 @@ namespace TGC.Group.Model.Scenes
             drawer.BeginDrawSprite();
             drawer.DrawSprite(mask);
             drawer.EndDrawSprite();
-            
-            this.statsIndicators.Render(this.GameState.character);
+            statsIndicators.Render(GameState.character);
+
+            //this.DrawText.drawText("Camera:", 800, 100, Color.Red);
+            //this.DrawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
+            //this.DrawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
+            //this.DrawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
+
         }
 
         public new void Render()
         {
             if (GameModel.frustum != null) 
-                this.Render(GameModel.frustum);
+                Render(GameModel.frustum);
         }
 
         public override void Dispose()
         {
-            this.World.Dispose();
+            World.Dispose();
         }
 
         public WorldScene OnPause(Callback onPauseCallback)

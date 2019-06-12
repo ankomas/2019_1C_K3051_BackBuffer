@@ -15,7 +15,7 @@ struct PixelInput
 	float4 Color: COLOR;
 };
 
-VertexOutput main_vertex(VertexInput input)
+VertexOutput propagate_vertex(VertexInput input)
 {
 	VertexOutput output;
 	output.Position = input.Position;
@@ -30,14 +30,44 @@ float signOf(float num)
 	return sign(num) + !num;
 }
 
-float isGreaterThanZero(float num)
+float isGreaterEqThanZero(float num)
 {
 	return sign(sign(num) + 1);
 }
 
+float isLowerEqThanZero(float num)
+{
+	return isGreaterEqThanZero(-num);
+}
+
+float isGreaterThanZero(float num)
+{
+	return !isLowerEqThanZero(num);
+}
+
 float isLowerThanZero(float num)
 {
-	return isGreaterThanZero(-num);
+	return !isGreaterEqThanZero(num);
+}
+
+float isLowerEqThan(float a, float b)
+{
+	return isLowerEqThanZero(a - b);
+}
+
+float isGreaterEqThan(float a, float b)
+{
+	return isGreaterEqThanZero(a - b);
+}
+
+float isLowerThan(float a, float b)
+{
+	return isLowerThanZero(a - b);
+}
+
+float isGreaterThan(float a, float b)
+{
+	return isGreaterThanZero(a - b);
 }
 
 bool eq(float4 a, float4 b)
@@ -52,55 +82,81 @@ float modulus(float num, float base)
 
 extern uniform float oxygen;
 
-float edgeTransparency(float2 absolutePos, float2 circleOrigin)
+uniform float stripeRadialStart = 0.30;
+uniform float stripeRadialEnd = 0.48;
+
+float edgeTransparency(float2 absolutePos, float2 circleOrigin, float circleRadius)
 {
 	float2 center = float2(0.5, 0.5);
-	float circleRadius = 0.1;
 	float2 distFromCircleOrigin = length(absolutePos - circleOrigin);
 
 	float2 pos = absolutePos - center;
 	float radialDist = length(pos);
 
-	float transparency = (0.8 + cos((length(circleOrigin - center) + length(absolutePos - circleOrigin)) * 25 + 2.5)) * isLowerThanZero(distFromCircleOrigin - circleRadius);
+	float transparency = pow(cos(distFromCircleOrigin * (PI / (stripeRadialEnd - stripeRadialStart))) + 0.8, 10) * isLowerEqThan(distFromCircleOrigin, circleRadius);
 
 	return transparency;
 }
 
-float4 main_pixel(PixelInput input) : COLOR
+float4 main_ring(PixelInput input) : COLOR
 {
 	float2 absolutePos = input.Color.rg;
 	float2 center = float2(0.5, 0.5);
 	float2 pos = absolutePos - center;
-	float radialDist = sqrt(pow(pos.x, 2) + pow(pos.y, 2));
+	float radialDist = length(pos);
 
-	float angleForColor = (PI * isGreaterThanZero(pos.y) - signOf(pos.y) * asin(abs(pos.x) / radialDist));
-	float primitiveAngle = (PI * isGreaterThanZero(pos.y) - signOf(pos.y) * asin(abs(pos.x) / radialDist));
-	float realAngle = modulus(primitiveAngle - isLowerThanZero(pos.x) * 2 * primitiveAngle, 2 * PI);
+	float angleForColor = (PI * isGreaterEqThanZero(pos.y) - signOf(pos.y) * asin(abs(pos.x) / radialDist));
+	float primitiveAngle = (PI * isGreaterEqThanZero(pos.y) - signOf(pos.y) * asin(abs(pos.x) / radialDist));
+	float realAngle = modulus(primitiveAngle - isLowerEqThanZero(pos.x) * 2 * primitiveAngle, 2 * PI);
 	float blueIntensity = angleForColor / PI;
 
-	float transparency = ((0.8 + cos(radialDist * 25 + 2.5)) * (isGreaterThanZero(radialDist * 25 + 2.5 - (3.5) * PI + 2) && isLowerThanZero(radialDist * 10 - 1.7 * PI))) * isLowerThanZero(realAngle - oxygen * 2 * PI);
+	float transparency =
+		isGreaterEqThan(radialDist, stripeRadialStart)
+		* isLowerEqThan(radialDist, stripeRadialEnd)
+		* isLowerEqThan(realAngle, oxygen * 2 * PI)
+		* pow(sin((radialDist - stripeRadialStart) * (PI / (stripeRadialEnd - stripeRadialStart))) + 0.8, 10);
 
-	float circleDistanceFromOrigin = 0.403;
+	float circleDistanceFromOrigin = stripeRadialStart + (stripeRadialEnd - stripeRadialStart) / 2;
 	float2 circleOrigin = float2(0.5, 0.5 - circleDistanceFromOrigin);
 	float2 o2AngleUnitVector = float2(sin(oxygen * 2 * PI), -cos(oxygen * 2 * PI));
 	float2 secondCircleOrigin = float2(0.5, 0.5) + o2AngleUnitVector * circleDistanceFromOrigin;
 
-	float4 lowCircleTransparency = edgeTransparency(absolutePos, circleOrigin);
-	float4 highCircleTransparency = edgeTransparency(absolutePos, secondCircleOrigin);
+	float circleRadius = (stripeRadialEnd - stripeRadialStart) / 2;
+
+	float4 lowCircleTransparency = edgeTransparency(absolutePos, circleOrigin, circleRadius);
+	float4 highCircleTransparency = edgeTransparency(absolutePos, secondCircleOrigin, circleRadius);
 
 	float finalTransparency = max(transparency, max(lowCircleTransparency.a, highCircleTransparency.a));
 
-	return float4(1 - oxygen, oxygen, blueIntensity, (oxygen > 0) * finalTransparency);
+	return float4(1 - oxygen, oxygen, blueIntensity, isGreaterThanZero(oxygen) * finalTransparency);
 }
 
-float4 main_pixel2(PixelInput input) : COLOR
+float makeCircle(float2 absolutePos, float2 center, float radius)
 {
-	float2 absolutePos = input.Color.rg;
+	float radialDist = length(absolutePos - center);
+	float transparency = pow(0.95 + cos(radialDist * (PI / (radius * 2))), 30);
+
+	return isLowerEqThan(radialDist, radius) * saturate(transparency);
+}
+
+float4 main_inner_circle(PixelInput input) : COLOR
+{
+	float  radius = 0.29;
 	float2 center = float2(0.5, 0.5);
-	float2 pos = absolutePos - center;
-	float radialDist = sqrt(pow(pos.x, 2) + pow(pos.y, 2));
-	float k = 1 - radialDist * 2.5;
-	return float4(k, k, k, isLowerThanZero(radialDist - 0.3) * (120.0 / 255.0));
+	float2 position = input.Color.rg;
+	float  saturation = makeCircle(position, center, radius);
+
+	float3 color = float3(0.1 + isLowerEqThanZero(oxygen) * 0.3 * 0.5, 0.2, 0.2);
+	float light = 1 - (position.y - center.x - radius) / (radius * 2);
+
+	return float4(color * light, saturation);
+}
+
+float4 main_outter_circle(PixelInput input) : COLOR
+{
+	float saturation = makeCircle(input.Color.rg, float2(0.5, 0.5), 0.5);
+
+	return float4(0 + isLowerEqThanZero(oxygen) * 0.3, 0, 0, saturation * 0.8);
 }
 
 float4 main_pixel_debug_coords(PixelInput input) : COLOR
@@ -113,12 +169,14 @@ technique OxygenTechnique
 {
 	pass Pass_0
 	{
-		VertexShader = compile vs_3_0 main_vertex();
-		PixelShader = compile ps_3_0 main_pixel();
+		PixelShader  = compile ps_3_0 main_outter_circle();
+	}
+	pass Pass_0
+	{
+		PixelShader  = compile ps_3_0 main_ring();
 	}
 	pass Pass_1
 	{
-		VertexShader = compile vs_3_0 main_vertex();
-		PixelShader = compile ps_3_0 main_pixel2();
+		PixelShader  = compile ps_3_0 main_inner_circle();
 	}
 };

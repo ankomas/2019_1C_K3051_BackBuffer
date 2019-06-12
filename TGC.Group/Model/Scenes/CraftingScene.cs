@@ -14,6 +14,7 @@ using TGC.Group.TGCUtils;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
+using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -37,11 +38,13 @@ namespace TGC.Group.Model.Scenes
 
         private Character Character;
         public Camera ShipCamera;
-        private TGCVector3 targetPosition, initialPosition, initialLookAt;
+        private TGCVector3 targetPosition, targetLookAt, initialPosition, initialLookAt;
         public ICrafteable ItemHighlighted { get; set; }
-        private Items.Crafter crafter = new Items.Crafter();
-        private List<bool> selectedItems = new List<bool>();
-        private bool opened = false;
+        private Items.Crafter logicalCrafter = new Items.Crafter();
+        private List<bool> hoveredItems = new List<bool>();
+        private Things.Crafter physicalCrafter;
+
+        List<TgcMesh> crafted3DModel;
 
         public CraftingScene()
         {
@@ -61,7 +64,7 @@ namespace TGC.Group.Model.Scenes
 
             foreach (var item in Items.Crafter.Crafteables)
             {
-                selectedItems.Add(false);
+                hoveredItems.Add(false);
             }
         }
         private TGCVector2 GetScaleForSpriteByPixels(CustomSprite sprite, int xPixels, int yPixels)
@@ -86,7 +89,7 @@ namespace TGC.Group.Model.Scenes
                 (bubble.Bitmap.Height * bubble.Scaling.Y - icon.Bitmap.Height * icon.Scaling.Y) / 2
                 );
         }
-        public void Render()
+        public new void Render()
         {
             renderer();
         }
@@ -95,7 +98,6 @@ namespace TGC.Group.Model.Scenes
         {
             updater(elapsedTime);
         }
-
         public override void Render(TgcFrustum frustum)
         {
             this.Render();
@@ -103,6 +105,7 @@ namespace TGC.Group.Model.Scenes
 
         private void MainUpdate(float elapsedTime)
         {
+            physicalCrafter.Open(elapsedTime);
             cursor.Position = new TGCVector2(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
         }
         private void MainRender()
@@ -112,6 +115,13 @@ namespace TGC.Group.Model.Scenes
             if (crafted != null)
             {
                 var item = Items.Crafter.Crafteables.Find(elem => elem == crafted);
+
+                foreach(var mesh in crafted3DModel)
+                {
+                    mesh.RotateY(0.025f);
+                    mesh.Render();
+                }
+
                 item.Icon.Scaling = item.DefaultScale * 4;
                 item.Icon.Position = new TGCVector2(
                     Screen.Width / 2 - item.Icon.Bitmap.Width * item.Icon.Scaling.X / 2,
@@ -120,12 +130,11 @@ namespace TGC.Group.Model.Scenes
 
                 var cursorPos = System.Windows.Forms.Cursor.Position;
 
-
                 if(
-                    cursorPos.X > item.Icon.Position.X &&
-                    cursorPos.X < item.Icon.Position.X + item.Icon.Bitmap.Width * item.Icon.Scaling.X &&
-                    cursorPos.Y > item.Icon.Position.Y &&
-                    cursorPos.Y < item.Icon.Position.Y + item.Icon.Bitmap.Height * item.Icon.Scaling.Y
+                    cursorPos.X > Screen.Width  * 0.4f &&
+                    cursorPos.X < Screen.Width  * 0.6f &&
+                    cursorPos.Y > Screen.Height * 0.3f &&
+                    cursorPos.Y < Screen.Height * 0.8f
                     )
                 {
                     cursor = hand;
@@ -138,7 +147,7 @@ namespace TGC.Group.Model.Scenes
                 
 
                 drawer.BeginDrawSprite();
-                drawer.DrawSprite(item.Icon);
+                //drawer.DrawSprite(item.Icon);
                 drawer.DrawSprite(cursor);
                 drawer.EndDrawSprite();
 
@@ -160,7 +169,7 @@ namespace TGC.Group.Model.Scenes
                 {
                     //bubble.Color = Color.Red;
                     ItemHighlighted = item;
-                    selectedItems[Items.Crafter.Crafteables.IndexOf(item)] = true;
+                    hoveredItems[Items.Crafter.Crafteables.IndexOf(item)] = true;
                     hovering = true;
                     dialogBox.AddLineBig(item.Name + "       ", this.Character.CanCraft(item) ? Color.FromArgb(255, 0, 255, 0) : Color.Red);
                     dialogBox.AddLineSmall("(" + item.type.ToString() + ")", Color.Gray);
@@ -176,18 +185,13 @@ namespace TGC.Group.Model.Scenes
                 }
                 else
                 {
-                    selectedItems[Items.Crafter.Crafteables.IndexOf(item)] = false;
+                    hoveredItems[Items.Crafter.Crafteables.IndexOf(item)] = false;
                 }
 
                 this.bubble.Color =
                         this.Character.CanCraft(item)
                             ? Color.White
                             : Color.Black;
-
-                //item.Icon.Color =
-                //        this.Character.CanCraft(item)
-                //            ? Color.White
-                //            : Color.FromArgb(255, 40, 40, 40);
 
                 drawer.BeginDrawSprite();
                 drawer.DrawSprite(bubble);
@@ -213,26 +217,22 @@ namespace TGC.Group.Model.Scenes
                 dist.Length() < 1 ?
                 targetPosition : currentPosition + normalDirection * elapsedTime * 1000;
 
-            ShipCamera.SetCamera(newPosition, ShipCamera.LookAt);
+            ShipCamera.SetCamera(newPosition, targetLookAt);
+            physicalCrafter.Open(elapsedTime);
 
-            if(newPosition == targetPosition)
+            if (newPosition == targetPosition)
             {
                 updater = MainUpdate;
                 renderer = MainRender;
-                Console.WriteLine("Call 1");
                 CraftCommandsOn();
+                if (crafted != null) TakeCraftedItemCommandsOn();
             }
         }
         private void CraftCommandsOn()
         {
-            Console.WriteLine("Craft on");
-
             pressed[GameInput.Accept] = () =>
             {
-                Console.WriteLine("Craft");
-                int index = this.selectedItems.IndexOf(true);
-
-                Console.WriteLine("index: " + index);
+                int index = this.hoveredItems.IndexOf(true);
 
                 if (index == -1) return;
 
@@ -240,25 +240,31 @@ namespace TGC.Group.Model.Scenes
 
                 if (!this.Character.CanCraft(item)) return;
 
-                Console.WriteLine("can craft");
+                hoveredItems = hoveredItems.ConvertAll(_ => false);
 
-                selectedItems = selectedItems.ConvertAll(_ => false);
+                TGCVector3 size = item.Meshes[0].BoundingBox.calculateSize();
+                float scale = 100f / size.Y;
+                crafted3DModel = item.Meshes;
+                foreach (var mesh in crafted3DModel)
+                {
+                    mesh.Scale = new TGCVector3(scale, scale, scale);
+                    mesh.Position = physicalCrafter.Center + new TGCVector3(0, -50, 40);
+                    mesh.RotateZ((float)Math.PI / 8);
+                }
+
                 StartCrafting(item);
             };
         }
         private void TakeCraftedItemCommandsOn()
         {
-            Console.WriteLine("Take on");
             pressed[GameInput.Accept] = () =>
             {
-                Console.WriteLine("Take");
-                if (true)
+                if (aboutToTake)
                 {
-                    this.crafter.Craft(crafted, this.Character);
-                    this.Character.GiveItem(this.crafter.CraftedItem);
-                    this.crafter.CraftedItem = null;
+                    this.logicalCrafter.Craft(crafted, this.Character);
+                    this.Character.GiveItem(this.logicalCrafter.CraftedItem);
+                    this.logicalCrafter.CraftedItem = null;
                     this.crafted = null;
-                    Console.WriteLine("Call 2");
                     CraftCommandsOn();
                 }
             };
@@ -278,39 +284,37 @@ namespace TGC.Group.Model.Scenes
 
             var newPosition =
                 dist.Length() < 1 ?
-                targetPosition : currentPosition + normalDirection * elapsedTime * 1000;
+                initialPosition : currentPosition + normalDirection * elapsedTime * 1000;
 
-            ShipCamera.SetCamera(newPosition, ShipCamera.LookAt);
+            ShipCamera.SetCamera(newPosition, targetLookAt);
+            physicalCrafter.Close(elapsedTime);
 
-            if (newPosition == targetPosition)
+            if (newPosition == initialPosition)
             {
                 ShipCamera.StopUsingManually();
-                updater = (e) => {};
+                updater = physicalCrafter.Close;
                 renderer = () => {};
             }
         }
 
-        public void Open(Character character, Camera shipCamera, TGCVector3 crafterPosition)
+        public void Open(Character character, Camera shipCamera, Things.Crafter crafter)  
         {
-            Console.WriteLine("Open");
-
+            this.physicalCrafter = crafter;
             this.Character = character;
             this.ShipCamera = shipCamera;
             this.initialPosition = shipCamera.Position;
-            this.initialLookAt = crafterPosition;
-            this.targetPosition = crafterPosition + new TGCVector3(0, 0, 250);
+            this.initialLookAt = shipCamera.LookAt;
+            this.targetPosition = crafter.Center + new TGCVector3(0, 0, 250);
+            this.targetLookAt = crafter.Center;
 
             ShipCamera.UseManually();
 
-            ShipCamera.SetCamera(ShipCamera.Position, crafterPosition);
+            ShipCamera.SetCamera(ShipCamera.Position, crafter.Center);
 
             updater = BeginningAnimation;
-
-            this.opened = true;
         }
         public void Close()
         {
-            if(!this.opened) return;
             ShipCamera.SetCamera(ShipCamera.Position, this.initialLookAt);
             updater = EndAnimation;
             renderer = () => {};
