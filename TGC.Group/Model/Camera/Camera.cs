@@ -93,9 +93,18 @@ namespace TGC.Group.Model
             if (manual) return;
 
             cameraRotation = CalculateCameraRotation();
+            
+            var translation = CalculateTranslation(elapsedTime, cameraRotation);
 
-            Position = CalculateTranslation(elapsedTime, cameraRotation);
-
+            if (translation.Y < 100)
+            {
+                Position = translation;   
+            }
+            else
+            {
+                Position = new TGCVector3(translation.X, Position.Y, translation.Z);
+            }
+            
             LookAt = Position + TGCVector3.TransformNormal(initialDirectionView, cameraRotation);
 
             UpVector = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
