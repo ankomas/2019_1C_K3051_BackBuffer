@@ -96,7 +96,7 @@ namespace TGC.Group.Model
             
             var translation = CalculateTranslation(elapsedTime, cameraRotation);
 
-            if (translation.Y < 100)
+            if (translation.Y < 150)
             {
                 Position = translation;   
             }
