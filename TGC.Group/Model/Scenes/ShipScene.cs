@@ -99,6 +99,8 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             };
+
+            GameState.character.UseShipAmbientShader();
         }
 
         private void TryToInteractWithSelectableThing()
@@ -172,6 +174,8 @@ namespace TGC.Group.Model.Scenes
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
             
             GameState.character.Update(Camera);
+
+            ShaderRepository.ShipAmbientShader.SetValue("time", elapsedTime);
         }
 
         public override void Render(TgcFrustum tgcFrustum)

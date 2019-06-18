@@ -28,7 +28,6 @@ namespace TGC.Group.Model.Scenes
         public static GameState InitialGameState => new GameState(new Player.Character());
         protected CustomSprite cursor, aim, hand;
         protected DialogBox dialogBox = new DialogBox();
-        string dialogName, dialogDescription;
         public delegate void TransitionCallback(GameState gameState);
         public GameState GameState { get; set; }
 

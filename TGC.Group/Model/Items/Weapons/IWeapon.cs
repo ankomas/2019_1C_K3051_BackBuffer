@@ -13,7 +13,7 @@ namespace TGC.Group.Model.Items
     {
         public override ItemType type { get; } = ItemType.WEAPON;
 
-        protected TgcMesh Mesh;
+        public TgcMesh Mesh;
 
         protected Weapon(Recipe recipe, TgcMesh mesh) : base(recipe)
         {

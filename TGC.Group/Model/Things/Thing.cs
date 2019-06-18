@@ -78,7 +78,7 @@ namespace TGC.Group.Model.Things
 
         public Thing(List<TgcMesh> meshes, string name, string actionDescription, Callback action)
         {
-            InitAmbientShader();
+            this.ambientShader = ShaderRepository.ShipAmbientShader;
             this.meshes = meshes;
             this.relativeScales = new List<float>(meshes.Select(_ => 1f));
             this.relativePositions = new List<TGCVector3>(meshes.Select(_ => new TGCVector3(0, 0, 0)));
@@ -86,15 +86,24 @@ namespace TGC.Group.Model.Things
             this.actionDescription = actionDescription;
             this.action = action;
         }
-        float x = 655f;
-        public virtual void Render()
+        protected virtual void RenderingPresets()
         {
-            ambientShader.SetValue("lightPosition", new float[4] { x, 1010, 504, 1});
-            foreach(var mesh in meshes)
+            ambientShader.SetValue("normalDirection", 1f);
+            ambientShader.SetValue("isBelt", 0);
+            ambientShader.SetValue("rotation", Matrix.Identity);
+            ambientShader.SetValue("lightPosition", new float[4] { 655f, 1250, 504, 1 });
+        }
+        protected virtual void RenderMeshes()
+        {
+            foreach (var mesh in meshes)
             {
                 mesh.Render();
             }
-            //x += 2f;
+        }
+        public void Render()
+        {
+            RenderingPresets();
+            RenderMeshes();
         }
         public void ExecuteAction()
         {
