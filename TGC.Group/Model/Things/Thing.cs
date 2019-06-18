@@ -90,8 +90,12 @@ namespace TGC.Group.Model.Things
         {
             ambientShader.SetValue("normalDirection", 1f);
             ambientShader.SetValue("isBelt", 0);
-            ambientShader.SetValue("rotation", Matrix.Identity);
-            ambientShader.SetValue("lightPosition", new float[4] { 655f, 1250, 504, 1 });
+            ambientShader.SetValue("rotation", Matrix.Identity
+                * Matrix.RotationX(meshes[0].Rotation.X)
+                * Matrix.RotationY(meshes[0].Rotation.Y)
+                * Matrix.RotationZ(meshes[0].Rotation.Z)
+                );
+            ambientShader.SetValue("lightPosition", new float[4] { 655f, 1220, 504, 1 });
         }
         protected virtual void RenderMeshes()
         {

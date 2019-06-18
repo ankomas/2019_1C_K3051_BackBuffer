@@ -61,7 +61,6 @@ namespace TGC.Group.Model.Things
         protected override void RenderMeshes()
         {
             var body = meshes[0];
-            ambientShader.SetValue("rotation", Matrix.Identity);
             body.Render();
             var frontCover = meshes[1];
             ambientShader.SetValue("rotation", Matrix.Identity

@@ -117,13 +117,13 @@ float4 main_pixel(VertexOutput input) : COLOR
 	float4 lightToPos = posToLight * (-1);
 	float4 posToCamera = normalize(cameraPosition - pos);
 	float3 reflectedRay = normalize(reflect(lightToPos.xyz, normal));
-	float specularK = pow(max(dot(reflectedRay, posToCamera.xyz), 0), 1);
+	float specularK = pow(max(dot(reflectedRay, posToCamera.xyz), 0), 100);
 
     float3 specularColor = float3(specularK, specularK, specularK);
 
     float3 blueBulb = float3(0.8, 0.8, 1);
 
-    return float4((ambientColor + diffuseColor) * blueBulb * tex2D(diffuseMap, input.TexCoord.xy).xyz, 1);
+    return float4((ambientColor + diffuseColor + specularColor) * blueBulb * tex2D(diffuseMap, input.TexCoord.xy).xyz, 1);
 }
 
 float4 main_pixel_crafted(VertexOutput input) : COLOR
@@ -144,7 +144,7 @@ float4 main_pixel_crafted(VertexOutput input) : COLOR
     float4 lightToPos = posToLight * (-1);
     float4 posToCamera = normalize(cameraPosition - pos);
     float3 reflectedRay = normalize(reflect(lightToPos.xyz, normal));
-    float specularK = pow(max(dot(reflectedRay, posToCamera.xyz), 0), 1);
+    float specularK = pow(max(dot(reflectedRay, posToCamera.xyz), 0), 100);
 
     float3 specularColor = float3(specularK, specularK, specularK);
 
@@ -163,7 +163,7 @@ float4 main_pixel_crafted(VertexOutput input) : COLOR
         ret = float4(0.5, 1, 1, 1);
     else if ((t - input.RotatedInitialPosition.y) / 40 > tex2D(perlinNoiseMap, float2(0.5, input.RotatedInitialPosition.x / 20)).y)
         ret = float4(
-        (ambientColor + diffuseColor)
+        (ambientColor + diffuseColor + specularColor)
         * blueBulb
         * tex2D(diffuseMap, input.TexCoord.xy).xyz
         , input.RotatedInitialPosition.y < t);

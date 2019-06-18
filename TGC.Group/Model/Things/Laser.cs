@@ -13,8 +13,8 @@ namespace TGC.Group.Model.Things
     {
         CustomVertex.PositionOnly[] vertexBuffer;
         public Vector3 position;
-        public Vector2 delta = new Vector2(30, 100);
-        public Vector3 scale = new Vector3(200, 130, 0);
+        public Vector2 delta = new Vector2(30, 130);
+        public Vector3 scale = new Vector3(50, 130, 0);
         public float rotation = 0;
         public Laser()
         {

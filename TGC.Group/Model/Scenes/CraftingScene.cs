@@ -49,7 +49,7 @@ namespace TGC.Group.Model.Scenes
 
         List<TgcMesh> crafted3DModel;
         static Texture perlinNoise = TextureLoader.FromFile(D3DDevice.Instance.Device, Game.Default.MediaDirectory + "perlin-noise.png");
-        Things.Laser laser = new Things.Laser();
+        Things.Laser laser1 = new Things.Laser(), laser2 = new Things.Laser();
 
         public CraftingScene()
         {
@@ -118,14 +118,18 @@ namespace TGC.Group.Model.Scenes
                 time += elapsedTime / 3;
             else time = 0;
 
-            laser.position.X = physicalCrafter.Center.X + deltaX;
-            laser.position.Y = physicalCrafter.Center.Y + 80;
-            laser.position.Z = physicalCrafter.Center.Z + 40;
+            laser1.position.X = physicalCrafter.Center.X + deltaX;
+            laser1.position.Y = physicalCrafter.Center.Y + 80;
+            laser1.position.Z = physicalCrafter.Center.Z + 40;
 
-            laser.delta.X = deltaX;
-            laser.delta.Y = deltaY;
+            laser2.position.X = physicalCrafter.Center.X - deltaX;
+            laser2.position.Y = physicalCrafter.Center.Y + 80;
+            laser2.position.Z = physicalCrafter.Center.Z + 40;
 
-            deltaY = Math.Max(deltaY - time * 0.3f, 0f);
+            laser1.delta.X = (float)Math.Abs(Math.Sin(time * 20)) * 30;
+            laser2.delta.X = -(float)Math.Abs(Math.Sin(time * 20)) * 30;
+
+            //deltaY = Math.Max(deltaY - time * 0.3f, 0f);
         }
         private void MainRender()
         {
@@ -135,7 +139,7 @@ namespace TGC.Group.Model.Scenes
             {
                 var item = Items.Crafter.Crafteables.Find(elem => elem == crafted);
 
-                ShaderRepository.ShipAmbientShader.SetValue("lightPosition", new float[4] { 655, 1010, 504, 1 });
+                ShaderRepository.ShipAmbientShader.SetValue("lightPosition", new float[4] { 655, 1220, 504, 1 });
                 ShaderRepository.ShipAmbientShader.SetValue("perlinNoise", perlinNoise);
                 ShaderRepository.ShipAmbientShader.SetValue("time", time);
                 foreach (var mesh in crafted3DModel)
@@ -149,7 +153,8 @@ namespace TGC.Group.Model.Scenes
                     mesh.Render();
                 }
 
-                laser.Render();
+                //laser1.Render();
+                //laser2.Render();
 
                 item.Icon.Scaling = item.DefaultScale * 4;
                 item.Icon.Position = new TGCVector2(
@@ -277,7 +282,7 @@ namespace TGC.Group.Model.Scenes
                 foreach (var mesh in crafted3DModel)
                 {
                     mesh.Scale = new TGCVector3(scale, scale, scale);
-                    mesh.Position = physicalCrafter.Center + new TGCVector3(0, -50, 40);
+                    mesh.Position = physicalCrafter.Center + new TGCVector3(0, -50, 60);
                 }
 
                 StartCrafting(item);
