@@ -182,13 +182,14 @@ namespace TGC.Group.Model.Scenes
         {
             ClearScreen();
 
+            ShaderRepository.ShipAmbientShader.SetValue("cameraPosition", new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+
             GameState.character.Render();
-            ship.TellCameraPosition(new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+
             ship.Render();
 
             foreach (var thing in selectableThings)
             {
-                thing.TellCameraPosition(new float[4]{ Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1});
                 thing.Render();
                 if (thing.Looked)
                 {

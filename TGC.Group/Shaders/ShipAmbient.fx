@@ -155,7 +155,7 @@ float4 main_pixel_crafted(VertexOutput input) : COLOR
     float4 ret;
     float t = time * 300;
 
-    tolerance = 0.05;
+    tolerance = 0.15;
 
     if (input.RotatedInitialPosition.y > t - 40
         && input.RotatedInitialPosition.y < t
@@ -167,7 +167,6 @@ float4 main_pixel_crafted(VertexOutput input) : COLOR
         * blueBulb
         * tex2D(diffuseMap, input.TexCoord.xy).xyz
         , input.RotatedInitialPosition.y < t);
-    
 
     return ret;
 }
