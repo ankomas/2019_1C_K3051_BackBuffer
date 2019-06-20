@@ -15,10 +15,10 @@ namespace TGC.Group.Model.Things
         {
             SetAmbientShader();
         }
-        public override void Render()
+        protected override void RenderingPresets()
         {
+            base.RenderingPresets();
             ambientShader.SetValue("normalDirection", -1f);
-            base.Render();
         }
     }
 }

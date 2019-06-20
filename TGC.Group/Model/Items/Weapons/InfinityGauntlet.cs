@@ -24,7 +24,6 @@ namespace TGC.Group.Model.Items
         
         public static Effect death = 
             TGCShaders.Instance.LoadEffect(Game.Default.ShadersDirectory + "NoMeQuieroIrSrStark.fx");
-
         
         private Random random = new Random();
 

@@ -99,6 +99,8 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             };
+
+            GameState.character.UseShipAmbientShader();
         }
 
         private void TryToInteractWithSelectableThing()
@@ -172,19 +174,22 @@ namespace TGC.Group.Model.Scenes
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
             
             GameState.character.Update(Camera);
+
+            ShaderRepository.ShipAmbientShader.SetValue("time", elapsedTime);
         }
 
         public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
+            ShaderRepository.ShipAmbientShader.SetValue("cameraPosition", new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+
             GameState.character.Render();
-            ship.TellCameraPosition(new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+
             ship.Render();
 
             foreach (var thing in selectableThings)
             {
-                thing.TellCameraPosition(new float[4]{ Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1});
                 thing.Render();
                 if (thing.Looked)
                 {

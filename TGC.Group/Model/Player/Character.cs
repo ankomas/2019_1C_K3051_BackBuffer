@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms.VisualStyles;
 using BulletSharp;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Items;
@@ -25,6 +26,15 @@ namespace TGC.Group.Model.Player
         public Weapon Weapon { get; set; } 
         
         private Equipment equipment = new Equipment();
+
+        Effect shader = null;
+        string technique = null;
+
+        public void UseShipAmbientShader()
+        {
+            shader = ShaderRepository.ShipAmbientShader;
+            technique = "ShipAmbient";
+        }
         
         public Character()
         {
@@ -104,6 +114,12 @@ namespace TGC.Group.Model.Player
 
         public void Render()
         {
+            if(Weapon != null && shader != null && technique != null)
+            {
+                Weapon.Mesh.Effect = shader;
+                Weapon.Mesh.Technique = technique;
+            }
+
             Weapon?.Render();
         }
 

@@ -168,8 +168,10 @@
     <Compile Include="Model\Scenes\WorldScene.cs" />
     <Compile Include="Model\Segment.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\IRigidBodyFactory.cs" />
+    <Compile Include="Model\ShaderRepository.cs" />
     <Compile Include="Model\Things\Crafter.cs" />
     <Compile Include="Model\Things\Hatch.cs" />
+    <Compile Include="Model\Things\Laser.cs" />
     <Compile Include="Model\Things\LifeBelt.cs" />
     <Compile Include="Model\Things\Seat.cs" />
     <Compile Include="Model\Things\Ship.cs" />
@@ -271,13 +273,14 @@
     <Content Include="Shaders\FishMovement.fx" />
     <Content Include="Shaders\Crafter.fx" />
     <Content Include="Shaders\Fede.fx" />
+    <Content Include="Shaders\Laser.fx" />
     <Content Include="Shaders\NoMeQuieroIrSrStark.fx" />
     <Content Include="Shaders\OrientationArrow.fx" />
     <Content Include="Shaders\Oxygen.fx" />
     <Content Include="Shaders\ShipAmbient.fx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\Elements\Effects" />
+    <Folder Include="Model\Elements\Effects\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
