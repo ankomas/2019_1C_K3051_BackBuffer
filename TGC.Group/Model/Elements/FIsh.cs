@@ -1,11 +1,8 @@
-﻿using System.Drawing;
-using BulletSharp;
+﻿using BulletSharp;
 using Microsoft.DirectX.Direct3D;
-using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
-using TGC.Group.Form;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Movements;
 
@@ -23,8 +20,10 @@ namespace TGC.Group.Model.Elements
         
         public Fish(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
         {
-            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 60f );
-            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.3f, 20f);
+            EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 30f );
+            RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.3f, 10f);
+            Mesh.Technique = "RenderScene";
+            Mesh.Effect = movement;
         }
 
         public override void Update(Camera camera)
@@ -37,8 +36,9 @@ namespace TGC.Group.Model.Elements
         }
 
         public override void Render()
-        {
-            this.Mesh.Render();
+        { 
+            this.Mesh.Effect.SetValue("time", GameModel.GlobalTime);
+            base.Render();
         }
 
         private MovementToApply Move(Camera camera)

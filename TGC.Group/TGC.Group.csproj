@@ -106,6 +106,7 @@
     <Compile Include="Model\Camera\Camera.cs" />
     <Compile Include="Model\Camera\CameraFactory.cs" />
     <Compile Include="Model\Camera\CameraFPSGravity.cs" />
+    <Compile Include="Model\Cheats.cs" />
     <Compile Include="Model\Chunks\AquaticChunk.cs" />
     <Compile Include="Model\Chunks\FloorChunk.cs" />
     <Compile Include="Model\Chunks\Chunk.cs" />
@@ -115,11 +116,12 @@
     <Compile Include="Model\CollisionManager.cs" />
     <Compile Include="Model\Elements\ElementFactories\ElementFactory.cs" />
     <Compile Include="Model\Elements\ElementFactories\FishFactory.cs" />
-    <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\Coral.cs" />
     <Compile Include="Model\Elements\ElementFactories\CoralFactory.cs" />
+    <Compile Include="Model\Elements\Fish.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\CapsuleFactory.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\BoxFactory.cs" />
+    <Compile Include="Model\Elements\RigidBodyFactories\TriangleShapeFactory.cs" />
     <Compile Include="Model\Elements\Ship.cs" />
     <Compile Include="Model\Entities\Shark\Shark.cs" />
     <Compile Include="Model\Entities\Shark\SharkFactory.cs" />
@@ -269,13 +271,13 @@
     <Content Include="Shaders\FishMovement.fx" />
     <Content Include="Shaders\Crafter.fx" />
     <Content Include="Shaders\Fede.fx" />
+    <Content Include="Shaders\NoMeQuieroIrSrStark.fx" />
     <Content Include="Shaders\OrientationArrow.fx" />
     <Content Include="Shaders\Oxygen.fx" />
     <Content Include="Shaders\ShipAmbient.fx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\Elements\Effects" />
-    <Folder Include="Model\Entities\Fish" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Core.Shaders;
+using TGC.Group.Model.Elements;
 using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
-using TGC.Group.Model.Scenes;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
@@ -21,11 +22,18 @@ namespace TGC.Group.Model.Items
             new Ingredient(new Gold(), 1)
         });
         
-        private static Random random = new Random();
+        public static Effect death = 
+            TGCShaders.Instance.LoadEffect(Game.Default.ShadersDirectory + "NoMeQuieroIrSrStark.fx");
 
-        private float transcurredTime = 0f;
+        
+        private Random random = new Random();
 
-
+        private bool inAttack;
+        private float elapsedTimeSinceAttack;
+        private IEnumerable<Element> elementsToAttack = new List<Element>();
+        private float elapsedTime = 0f;
+        
+        
         private static TgcMesh CreateMesh()
         {
             return new TgcSceneLoader()
@@ -56,35 +64,60 @@ namespace TGC.Group.Model.Items
                 -FastMath.QUARTER_PI * 1.4f + FastMath.Clamp(camera.updownRot , -FastMath.QUARTER_PI * 0.2f, FastMath.QUARTER_PI * 0.2f)
             );
         }
-
-        public override void Attack(World world, TgcD3dInput input)
+        public override void Attack(World world, TgcD3dInput input) 
         {
-            if (GameInput._Attack.IsDown(input))
+            if (inAttack)
             {
-                transcurredTime += GameModel.GlobalElapsedTime;
+                elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
+                foreach (var element in elementsToAttack)
+                {
+
+                    element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack * 0.5f);
+                }
+                
+                
+                if (elapsedTimeSinceAttack > 5)
+                {
+                    foreach (var element in elementsToAttack)
+                    {
+                        world.Remove(element);
+                    }
+
+                    elementsToAttack = new List<Element>();
+                    inAttack = false;
+                    elapsedTimeSinceAttack = 0;
+                }
+
+            }
+            
+            if (GameInput._Attack.IsPressed(input))
+            {
                 
                 Mesh.Position = new TGCVector3(
                     Mesh.Position.X + (float)random.NextDouble() / 8,
                     Mesh.Position.Y + (float)random.NextDouble() / 8, 
                     Mesh.Position.Z + (float)random.NextDouble() / 8
                     );
+                
+                if (!inAttack)
+                { 
+                   inAttack = true;
+                   elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
+                   elementsToAttack = world.elementsToUpdate
+                       .Take(world.elementsToUpdate.Count / 2)
+                       .Where(element => element.Mesh != null);
+                   foreach (var element in elementsToAttack)
+                   {
+                           element.Mesh.Technique = "RenderScene";
+                           element.Mesh.Effect = death;
+                           element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
 
-                if (transcurredTime > 2)
-                {
-                 
-                    foreach (var element in world.elementsToUpdate.Take(world.elementsToUpdate.Count / 2 ))
-                    { 
-                        world.Remove(element);
-                    }
-
-                    transcurredTime = 0;
+                   }
+                   
                 }
             }
-            else
-            {
-                transcurredTime = 0;
-            }
         }
+               
 
     }
 }

@@ -86,12 +86,15 @@ namespace TGC.Group.Model.Things
             this.actionDescription = actionDescription;
             this.action = action;
         }
+        float x = 655f;
         public virtual void Render()
         {
+            ambientShader.SetValue("lightPosition", new float[4] { x, 1010, 504, 1});
             foreach(var mesh in meshes)
             {
                 mesh.Render();
             }
+            //x += 2f;
         }
         public void ExecuteAction()
         {

@@ -45,7 +45,7 @@ namespace TGC.Group.Model.Player
 
         public bool IsDead()
         {
-            return this.ActualStats.Life <= 0;
+            return !Cheats.GodMode && this.ActualStats.Life <= 0;
         }
 
         public void GiveItem(IItem item)

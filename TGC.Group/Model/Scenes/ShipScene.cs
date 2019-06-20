@@ -165,7 +165,7 @@ namespace TGC.Group.Model.Scenes
 
         public override void UpdateGameplay(float elapsedTime)
         {
-            
+            Cheats.ApplyCheats(this.GameState.character);
             this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
             inventoryScene.Update(elapsedTime);
             craftingScene.Update(elapsedTime);
@@ -250,6 +250,8 @@ namespace TGC.Group.Model.Scenes
         {
             cursor = null;
             TurnExploreCommandsOff();
+            pressed[GameInput.Inventory] = () => {};
+            inventoryScene.Close();
             craftingScene.Open(this.GameState.character, Camera, this.crafter);
             pressed[GameInput.GoBack] = CloseCrafter;
         }

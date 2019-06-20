@@ -13,5 +13,10 @@ namespace TGC.Group.Model.Things
         {
             SetAmbientShader();
         }
+        public override void Render()
+        {
+            ambientShader.SetValue("isBelt", 1);
+            base.Render();
+        }
     }
 }

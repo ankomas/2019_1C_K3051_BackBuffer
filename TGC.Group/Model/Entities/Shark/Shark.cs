@@ -18,7 +18,6 @@ namespace TGC.Group.Model.Elements
     public class Shark : Entity
     {
         private static readonly TgcText2D DrawText = new TgcText2D();
-        private bool dead;
 
         public Shark(TgcMesh model, RigidBody rigidBody, Movement movement) : base(model, rigidBody, movement) { }
 
@@ -54,16 +53,6 @@ namespace TGC.Group.Model.Elements
                 FastMath.Pow2(sharkBody.Radius - cameraBody.Radius) * epsilon ;
         }
 
-        public override void Render()
-        {
-            base.Render();
-            if (dead)
-            {
-                var point = GetCenter();
-                DrawText.drawText("Hit", point.X, point.Y, Color.Red);
-            }
-
-        }
         private static Point GetCenter()
         {
             return new Point(

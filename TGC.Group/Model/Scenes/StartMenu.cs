@@ -9,6 +9,7 @@ using TGC.Group.Model.Utils;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Core.Terrain;
 using TGC.Core.Camara;
+using TGC.Group.Form;
 using TGC.Group.Model.Input;
 
 namespace TGC.Group.Model.Scenes
@@ -70,6 +71,8 @@ namespace TGC.Group.Model.Scenes
 
             pressed[GameInput.Down] = () => pointer = Pointer.DOWN;
             pressed[GameInput.Up] = () => pointer = Pointer.UP;
+            pressed[GameInput.Right] = () => Cheats.ActivateNext();
+            pressed[GameInput.Left] = () => Cheats.DesactivateNext();
             pressed[GameInput.Accept] = fireAction;
         }
 
@@ -122,6 +125,12 @@ namespace TGC.Group.Model.Scenes
             DrawTextSmall.drawText("Start", (int)x, yStartWord, colors[(int)pointer]);
             DrawTextSmall.drawText("Exit", (int)x, yStartWord + yOffset, colors[(((int)pointer) + 1) % 2]);
             DrawTextSmall.drawText("->", (int)x - 40, yStartWord + (int)pointer * yOffset, Color.OrangeRed);
+            
+            if(Cheats.GodMode)
+                this.DrawTextSmall.drawText("God Mode", 300, 300, Color.Gold);
+            
+            if(Cheats.StartingItems)
+                this.DrawTextSmall.drawText("Starting items", 300, 360, Color.Gold);
         }
         private void fireAction()
         {

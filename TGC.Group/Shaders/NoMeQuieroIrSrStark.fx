@@ -1,19 +1,10 @@
-// ---------------------------------------------------------
-// Ejemplo shader Minimo:
-// ---------------------------------------------------------
-
-/**************************************************************************************/
-/* Variables comunes */
-/**************************************************************************************/
-
 //Matrices de transformacion
 float4x4 matWorld; //Matriz de transformacion World
 float4x4 matWorldView; //Matriz World * View
 float4x4 matWorldViewProj; //Matriz World * View * Projection
 float4x4 matInverseTransposeWorld; //Matriz Transpose(Invert(World))
-
-float screen_dx = 1024;
-float screen_dy = 768;
+float elapsedTime;
+float time;
 
 //Textura para DiffuseMap
 texture texDiffuseMap;
@@ -27,11 +18,6 @@ sampler2D diffuseMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
-float time = 0;
-
-/**************************************************************************************/
-/* RenderScene */
-/**************************************************************************************/
 
 //Input del Vertex Shader
 struct VS_INPUT
@@ -51,20 +37,20 @@ struct VS_OUTPUT
 };
 
 //Vertex Shader
-
 VS_OUTPUT vs_main(VS_INPUT Input)
 {
     VS_OUTPUT Output;
-    
-    Input.Position.z = Input.Position.z + sin(time + Input.Position.x*0.1)*0.75;
-    
+
+    //if(frac(Input.Position.x * elapsedTime)  > 0.3)
+      //  Input.Position.x -= abs(Input.Position.x - centerX) * elapsedTime / 5 ;
+
     Output.RealPos = Input.Position;
 
 	//Proyectar posicion
     Output.Position = mul(Input.Position, matWorldViewProj);
    
 	//Propago las coordenadas de textura
-    Output.Texcoord = Input.Texcoord;
+    Output.Texcoord = Input.Texcoord; 
 
 	//Propago el color x vertice
     Output.Color = Input.Color;
@@ -72,15 +58,15 @@ VS_OUTPUT vs_main(VS_INPUT Input)
     return (Output);
 }
 
+
 //Pixel Shader
 float4 ps_main(VS_OUTPUT Input) : COLOR0
 {
-    //float4 rgb = 0;
-    //return rgb;
+    if((frac(Input.RealPos.x * elapsedTime) + 0.3 )* elapsedTime > 1 || (frac(Input.RealPos.y * elapsedTime ) + 0.2 )* elapsedTime > 1)
+        discard;
     return tex2D(diffuseMap, Input.Texcoord);
 }
 
-// ------------------------------------------------------------------
 technique RenderScene
 {
     pass Pass_0
@@ -89,3 +75,5 @@ technique RenderScene
         PixelShader = compile ps_3_0 ps_main();
     }
 }
+
+

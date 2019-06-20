@@ -248,6 +248,8 @@ namespace TGC.Group.Model.Scenes
             {
                 onGameOverCallback();
             }
+
+            Cheats.ApplyCheats(this.GameState.character);
             
             GameState.character.Update(Camera);
 
