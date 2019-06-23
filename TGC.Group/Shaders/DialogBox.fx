@@ -39,7 +39,7 @@ float4 main_border(TransformedVertexData input) : COLOR
         discard;
     }
 
-    return float4(borderColor.xyz, 1);
+    return borderColor;
 }
 
 technique DialogBox

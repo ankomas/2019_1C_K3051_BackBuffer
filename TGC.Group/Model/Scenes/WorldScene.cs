@@ -84,7 +84,6 @@ namespace TGC.Group.Model.Scenes
             InitSkyBoxes();
             InitWaterVision();
             InitMask();
-            InitDialogBox();
             
             this.World = new World(new TGCVector3(0, 0, 0));
             
@@ -169,10 +168,6 @@ namespace TGC.Group.Model.Scenes
         {
             mask = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Mask);
             Screen.FitSpriteToScreen(mask);
-        }
-        private void InitDialogBox()
-        {
-            dialogBox = new DialogBox();
         }
         private void InitSkyBoxes()
         {

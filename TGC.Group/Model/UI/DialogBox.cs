@@ -34,9 +34,8 @@ namespace TGC.Group.Model.UI
         private float width = 0, height = 0;
         private Vector2 position = new Vector2();
         private float borderThickness = 2;
-        //public Color color = Color.FromArgb(1, 0, 0, 0), borderColor = Color.Black;
         public Color color = Color.FromArgb(180, 0, 0, 0), borderColor = Color.Transparent;
-        private float opacityLevel = 1;
+        private float interiorOpacity = 1, borderOpacity = 1;
 
         private delegate void Renderer();
         Renderer renderer = () => {};
@@ -48,7 +47,7 @@ namespace TGC.Group.Model.UI
         {
             textBig.changeFont(new System.Drawing.Font("Arial Black", 10f));
 
-            vertexBuffer =    new CustomVertex.TransformedColored[6];
+            vertexBuffer    = new CustomVertex.TransformedColored[6];
             vertexBuffer[0] = new CustomVertex.TransformedColored(  0,   0, 0, 1, 0x000000); // Top-Left
             vertexBuffer[1] = new CustomVertex.TransformedColored(100,   0, 0, 1, 0xFF0000); // Top-Right
             vertexBuffer[2] = new CustomVertex.TransformedColored(100, 100, 0, 1, 0xFFFF00); // Bottom-Right
@@ -128,7 +127,8 @@ namespace TGC.Group.Model.UI
         private void UpdateOpen(float elapsedTime)
         {
             openingLevel += 5f * elapsedTime;
-            opacityLevel = color.A * openingLevel;
+            interiorOpacity = color.A * openingLevel;
+            borderOpacity = borderColor.A * openingLevel;
             SetPositionWidthHeight(position, width * openingLevel, height * openingLevel);
 
             if (openingLevel >= 1)
@@ -139,7 +139,8 @@ namespace TGC.Group.Model.UI
         }
         private void MainUpdate(float elapsedTime)
         {
-            opacityLevel = color.A;
+            interiorOpacity = color.A;
+            borderOpacity = borderColor.A;
             SetPositionWidthHeight(position, width, height);
         }
         public void Update(float elapsedTime)
@@ -159,7 +160,7 @@ namespace TGC.Group.Model.UI
         }
         private void RenderRectangle()
         {
-            var shader = ShaderRepository.DialogBoxShader;
+            var shader = ShaderManager.DialogBoxShader;
             shader.Begin(FX.None);
             shader.BeginPass(0);
 
@@ -168,7 +169,7 @@ namespace TGC.Group.Model.UI
             shader.SetValue("screenPos", new float[2] { position.X, position.Y });
             shader.SetValue("size", new float[2] { width * openingLevel, height * openingLevel });
             shader.SetValue("borderThickness", borderThickness);
-            shader.SetValue("color", new float[4] { color.R / 255f, color.G / 255f, color.B / 255f, opacityLevel / 255f });
+            shader.SetValue("color", new float[4] { color.R / 255f, color.G / 255f, color.B / 255f, interiorOpacity / 255f });
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, 2, vertexBuffer);
 
             shader.EndPass();
@@ -179,7 +180,7 @@ namespace TGC.Group.Model.UI
 
                 D3DDevice.Instance.Device.VertexFormat = CustomVertex.TransformedColored.Format;
                 D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
-                shader.SetValue("borderColor", new float[4] { borderColor.R / 255f, borderColor.G / 255f, borderColor.B / 255f, borderColor.A / 255f });
+                shader.SetValue("borderColor", new float[4] { borderColor.R / 255f, borderColor.G / 255f, borderColor.B / 255f, borderOpacity / 255f });
                 D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, 2, vertexBuffer);
 
                 shader.EndPass();

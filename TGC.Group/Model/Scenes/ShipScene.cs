@@ -80,7 +80,10 @@ namespace TGC.Group.Model.Scenes
             crafter.Scale = new TGCVector3(.5f, .5f, .5f);
             crafter.Position = new TGCVector3(560, 950, -250);
 
-            hatch = new Things.Hatch(() => onGoToWaterCallback(this.GameState));
+            hatch = new Things.Hatch(() => {
+                this.GameState.character.StopUsingShipAmbientShader();
+                onGoToWaterCallback(this.GameState);
+            });
             hatch.Position = new TGCVector3(600, 720, 450);
 
             SetCamera();
@@ -177,14 +180,14 @@ namespace TGC.Group.Model.Scenes
             GameState.character.Update(Camera);
 
             dialogBox.Update(elapsedTime);
-            ShaderRepository.ShipAmbientShader.SetValue("time", elapsedTime);
+            ShaderManager.ShipAmbientShader.SetValue("time", elapsedTime);
         }
 
         public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
-            ShaderRepository.ShipAmbientShader.SetValue("cameraPosition", new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+            ShaderManager.ShipAmbientShader.SetValue("cameraPosition", new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
 
             GameState.character.Render();
 

@@ -5,6 +5,7 @@ using BulletSharp;
 using Microsoft.DirectX.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.SceneLoader;
+using TGC.Core.Shaders;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Items.Consumables;
 using TGC.Group.Model.Items.Equipment;
@@ -32,10 +33,19 @@ namespace TGC.Group.Model.Player
 
         public void UseShipAmbientShader()
         {
-            shader = ShaderRepository.ShipAmbientShader;
+            shader = ShaderManager.ShipAmbientShader;
             technique = "ShipAmbient";
         }
-        
+        public void StopUsingShipAmbientShader()
+        {
+            shader = null;
+            technique = null;
+            if (Weapon != null)
+            {
+                ShaderManager.DeleteShaderFromTgcMesh(Weapon.Mesh);
+            }
+        }
+
         public Character()
         {
             this.ActualStats = this.MaxStats;

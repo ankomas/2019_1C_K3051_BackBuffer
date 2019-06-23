@@ -78,7 +78,7 @@ namespace TGC.Group.Model.Things
 
         public Thing(List<TgcMesh> meshes, string name, string actionDescription, Callback action)
         {
-            this.ambientShader = ShaderRepository.ShipAmbientShader;
+            this.ambientShader = ShaderManager.ShipAmbientShader;
             this.meshes = meshes;
             this.relativeScales = new List<float>(meshes.Select(_ => 1f));
             this.relativePositions = new List<TGCVector3>(meshes.Select(_ => new TGCVector3(0, 0, 0)));

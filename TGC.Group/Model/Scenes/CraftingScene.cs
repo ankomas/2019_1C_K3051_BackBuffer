@@ -140,13 +140,13 @@ namespace TGC.Group.Model.Scenes
             {
                 var item = Items.Crafter.Crafteables.Find(elem => elem == crafted);
 
-                ShaderRepository.ShipAmbientShader.SetValue("lightPosition", new float[4] { 655, 1220, 504, 1 });
-                ShaderRepository.ShipAmbientShader.SetValue("perlinNoise", perlinNoise);
-                ShaderRepository.ShipAmbientShader.SetValue("time", time);
+                ShaderManager.ShipAmbientShader.SetValue("lightPosition", new float[4] { 655, 1220, 504, 1 });
+                ShaderManager.ShipAmbientShader.SetValue("perlinNoise", perlinNoise);
+                ShaderManager.ShipAmbientShader.SetValue("time", time);
                 foreach (var mesh in crafted3DModel)
                 {
-                    mesh.Effect = ShaderRepository.ShipAmbientShader;
-                    ShaderRepository.ShipAmbientShader.SetValue("rotation", Matrix.RotationX(mesh.Rotation.X) * Matrix.RotationY(mesh.Rotation.Y));
+                    mesh.Effect = ShaderManager.ShipAmbientShader;
+                    ShaderManager.ShipAmbientShader.SetValue("rotation", Matrix.RotationX(mesh.Rotation.X) * Matrix.RotationY(mesh.Rotation.Y));
                     mesh.Technique = "CraftedItems";
                     mesh.RotateY(0.025f);
                     
