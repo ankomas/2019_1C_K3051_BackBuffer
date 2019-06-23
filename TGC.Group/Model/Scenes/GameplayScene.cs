@@ -1,6 +1,7 @@
 ﻿using Microsoft.DirectX;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace TGC.Group.Model.Scenes
         public GameplayScene(GameState gameState) : base()
         {
             this.GameState = gameState;
+            InitDialogBox();
             InitStatsIndicator();
             InitAim();
             InitHand();
@@ -59,6 +61,11 @@ namespace TGC.Group.Model.Scenes
         {
             this.GameState = gameState;
             return this;
+        }
+        private void InitDialogBox()
+        {
+            dialogBox.color = Color.FromArgb(210, 0, 63, 108);
+            dialogBox.borderColor = Color.FromArgb(255, 13, 158, 255);
         }
         private void InitStatsIndicator()
         {

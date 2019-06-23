@@ -101,6 +101,7 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
+            dialogBox.Update(elapsedTime);
             updater(elapsedTime);
         }
         public override void Render(TgcFrustum frustum)

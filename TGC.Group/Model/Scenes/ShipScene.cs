@@ -38,6 +38,7 @@ namespace TGC.Group.Model.Scenes
         private CraftingScene craftingScene;
 
         List<Thing> selectableThings = new List<Thing>();
+        Thing lookedThing = null;
         Things.Hatch hatch;
         Things.Crafter crafter;
         Things.Ship ship;
@@ -175,6 +176,7 @@ namespace TGC.Group.Model.Scenes
             
             GameState.character.Update(Camera);
 
+            dialogBox.Update(elapsedTime);
             ShaderRepository.ShipAmbientShader.SetValue("time", elapsedTime);
         }
 
@@ -188,22 +190,36 @@ namespace TGC.Group.Model.Scenes
 
             ship.Render();
 
+            var lookedThings = selectableThings.Where(t => t.Looked).ToList();
+            Thing newLookedThing = null;
+
+            if(lookedThings.Count() == 0)
+            {
+                lookedThing = null;
+            }
+            else
+            {
+                newLookedThing = lookedThings[0];
+                if (newLookedThing != lookedThing)
+                {
+                    dialogBox.Open();
+                    lookedThing = newLookedThing;
+                }
+                dialogBox.Clear();
+                if (cursor != null)
+                {
+                    newLookedThing.BoundingBox.Render();
+                    dialogBox.AddLineSmall(newLookedThing.name);
+                    dialogBox.AddLineSmall("------------");
+                    dialogBox.AddLineSmall(newLookedThing.actionDescription);
+                    dialogBox.Render();
+                    cursor = hand;
+                }
+            }
+
             foreach (var thing in selectableThings)
             {
                 thing.Render();
-                if (thing.Looked)
-                {
-                    dialogBox.Clear();
-                    if (cursor != null)
-                    {
-                        thing.BoundingBox.Render();
-                        dialogBox.AddLineSmall(thing.name);
-                        dialogBox.AddLineSmall("------------");
-                        dialogBox.AddLineSmall(thing.actionDescription);
-                        dialogBox.Render();
-                        cursor = hand;
-                    }
-                }
             }
 
             lifeBelt.Position = new TGCVector3(285, 1000, 250);

@@ -12,6 +12,7 @@ namespace TGC.Group.Model
     {
         public static Effect ShipAmbientShader = Load("ShipAmbient.fx");
         public static Effect LaserShader = Load("Laser.fx");
+        public static Effect DialogBoxShader = Load("DialogBox.fx");
         private static Effect Load(string path)
         {
             Effect effect;

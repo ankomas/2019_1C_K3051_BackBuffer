@@ -1,5 +1,6 @@
 #define c  0.9238795325112867f // cos(PI / 8)
 #define s  0.3826834323650898f // sin(PI / 8)
+#define MaxFarness 3000
 
 extern uniform float4x4 matWorld;
 extern uniform float4x4 matWorldView;
@@ -123,7 +124,17 @@ float4 main_pixel(VertexOutput input) : COLOR
 
     float3 blueBulb = float3(0.8, 0.8, 1);
 
-    return float4((ambientColor + diffuseColor + specularColor) * blueBulb * tex2D(diffuseMap, input.TexCoord.xy).xyz, 1);
+    float4 realColor = float4((ambientColor + diffuseColor + specularColor) * blueBulb * tex2D(diffuseMap, input.TexCoord.xy).xyz, 1);
+
+    float farness = length(pos - cameraPosition);
+
+    float3 waterColor = float3(0, 0.4, 0.7);
+
+    //float4 finalColor = lerp(realColor, duColor, saturate(farness / MaxFarness));
+    float4 depthWaterColor = float4(waterColor * (farness / MaxFarness), 1);
+    float4 finalColor = lerp(realColor, depthWaterColor, saturate(0.4 + farness / MaxFarness));
+
+    return finalColor;
 }
 
 float4 main_pixel_crafted(VertexOutput input) : COLOR

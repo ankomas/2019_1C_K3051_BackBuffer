@@ -58,7 +58,8 @@ namespace TGC.Group.Model.Scenes
 
         OrientationArrow orientationArrow = new OrientationArrow();
         TgcSkyBox skyBoxUnderwater, skyBoxOutside;
-        CustomSprite waterVision, mask, dialogBox;
+        CustomSprite waterVision, mask;
+
         Drawer2D drawer = new Drawer2D();
         string dialogName, dialogDescription;
         internal Character Character { get { return GameState.character; } }
@@ -103,7 +104,7 @@ namespace TGC.Group.Model.Scenes
             RegisterSubscene(inventoryScene);
 
             TurnExploreCommandsOn();
-            
+
             //this.loadIndicator.Init();
         }
         public void ResetCamera()
@@ -171,11 +172,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void InitDialogBox()
         {
-            dialogBox = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.BlackRectangle);
-            dialogBox.Scaling = new TGCVector2(.35f, .05f);
-            dialogBox.Color = Color.FromArgb(188, dialogBox.Color.R, dialogBox.Color.G, dialogBox.Color.B);
-            Screen.CenterSprite(dialogBox);
-            dialogBox.Position = new TGCVector2(dialogBox.Position.X + 120, dialogBox.Position.Y + 80);
+            dialogBox = new DialogBox();
         }
         private void InitSkyBoxes()
         {
@@ -234,7 +231,6 @@ namespace TGC.Group.Model.Scenes
                     return;
                 }
 
-
                 preload();
 
                 //TODO loading scene
@@ -279,14 +275,14 @@ namespace TGC.Group.Model.Scenes
             aimFired = false;
 
             orientationArrow.Update(Camera.Position, InitialChunk.ShipInitialPosition, Camera.LookAt);
+            dialogBox.Update(elapsedTime);
         }
 
         private IItem manageSelectableElement(Element element)
         {
-            dialogName = dialogDescription = "";
-
             if (element == null)
             {
+                dialogName = dialogDescription = "";
                 cursor = aim;
                 return null;
             }
@@ -296,12 +292,20 @@ namespace TGC.Group.Model.Scenes
 
             if (element.item != null)
             {
+                if(element.item.Name != dialogName)
+                {
+                    dialogBox.Open();
+                }
                 dialogName = element.item.Name;
                 dialogDescription = element.item.Description;
             }
 
             if (element.GetType() == typeof(Ship))
             {
+                if ("Ship" != dialogName)
+                {
+                    dialogBox.Open();
+                }
                 dialogName = "Ship";
                 dialogDescription = "Enter to the ship";
             }
@@ -390,18 +394,16 @@ namespace TGC.Group.Model.Scenes
             drawer.BeginDrawSprite();
             //drawer.DrawSprite(waterVision);
             drawer.DrawSprite(cursor);
-            if (dialogName != "")
-            {
-                drawer.DrawSprite(dialogBox);
-            }
             drawer.EndDrawSprite();
 
             inventoryScene.Render();
 
             if (dialogName != "")
             {
-                DrawText.drawText(dialogName, (int)dialogBox.Position.X, (int)dialogBox.Position.Y, Color.White);
-                DrawText.drawText(dialogDescription, (int)dialogBox.Position.X, (int)dialogBox.Position.Y + 15, Color.White);
+                dialogBox.Clear();
+                dialogBox.AddLineBig(dialogName, Color.FromArgb(255, 204, 234, 255));
+                dialogBox.AddLineSmall(dialogDescription, Color.FromArgb(255, 204, 234, 255));
+                dialogBox.Render();
             }
 
             drawer.BeginDrawSprite();
