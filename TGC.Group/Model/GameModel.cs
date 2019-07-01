@@ -137,15 +137,8 @@ namespace TGC.Group.Model
 
         private void ResetGame()
         {
-            shipScene = new ShipScene(GameplayScene.InitialGameState)
-                .OnGoToWater((gameState) => {
-                    gameScene.ResetCamera();
-                    SetNextScene(gameScene.WithGameState(gameState));
-                })
-                .OnPause(() => {
-                    PauseScene(shipScene);
-                });
-
+            this.gameScene?.Dispose();
+            
             gameScene = new WorldScene(GameplayScene.InitialGameState)
                 .OnPause(() => {
                     PauseScene(gameScene);
@@ -157,6 +150,15 @@ namespace TGC.Group.Model
                 .OnGameOver(() => {
                     SetNextScene(gameOverScene);
                     ResetGame();
+                });
+
+            shipScene = new ShipScene(GameplayScene.InitialGameState)
+                .OnGoToWater((gameState) => {
+                    gameScene.ResetCamera();
+                    SetNextScene(gameScene.WithGameState(gameState));
+                })
+                .OnPause(() => {
+                    PauseScene(shipScene);
                 });
 
             gameOverScene = new GameOverScene()

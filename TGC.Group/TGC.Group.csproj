@@ -183,6 +183,7 @@
     <Compile Include="Model\UI\OxygenIndicator.cs" />
     <Compile Include="Model\Utils\Cube.cs" />
     <Compile Include="Model\Scenes\PauseMenu.cs" />
+    <Compile Include="Model\Utils\MySimpleTerrain.cs" />
     <Compile Include="Model\Utils\Screen.cs" />
     <Compile Include="Model\Utils\ShaderRepository.cs" />
     <Compile Include="Model\Utils\SpawnRate.cs" />

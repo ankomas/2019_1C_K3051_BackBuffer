@@ -7,13 +7,18 @@ using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Resources.Meshes
 {
-    class SharkMesh
+    static class SharkMesh
     {
-        private static readonly TgcMesh Shark = new TgcSceneLoader()
+        private static TgcMesh Shark = new TgcSceneLoader()
                         .loadSceneFromFile(Game.Default.MediaDirectory + "shark-TgcScene.xml").Meshes[0];
 
         public static TgcMesh Get()
         {
+            if (Shark == null || Shark.D3dMesh == null)
+            {
+                Shark = new TgcSceneLoader()
+                    .loadSceneFromFile(Game.Default.MediaDirectory + "shark-TgcScene.xml").Meshes[0];
+            }
             return Shark;
         }
     }

@@ -13,6 +13,7 @@ using TGC.Group.Model.Elements;
 using TGC.Group.Model.Elements.ElementFactories;
 using TGC.Group.Model.Elements.RigidBodyFactories;
 using TGC.Group.Model.Resources;
+using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
 using Element = TGC.Group.Model.Elements.Element;
 
@@ -22,7 +23,7 @@ namespace TGC.Group.Model.Chunks
     {
         public RigidBody FloorRigidBody { get; set; }
 
-        public TgcSimpleTerrain Floor { get; set; }
+        public MySimpleTerrain Floor { get; set; }
         
         private List<Segment> segments;
         private int divisions;
@@ -49,7 +50,7 @@ namespace TGC.Group.Model.Chunks
             return segments.SelectMany(segment => segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 1200), FishFactory.Instance)).ToList();
         }
 
-        private static List<Element> CreateCorals(Segment segment, int divisions, TgcSimpleTerrain floor)
+        private static List<Element> CreateCorals(Segment segment, int divisions, MySimpleTerrain floor)
         {
             var corals = segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 100), CoralFactory.Instance)
                 .ToList();
@@ -75,7 +76,7 @@ namespace TGC.Group.Model.Chunks
 
         public override void Dispose()
         {
-            Floor.Dispose();
+            FloorRepository.Dispose(Floor);
             base.Dispose();
         }
     }

@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using BulletSharp;
 using Microsoft.DirectX.Direct3D;
@@ -12,11 +13,13 @@ using TGC.Core.BoundingVolumes;
 using TGC.Core.Camara;
 using TGC.Core.Collision;
 using TGC.Core.Direct3D;
+using TGC.Core.Example;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using TGC.Group.Model.Chunks;
 using TGC.Group.Model.Elements;
 using TGC.Group.Model.Elements.ElementFactories;
+using TGC.Group.Model.Input;
 using TGC.Group.Model.Player;
 using TGC.Group.Model.Utils;
 using Chunk = TGC.Group.Model.Chunks.Chunk;
@@ -42,14 +45,12 @@ namespace TGC.Group.Model
 
         private readonly List<Element> entities;
         private Entity shark;
-        public TgcSimpleTerrain Floor { get; set; }
 
-        private Effect effect;
-
+        public int generating;
         public int elementsUpdated;
         public int elementsRendered;
-        public int generating = 0;
         
+
         public World(TGCVector3 initialPoint)
         {
             chunks = new Dictionary<TGCVector3, Chunk>();
@@ -106,10 +107,14 @@ namespace TGC.Group.Model
 
             this.generating = vectors.Count;
 
+            TGCVector3 trunkedPosition;
+            //var limit = 10 * Chunk.DefaultSize.X;
             foreach (var position in vectors)
             {
-                toUpdate.Add(chunks.ContainsKey(position) ? chunks[position] : AddChunk(position));
-            }            
+                trunkedPosition = position;
+                //trunkedPosition = new TGCVector3(Math.Abs(position.X)%limit, position.Y, Math.Abs(position.X)%limit);
+                toUpdate.Add(chunks.ContainsKey(trunkedPosition) ? chunks[trunkedPosition] : AddChunk(trunkedPosition));
+            }
             
             return toUpdate.ToList();
         }
@@ -132,6 +137,8 @@ namespace TGC.Group.Model
 
         public void Update(Camera camera, Character character)
         {
+            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(GameModel.GlobalElapsedTime);
+
             var toUpdate = ToUpdate(camera.Position);
             renderedOrigins = toUpdate.ConvertAll(chunk => chunk.Origin).FindAll(v3 => v3.Y/(Chunk.DefaultSize.Y) == Chunk.seaFloor);
             
@@ -186,10 +193,19 @@ namespace TGC.Group.Model
 
         public void Dispose()
         {
+            SelectableElement?.Dispose(AquaticPhysics.Instance);
+            shark?.Dispose();
+
             chunks.Values.ToList().ForEach(chunk => chunk.Dispose());
-            entities.ForEach(entity => entity.Dispose());
-            shark.Dispose();
+
+            entities.ForEach(entity => entity.Dispose(AquaticPhysics.Instance));
+
+            chunks.Clear();
+            chunksToUpdate.Clear();
+            entities.Clear();
+            elementsToUpdate.Clear();
         }
+
         private static Element GetSelectableElement(TgcCamera camera, List<Element> elements)
         {            
             var direction = camera.LookAt - camera.Position;

@@ -72,8 +72,13 @@ namespace TGC.Group.Model.Elements
 
         public override void Dispose()
         {
-            Mesh.Dispose();
-            RigidBody.Dispose();
+            Mesh?.Dispose();
+            //TODO hack
+            if (RigidBody != null)
+            {
+                AquaticPhysics.Instance.Remove(RigidBody);
+                RigidBody.Dispose();
+            }
         }
     }
 }

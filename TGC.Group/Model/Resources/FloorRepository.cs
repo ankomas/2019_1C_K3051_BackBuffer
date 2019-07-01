@@ -1,34 +1,53 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using TGC.Core.Textures;
 using TGC.Group.Model.Chunks;
+using TGC.Group.Model.UI;
 
 namespace TGC.Group.Model.Resources
 {
     public static class FloorRepository
     {
-        private static readonly string FloorTexture = Game.Default.MediaDirectory + Game.Default.TexturaTierra;
+        private static readonly string FloorPath = Game.Default.MediaDirectory + Game.Default.TexturaTierra;
+        private static Texture FloorTexture;
         private static readonly string FloorHeightmap = Game.Default.MediaDirectory + "\\Heightmap";
-        public static ConcurrentDictionary<TGCVector3, TgcSimpleTerrain> Floors = new ConcurrentDictionary<TGCVector3, TgcSimpleTerrain>();
+        public static Dictionary<TGCVector3, MySimpleTerrain> Floors = new Dictionary<TGCVector3, MySimpleTerrain>();
+        
         private static bool preLoading = false;
         public static int generating;
 
-        public static TgcSimpleTerrain getFloor(TGCVector3 position)
+        private static Dictionary<String, Bitmap> heightmaps = new Dictionary<string, Bitmap>();
+
+        private static Image img;
+        
+        private static Texture loadTexture(string path)
         {
-            var cacheHit = Floors.ContainsKey(position);
-            if (!cacheHit)
-            {
-                Task.Run(()=>preLoad(position, World.UpdateRadius));
-            }
-            return cacheHit ? Floors[position] : Add(position);
+            if (FloorTexture != null)
+                return FloorTexture;
+            
+            Bitmap image = (Bitmap) Image.FromFile(path);
+            image.RotateFlip(RotateFlipType.Rotate90FlipX);
+            
+            FloorTexture = Texture.FromBitmap(D3DDevice.Instance.Device, image, Usage.AutoGenerateMipMap, Pool.Managed);
+            
+            image.Dispose();
+
+            return FloorTexture;
+        }
+
+        public static MySimpleTerrain getFloor(TGCVector3 position)
+        {
+            return Floors.ContainsKey(position) ? Floors[position] : Add(position);
         }
 
         public static void preLoad(TGCVector3 origin, int radius)
@@ -51,37 +70,58 @@ namespace TGC.Group.Model.Resources
             preLoading = false;
         }
 
-        private static TgcSimpleTerrain Add(TGCVector3 position)
+        private static MySimpleTerrain Add(TGCVector3 position)
         {
             var terrain = CreateFloor(position);
-            Floors.TryAdd(position, terrain);
+            Floors.Add(position, terrain);
             return terrain;
         }
         
-        private static TgcSimpleTerrain CreateFloor(TGCVector3 origin)
+        private static MySimpleTerrain CreateFloor(TGCVector3 origin)
         {
-            var img = Image.FromFile(getHeightmap(origin));
-            var imgSize = img.Height;
-            var floor = new TgcSimpleTerrain();
-            
-            img.Dispose();
-            
+            var bitmap = getHeightmap(origin);
+
+            var imgSize = bitmap.Height;
+            var floor = new MySimpleTerrain();
+                        
             var scaleXz = Chunk.DefaultSize.X / imgSize + 0.25f * Chunk.DefaultSize.X/1000 * imgSize/64;
             var xCenter = origin.X + Chunk.DefaultSize.X / 2 + imgSize * 2.0f / scaleXz;
             var zCenter = origin.Z + Chunk.DefaultSize.Z / 2 + imgSize * 2.0f / scaleXz;            
             
             floor.loadHeightmap(getHeightmap(origin), scaleXz, 1f, new TGCVector3(xCenter / scaleXz, origin.Y, zCenter / scaleXz));
-            floor.loadTexture(FloorTexture);
+            floor.loadTexture(loadTexture(FloorPath));
 
             return floor;
         }
-        private static string getHeightmap(TGCVector3 origin)
+
+        private static string getPath(TGCVector3 origin)
         {
             var x = Math.Abs(origin.X) % (Chunk.DefaultSize.X * 2) < Chunk.DefaultSize.X ? "1" : "2";
             
             var z = Math.Abs(origin.Z) % (Chunk.DefaultSize.Z * 2) < Chunk.DefaultSize.Z ? "1" : "2";
 
             return FloorHeightmap + x + z + ".jpg";
+        }
+        
+        private static Bitmap getHeightmap(TGCVector3 origin)
+        {
+            var x = Math.Abs(origin.X) % (Chunk.DefaultSize.X * 2) < Chunk.DefaultSize.X ? "1" : "2";
+            
+            var z = Math.Abs(origin.Z) % (Chunk.DefaultSize.Z * 2) < Chunk.DefaultSize.Z ? "1" : "2";
+
+            return loadHeightmap(FloorHeightmap + x + z + ".jpg", x+z);
+        }
+
+        private static Bitmap loadHeightmap(string path, string number)
+        {
+            var res = heightmaps.ContainsKey(number) ? heightmaps[number] : (Bitmap) Image.FromFile(path);            
+
+            return res;
+        }
+
+        public static void Dispose(MySimpleTerrain floor)
+        {
+            //TODO something?
         }
     }
 }

@@ -67,10 +67,15 @@ namespace TGC.Group.Model.Elements
                 getCollisionVolume().Render();
         }
 
-        public virtual void Dispose()
+        public virtual void Dispose(AquaticPhysics physics)
         {
-            Mesh.Dispose();
-            PhysicsBody.Dispose();
+            Mesh?.Dispose();
+            
+            if (PhysicsBody != null)
+            {
+                physics.Remove(PhysicsBody);
+                PhysicsBody.Dispose();
+            }
         }
 
         public virtual TGCVector3 getPosition()
