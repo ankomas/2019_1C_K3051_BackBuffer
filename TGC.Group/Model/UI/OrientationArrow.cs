@@ -97,9 +97,9 @@ namespace TGC.Group.Model.UI
         }
         public void Render()
         {
-            shader.SetValue("transform", transform);
             shader.Begin(FX.None);
             shader.BeginPass(0);
+            shader.SetValue("transform", transform);
 
             D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionColored.Format;

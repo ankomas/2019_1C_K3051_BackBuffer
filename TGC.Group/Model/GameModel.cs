@@ -22,7 +22,7 @@ namespace TGC.Group.Model
     {
         public static float GlobalElapsedTime;
         public static float GlobalTime;
-        private WorldScene gameScene;
+        private WorldScene worldScene;
         private StartMenu startMenu;
         private PauseMenu pauseMenu;
         private ShipScene shipScene;
@@ -139,16 +139,16 @@ namespace TGC.Group.Model
         {
             shipScene = new ShipScene(GameplayScene.InitialGameState)
                 .OnGoToWater((gameState) => {
-                    gameScene.ResetCamera();
-                    SetNextScene(gameScene.WithGameState(gameState));
+                    worldScene.ResetCamera();
+                    SetNextScene(worldScene.WithGameState(gameState));
                 })
                 .OnPause(() => {
                     PauseScene(shipScene);
                 });
 
-            gameScene = new WorldScene(GameplayScene.InitialGameState)
+            worldScene = new WorldScene(GameplayScene.InitialGameState)
                 .OnPause(() => {
-                    PauseScene(gameScene);
+                    PauseScene(worldScene);
                 })
                 .OnGetIntoShip((gameState) => {
                     shipScene.ResetCamera();
@@ -160,7 +160,7 @@ namespace TGC.Group.Model
                 });
 
             gameOverScene = new GameOverScene()
-                .WithPreRender(gameScene.Render)
+                .WithPreRender(worldScene.Render)
                 .OnGoToStartScreen(() => SetNextScene(startMenu));
         }
 

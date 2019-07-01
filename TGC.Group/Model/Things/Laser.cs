@@ -37,17 +37,17 @@ namespace TGC.Group.Model.Things
                 * Matrix.Translation(position)
                 ;
 
-            ShaderManager.LaserShader.SetValue("world", world);
-            ShaderManager.LaserShader.SetValue("view", D3DDevice.Instance.Device.Transform.View);
-            ShaderManager.LaserShader.SetValue("projection", D3DDevice.Instance.Device.Transform.Projection);
+            ShaderRepository.LaserShader.SetValue("world", world);
+            ShaderRepository.LaserShader.SetValue("view", D3DDevice.Instance.Device.Transform.View);
+            ShaderRepository.LaserShader.SetValue("projection", D3DDevice.Instance.Device.Transform.Projection);
 
             D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionOnly.Format;
-            ShaderManager.LaserShader.Begin(FX.None);
-            ShaderManager.LaserShader.BeginPass(0);
+            ShaderRepository.LaserShader.Begin(FX.None);
+            ShaderRepository.LaserShader.BeginPass(0);
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, 2, vertexBuffer);
-            ShaderManager.LaserShader.EndPass();
-            ShaderManager.LaserShader.End();
+            ShaderRepository.LaserShader.EndPass();
+            ShaderRepository.LaserShader.End();
         }
     }
 }

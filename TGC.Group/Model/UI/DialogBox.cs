@@ -160,7 +160,7 @@ namespace TGC.Group.Model.UI
         }
         private void RenderRectangle()
         {
-            var shader = ShaderManager.DialogBoxShader;
+            var shader = ShaderRepository.DialogBoxShader;
             shader.Begin(FX.None);
             shader.BeginPass(0);
 

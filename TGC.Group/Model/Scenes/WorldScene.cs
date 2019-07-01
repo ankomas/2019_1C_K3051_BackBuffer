@@ -56,8 +56,10 @@ namespace TGC.Group.Model.Scenes
 
         InventoryScene inventoryScene;
 
-        OrientationArrow orientationArrow = new OrientationArrow();
-        TgcSkyBox skyBoxUnderwater, skyBoxOutside;
+        static OrientationArrow orientationArrow = new OrientationArrow();
+        //TgcSkyBox skyBoxUnderwater, skyBoxOutside;
+        static FedeSkybox theSkybox = new FedeSkybox("lol2.jpg", 0.0005f);
+        static FedePlane plane = new FedePlane(10000, 10000);
         CustomSprite waterVision, mask;
 
         Drawer2D drawer = new Drawer2D();
@@ -72,13 +74,14 @@ namespace TGC.Group.Model.Scenes
 
         private bool loaded = false;
         private bool loading = false;
+
         public WorldScene(GameState gameState) : base(gameState)
         {
             backgroundColor = Color.FromArgb(255, 78, 129, 179);
 
             SetCamera(Input);
             
-            IncrementFarPlane(3f);
+            IncrementFarPlane(6f);
             SetClampTextureAddressing();
             InitInventoryScene();
             InitSkyBoxes();
@@ -171,37 +174,42 @@ namespace TGC.Group.Model.Scenes
         }
         private void InitSkyBoxes()
         {
-            skyBoxUnderwater = new TgcSkyBox();
-            skyBoxUnderwater.Color = backgroundColor;
-            skyBoxUnderwater.SkyEpsilon = 30;
-            skyBoxUnderwater.Size = new TGCVector3(30000, 8000, 30000);
-            skyBoxUnderwater.Center = new TGCVector3(0, -skyBoxUnderwater.Size.Y / 4, 0);
-            skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Up   , baseDir + "underwater_skybox-up.jpg"    );
-            skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Down , baseDir + "underwater_skybox-down.jpg"  );
-            skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Left , baseDir + "underwater_skybox-left.jpg"  );
-            skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Right, baseDir + "underwater_skybox-right.jpg" );
-            skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "underwater_skybox-front.jpg" );
-            skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Back , baseDir + "underwater_skybox-back.jpg"  );
-            skyBoxUnderwater.Init();
-            
+            //skyBoxUnderwater = new TgcSkyBox();
+            //skyBoxUnderwater.Color = backgroundColor;
+            //skyBoxUnderwater.SkyEpsilon = 30;
+            //skyBoxUnderwater.Size = new TGCVector3(30000, 8000, 30000);
+            //skyBoxUnderwater.Center = new TGCVector3(0, -skyBoxUnderwater.Size.Y / 4, 0);
+            //skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Up   , baseDir + "underwater_skybox-up.jpg"    );
+            //skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Down , baseDir + "underwater_skybox-down.jpg"  );
+            //skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Left , baseDir + "underwater_skybox-left.jpg"  );
+            //skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Right, baseDir + "underwater_skybox-right.jpg" );
+            //skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "underwater_skybox-front.jpg" );
+            //skyBoxUnderwater.setFaceTexture(TgcSkyBox.SkyFaces.Back , baseDir + "underwater_skybox-back.jpg"  );
+            //skyBoxUnderwater.Init();
 
-            skyBoxOutside = new TgcSkyBox();
-            skyBoxOutside.Color = Color.FromArgb(255, 71, 96, 164);
-            skyBoxOutside.SkyEpsilon = 50;
-            skyBoxOutside.Size = new TGCVector3(30000, 8000, 30000);
-            skyBoxOutside.Center = new TGCVector3(
-                skyBoxUnderwater.Center.X,
-                skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 0,
-                skyBoxUnderwater.Center.Z
-                );
-            skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Up, baseDir +    "skybox-up.jpg");
-            skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Down, baseDir +  "skybox-down.jpg");
-            skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Left, baseDir +  "skybox-left-middle.jpg");
-            skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Right, baseDir + "skybox-right-middle.jpg");
-            skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "skybox-front-middle.jpg");
-            skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Back, baseDir + "skybox-back-middle.jpg");
-            skyBoxOutside.Init();
-            
+
+            //skyBoxOutside = new TgcSkyBox();
+            //skyBoxOutside.Color = Color.FromArgb(255, 71, 96, 164);
+            //skyBoxOutside.SkyEpsilon = 50;
+            //skyBoxOutside.Size = new TGCVector3(30000, 8000, 30000);
+            //skyBoxOutside.Center = new TGCVector3(
+            //    skyBoxUnderwater.Center.X,
+            //    skyBoxUnderwater.Center.Y + skyBoxUnderwater.Size.Y / 2 + 0,
+            //    skyBoxUnderwater.Center.Z
+            //    );
+            //skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Up, baseDir + "skybox-up.jpg");
+            //skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Down, baseDir + "skybox-down.jpg");
+            //skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Left, baseDir + "skybox-left-middle.jpg");
+            //skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Right, baseDir + "skybox-right-middle.jpg");
+            //skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Front, baseDir + "skybox-front-middle.jpg");
+            //skyBoxOutside.setFaceTexture(TgcSkyBox.SkyFaces.Back, baseDir + "skybox-back-middle.jpg");
+            //skyBoxOutside.Init();
+
+            //FedeSkybox s1 = new FedeSkybox(Game.Default.MediaDirectory + "lol6.jpg", 0.0005f);
+            //FedeSkybox s2 = new FedeSkybox(Game.Default.MediaDirectory + "lol2.jpg", 0.001f);
+            //s = s2;
+            theSkybox.size = new Microsoft.DirectX.Vector3(12000, 12000, 12000);
+            theSkybox.position = new Microsoft.DirectX.Vector3(0, 0, 0);
         }
 
         private void SetClampTextureAddressing()
@@ -259,8 +267,9 @@ namespace TGC.Group.Model.Scenes
                 }
             }
 
-            skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
-            skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
+            //skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
+            //skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
+            theSkybox.position = Camera.Position;
 
             GameState.character.UpdateStats(Camera.Position.Y < 0
                 ? new Stats(-elapsedTime, 0)
@@ -342,7 +351,7 @@ namespace TGC.Group.Model.Scenes
         public override void Render(TgcFrustum frustum)
         {
             ClearScreen();
-
+            ShaderRepository.WorldWaterFog.SetValue("cameraPosition", new Vector4(Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1));
             GameState.character.Render();
             
             if (!this.loaded)
@@ -364,27 +373,48 @@ namespace TGC.Group.Model.Scenes
                 this.DrawText.drawText("Loading...", 600, 300, color);
                 this.DrawText.drawText("Chunnks: " + this.World.chunks.Count + "/" + this.World.generating, 600, 330, color);
                 this.DrawText.drawText("Floors: " + FloorRepository.Floors.Count + "/" + FloorRepository.generating, 600, 360, color);
-                this.backgroundColor = oldColor;
+                this.backgroundColor = Color.Green;
                 
                 return;
             }
 
+            //if (Camera.Position.Y < 0)
+            //{
+            //    foreach (var mesh in skyBoxUnderwater.Faces)
+            //    {
+            //        mesh.Effect = ShaderRepository.WorldWaterFog;
+            //        mesh.Technique = "WorldWaterFog";
+            //    }
+            //    skyBoxUnderwater.Render();
+            //}
+            //else
+            //{
+            //    foreach (var mesh in skyBoxOutside.Faces)
+            //    {
+            //        mesh.Effect = ShaderRepository.WorldWaterFog;
+            //        mesh.Technique = "WorldWaterFog";
+            //    }
+            //   skyBoxOutside.Render();
+            //}
+
             if (Camera.Position.Y < 0)
             {
-                skyBoxUnderwater.Render();
+                theSkybox.Render(new Vector4(Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1));
             }
             else
             {
-                skyBoxOutside.Render();
+                theSkybox.Render();
             }
 
+            plane.Render();
+            ShaderRepository.WorldWaterFog.SetValue("cameraPosition", new Vector4(Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1));
             World.Render(Camera, frustum);
 
             if (BoundingBox)
             {
                 World.RenderBoundingBox(Camera);
             }
-            this.orientationArrow.Render();
+            orientationArrow.Render();
 
             drawer.BeginDrawSprite();
             //drawer.DrawSprite(waterVision);

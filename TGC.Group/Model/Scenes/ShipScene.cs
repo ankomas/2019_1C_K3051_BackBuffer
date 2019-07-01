@@ -23,6 +23,7 @@ using TGC.Group.TGCUtils;
 using TGC.Group.Model.Scenes.Crafter;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
 using TGC.Group.Model.Things;
+using Microsoft.DirectX;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -137,7 +138,6 @@ namespace TGC.Group.Model.Scenes
         private void SetCamera()
         {
             this.Camera = CameraFactory.Create(new TGCVector3(675, 1000, 900), Input);
-
         }
 
         private void OpenInventory()
@@ -180,14 +180,14 @@ namespace TGC.Group.Model.Scenes
             GameState.character.Update(Camera);
 
             dialogBox.Update(elapsedTime);
-            ShaderManager.ShipAmbientShader.SetValue("time", elapsedTime);
+            ShaderRepository.ShipAmbientShader.SetValue("time", elapsedTime);
         }
 
         public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
-            ShaderManager.ShipAmbientShader.SetValue("cameraPosition", new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+            ShaderRepository.ShipAmbientShader.SetValue("cameraPosition", new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
 
             GameState.character.Render();
 
@@ -196,7 +196,7 @@ namespace TGC.Group.Model.Scenes
             var lookedThings = selectableThings.Where(t => t.Looked).ToList();
             Thing newLookedThing = null;
 
-            if(lookedThings.Count() == 0)
+            if (lookedThings.Count() == 0)
             {
                 lookedThing = null;
             }
@@ -234,7 +234,7 @@ namespace TGC.Group.Model.Scenes
 
             seat.Render();
 
-            if(cursor != null)
+            if (cursor != null)
             {
                 drawer2D.BeginDrawSprite();
                 drawer2D.DrawSprite(cursor);
@@ -246,14 +246,20 @@ namespace TGC.Group.Model.Scenes
             inventoryScene.Render();
             craftingScene.Render();
 
-            statsIndicators.Render(this.GameState.character);
-            //this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
-            //    300, 300, Color.NavajoWhite);
+
+            this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
+                300, 300, Color.NavajoWhite);
 
             //this.drawText.drawText("Camera:", 800, 100, Color.Red);
             //this.drawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
             //this.drawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
             //this.drawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
+
+            //crafter.Render();
+            //s.Render();
+
+            statsIndicators.Render(this.GameState.character);
+
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {

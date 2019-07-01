@@ -33,7 +33,7 @@ namespace TGC.Group.Model.Player
 
         public void UseShipAmbientShader()
         {
-            shader = ShaderManager.ShipAmbientShader;
+            shader = ShaderRepository.ShipAmbientShader;
             technique = "ShipAmbient";
         }
         public void StopUsingShipAmbientShader()
@@ -42,7 +42,7 @@ namespace TGC.Group.Model.Player
             technique = null;
             if (Weapon != null)
             {
-                ShaderManager.DeleteShaderFromTgcMesh(Weapon.Mesh);
+                ShaderRepository.DeleteShaderFromTgcMesh(Weapon.Mesh);
             }
         }
 

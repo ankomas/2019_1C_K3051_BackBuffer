@@ -68,6 +68,8 @@ namespace TGC.Group.Model.Chunks
         public override void Render()
         {
             //Floor.updateValues();
+            Floor.Effect = ShaderRepository.WorldWaterFog;
+            Floor.Technique = "WorldWaterFog";
             Floor.Render();
             base.Render();
         }

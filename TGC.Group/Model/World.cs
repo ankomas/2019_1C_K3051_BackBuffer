@@ -163,16 +163,26 @@ namespace TGC.Group.Model
         {
             var toRender = ToRender(camera.Position, frustum);
             var elements = new List<Element>();
-            
+
             elements.AddRange(elementsToUpdate.FindAll(entity => entity.asCube().isIn(frustum)));
-            
-            elements.ForEach(element => element.Render());
+
+            elements.ForEach(element => {
+                if(element.Mesh != null)
+                {
+                    element.Mesh.Effect = ShaderRepository.WorldWaterFog;
+                    element.Mesh.Technique = "WorldWaterFog";
+                }
+                element.Render();
+            });
             
             elementsRendered = elements.Count;
             
             toRender.ForEach(chunk => chunk.Render());
-            
+
+            shark.Mesh.Effect = ShaderRepository.WorldWaterFog;
+            shark.Mesh.Technique = "WorldWaterFog";
             shark.Render();
+
             //waterSurface.Render(camera.Position);
             //Floor.Render();
         }

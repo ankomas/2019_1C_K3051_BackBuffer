@@ -134,7 +134,7 @@ float4 main_pixel(VertexOutput input) : COLOR
     float4 depthWaterColor = float4(waterColor * (farness / MaxFarness), 1);
     float4 finalColor = lerp(realColor, depthWaterColor, saturate(0.4 + farness / MaxFarness));
 
-    return finalColor;
+    return realColor;
 }
 
 float4 main_pixel_crafted(VertexOutput input) : COLOR

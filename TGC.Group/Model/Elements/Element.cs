@@ -21,21 +21,7 @@ namespace TGC.Group.Model.Elements
         public bool Selectable { get; set; }
 
         public abstract IItem item { get; }
-/*
-        private Effect effect;
-        public Effect Effect
-        {
-            set
-            {
-                Mesh.Effect = effect = value;
-                Mesh.Technique = "FedeTechnique";
-            }
-            get
-            {
-                return effect;
-            }
-        }
-*/
+
         public Element(TgcMesh model, RigidBody rigidBody)
         {
             Mesh = model;
@@ -62,8 +48,8 @@ namespace TGC.Group.Model.Elements
         public virtual void Render()
         {
             Mesh.Render();
-            
-            if(Selectable)
+
+            if (Selectable)
                 getCollisionVolume().Render();
         }
 

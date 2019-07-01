@@ -62,7 +62,14 @@ namespace TGC.Group.Model.Chunks
 
         public virtual void Render()
         {
-            this.Elements.ForEach(element => element.Render());
+            this.Elements.ForEach(element => {
+                if(element.Mesh != null)
+                {
+                    element.Mesh.Effect = ShaderRepository.WorldWaterFog;
+                    element.Mesh.Technique = "WorldWaterFog";
+                }
+                element.Render();
+            });
         }
 
         public virtual void RenderBoundingBox()
