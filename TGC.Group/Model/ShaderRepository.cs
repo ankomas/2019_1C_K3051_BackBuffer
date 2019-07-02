@@ -17,7 +17,7 @@ namespace TGC.Group.Model
         public static Effect DialogBoxShader = Load("DialogBox"); 
         public static Effect WorldWaterFog = Load("WorldWaterFog");
         public static Effect FedeSkybox = Load("FedeSkybox");
-        public static Effect Plane = Load("Plane");
+        public static Effect WaterSurface = Load("WaterSurface");
         private static Effect Load(string path)
         {
             Effect effect;

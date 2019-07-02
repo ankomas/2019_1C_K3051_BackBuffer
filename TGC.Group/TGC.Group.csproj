@@ -282,8 +282,8 @@
     <Content Include="Shaders\NoMeQuieroIrSrStark.fx" />
     <Content Include="Shaders\OrientationArrow.fx" />
     <Content Include="Shaders\Oxygen.fx" />
-    <Content Include="Shaders\Plane.fx" />
     <Content Include="Shaders\ShipAmbient.fx" />
+    <Content Include="Shaders\WaterSurface.fx" />
     <Content Include="Shaders\WorldWaterFog.fx" />
   </ItemGroup>
   <ItemGroup>

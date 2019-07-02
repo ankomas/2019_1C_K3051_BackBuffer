@@ -17,9 +17,9 @@ sampler2D mapper = sampler_state
     MIPFILTER = LINEAR;
 };
 
-float4x4 transform;
-
+extern uniform float4x4 transform;
 float tolerance = 0.005;
+extern uniform float time;
 
 bool eq(float a, float b)
 {
@@ -30,7 +30,7 @@ VertexData main_vertex(VertexData input)
 {
     float f = 0.05;
     float amplitude = 10;
-    input.Position.y = (sin(input.Position.x * f) + sin(input.Position.z * f)) * amplitude;
+    input.Position.y = (sin(input.Position.x * f - time) + sin(input.Position.z * f - time)) * amplitude;
 
     float4 worldPos = mul(input.Position, transform);
     VertexData output = { worldPos, worldPos, input.Color, input.Position.y };
@@ -39,16 +39,7 @@ VertexData main_vertex(VertexData input)
 
 float4 main_pixel(VertexData input) : COLOR
 {
-    float4 ret;
-
-    if (eq(input.Color.x, 0) || eq(input.Color.x, 1) || eq(input.Color.y, 0) || eq(input.Color.y, 1))
-    {
-        ret = float4(1, 0, 0, 1);
-    }
-    else
-        ret = float4(0.2, 0.5, 0.75, 0.5) + float4(1, 1, 1, 1) * (input.Y / 200);
-
-    return ret;
+    return float4(0.2, 0.5, 0.75, 0.5) + float4(1, 1, 1, 1) * (input.Y / 200);
 }
 
 technique Plane

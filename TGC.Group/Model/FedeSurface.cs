@@ -18,6 +18,8 @@ namespace TGC.Group.Model
         float sizeZ;
         int quadsNumber;
         public Vector3 position = new Vector3(0, 0, 0);
+        float time = 0;
+        public float velocity = 1;
         public FedeSurface(float sizeX, float sizeZ)
         {
             this.sizeX = sizeX;
@@ -26,7 +28,6 @@ namespace TGC.Group.Model
             this.quadsNumber = tessLevelX * tessLevelZ;
 
             vertexBuffer = new CustomVertex.PositionColored[6 * quadsNumber];
-
 
             //var x0 = new Vector3(1, 0, -1) * size;
             //var x1 = new Vector3(-1, 0, -1) * size;
@@ -45,23 +46,28 @@ namespace TGC.Group.Model
                 SetQuad(i % tessLevelX, i / tessLevelZ);
             }
         }
+        public void Update(float elapsedTime)
+        {
+            time += elapsedTime;
+        }
         public void Render()
         {
             Matrix world = Matrix.Translation(position);
             Matrix view = D3DDevice.Instance.Device.Transform.View;
             Matrix projection = D3DDevice.Instance.Device.Transform.Projection;
 
-            ShaderRepository.Plane.Begin(FX.None);
-            ShaderRepository.Plane.BeginPass(0);
+            ShaderRepository.WaterSurface.Begin(FX.None);
+            ShaderRepository.WaterSurface.BeginPass(0);
 
             D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
-            ShaderRepository.Plane.SetValue("transform", world * view * projection);
+            ShaderRepository.WaterSurface.SetValue("transform", world * view * projection);
+            ShaderRepository.WaterSurface.SetValue("time", time * velocity);
 
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionColored.Format;
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, quadsNumber * 2, vertexBuffer);
 
-            ShaderRepository.Plane.EndPass();
-            ShaderRepository.Plane.End();
+            ShaderRepository.WaterSurface.EndPass();
+            ShaderRepository.WaterSurface.End();
         }
         private void SetQuad(int x, int z)
         {

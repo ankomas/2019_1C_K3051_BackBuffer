@@ -59,7 +59,7 @@ namespace TGC.Group.Model.Scenes
         static OrientationArrow orientationArrow = new OrientationArrow();
         //TgcSkyBox skyBoxUnderwater, skyBoxOutside;
         static FedeSkybox theSkybox = new FedeSkybox("lol2.jpg", 0.0005f);
-        static FedeSurface waterSurface = new FedeSurface(10000, 10000);
+        static FedeSurface waterSurface = new FedeSurface(50000, 50000);
         CustomSprite waterVision, mask;
 
         Drawer2D drawer = new Drawer2D();
@@ -108,6 +108,7 @@ namespace TGC.Group.Model.Scenes
             TurnExploreCommandsOn();
 
             waterSurface.position = new Microsoft.DirectX.Vector3(0, 0, 0);
+            waterSurface.velocity = 3;
 
             //this.loadIndicator.Init();
         }
@@ -272,7 +273,8 @@ namespace TGC.Group.Model.Scenes
             //skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             //skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
             theSkybox.position = Camera.Position;
-            waterSurface.position = new Microsoft.DirectX.Vector3(Camera.Position.X, 0, Camera.Position.Z);
+            //waterSurface.position = new Microsoft.DirectX.Vector3(Camera.Position.X, 0, Camera.Position.Z);
+            waterSurface.Update(elapsedTime);
 
             GameState.character.UpdateStats(Camera.Position.Y < 0
                 ? new Stats(-elapsedTime, 0)
