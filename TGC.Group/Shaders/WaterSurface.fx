@@ -1,9 +1,12 @@
+#define MaxFarness 20000
+
 struct VertexData
 {
     float4 Position : POSITION;
     float4 WorldPos : TEXCOORD0;
     float4 Color : COLOR;
     float Y : TEXCOORD1;
+    float Normal : NORMAL;
 };
 
 texture tex;
@@ -18,8 +21,9 @@ sampler2D mapper = sampler_state
 };
 
 extern uniform float4x4 transform;
-float tolerance = 0.005;
+float tolerance = 0.3;
 extern uniform float time;
+extern uniform float4 cameraPosition;
 
 bool eq(float a, float b)
 {
@@ -33,13 +37,58 @@ VertexData main_vertex(VertexData input)
     input.Position.y = (sin(input.Position.x * f - time) + sin(input.Position.z * f - time)) * amplitude;
 
     float4 worldPos = mul(input.Position, transform);
-    VertexData output = { worldPos, worldPos, input.Color, input.Position.y };
+    VertexData output = { worldPos, worldPos, input.Color, input.Position.y, input.Normal };
     return output;
 }
 
-float4 main_pixel(VertexData input) : COLOR
+float4 lightPosition = float4(0, 0, 0, 1);
+float normalDirection = 1;
+float isBelt = 0;
+
+float3 texColor = float3(0.2, 0.5, 0.75);
+
+float4 applyFogAndLight(VertexData input) : COLOR
 {
-    return float4(0.2, 0.5, 0.75, 0.5) + float4(1, 1, 1, 1) * (input.Y / 200);
+    lightPosition = cameraPosition + float4(0, 5000, 0, 1);
+    float4 pos = input.WorldPos;
+    float ambient = 0.5;
+    float3 ambientColor = float3(ambient, ambient, ambient);
+
+    float3 normal = normalize(input.Normal) * normalDirection;
+    float4 posToLight = normalize(lightPosition - pos);
+    float dotP = dot(normal, posToLight.xyz);
+    float diffuseK = saturate(dotP);
+    float absDiffuseK = abs(dotP);
+    float2 chooseK = { diffuseK, absDiffuseK };
+    float k = chooseK[isBelt];
+    float3 diffuseColor = float3(k, k, k);
+	
+    float4 lightToPos = posToLight * (-1);
+    float4 posToCamera = normalize(cameraPosition - pos);
+    float3 reflectedRay = normalize(reflect(lightToPos.xyz, normal));
+    float specularK = pow(max(dot(reflectedRay, posToCamera.xyz), 0), 100);
+
+    float3 specularColor = float3(specularK, specularK, specularK);
+
+    float4 realColor = float4((ambientColor + diffuseColor + specularColor) * texColor, 1);
+
+    float farness = length(pos - cameraPosition);
+
+    float3 waterColor = float3(0, 0.7, 1);
+    
+    float4 depthWaterColor = float4(waterColor * (farness / MaxFarness), 0.5);
+    float4 finalColor = lerp(realColor, depthWaterColor, saturate(0.4 + pow(farness / MaxFarness, 4)));
+
+    return finalColor;
+}
+
+float4 main_pixel_outside(VertexData input) : COLOR
+{
+    return float4(texColor, 0.5) + float4(1, 1, 1, 1) * (input.Y / 200);
+}
+float4 main_pixel_underwater(VertexData input) : COLOR
+{
+    return applyFogAndLight(input) + float4(1, 1, 1, 1) * (input.Y / 200);
 }
 
 technique Plane
@@ -47,6 +96,6 @@ technique Plane
     pass unique
     {
         VertexShader = compile vs_3_0 main_vertex();
-        PixelShader = compile ps_3_0 main_pixel();
+        PixelShader = compile ps_3_0 main_pixel_underwater();
     }
 };
