@@ -235,6 +235,7 @@ namespace TGC.Group.Model.Scenes
 
         public override void UpdateGameplay(float elapsedTime)
         {
+            Game.cameraPosition = Camera.Position;
             if (!loaded)
             {
                 if (this.loading)

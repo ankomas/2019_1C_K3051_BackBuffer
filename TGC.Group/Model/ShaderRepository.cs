@@ -19,6 +19,7 @@ namespace TGC.Group.Model
         public static Effect FedeSkybox = Load("FedeSkybox");
         public static Effect WaterSurface = Load("WaterSurface");
         public static Effect NoMeQuieroIrSrStark = Load("NoMeQuieroIrSrStark");
+        public static Effect Terrain = Load("Terrain");
         private static Effect Load(string path)
         {
             Effect effect;
