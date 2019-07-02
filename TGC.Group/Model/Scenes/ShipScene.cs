@@ -23,12 +23,13 @@ using TGC.Group.TGCUtils;
 using TGC.Group.Model.Scenes.Crafter;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
 using TGC.Group.Model.Things;
+using TGC.Group.Model.Utils;
 using Microsoft.DirectX;
 
 namespace TGC.Group.Model.Scenes
 {
     class ShipScene : GameplayScene
-    {
+    {       
         float rotation = 0;
         private readonly TgcText2D drawText = new TgcText2D();
         TGCVector3 viewDirectionStart = new TGCVector3(-1, 0.25f, 0);
@@ -171,6 +172,9 @@ namespace TGC.Group.Model.Scenes
 
         public override void UpdateGameplay(float elapsedTime)
         {
+            MusicManager.play(MusicManager.ShipMusic);
+            
+            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(GameModel.GlobalElapsedTime);
             Cheats.ApplyCheats(this.GameState.character);
             this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
             inventoryScene.Update(elapsedTime);
@@ -278,6 +282,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void OpenCrafter()
         {
+            SoundManager.Play(SoundManager.CrafterOpen);
             cursor = null;
             TurnExploreCommandsOff();
             pressed[GameInput.Inventory] = () => {};
@@ -287,6 +292,7 @@ namespace TGC.Group.Model.Scenes
         }
         public void CloseCrafter()
         {
+            SoundManager.Play(SoundManager.CrafterClose);
             cursor = hand;
             pressed[GameInput.GoBack] = () => {};
             TurnExploreCommandsOn();

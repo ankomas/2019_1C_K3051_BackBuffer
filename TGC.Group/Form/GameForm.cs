@@ -9,6 +9,7 @@ using TGC.Core.Shaders;
 using TGC.Core.Sound;
 using TGC.Core.Textures;
 using TGC.Group.Model;
+using TGC.Group.Model.Utils;
 using Timer = System.Windows.Forms.Timer;
 
 namespace TGC.Group.Form
@@ -129,7 +130,9 @@ namespace TGC.Group.Form
                         {
                             start = DateTime.UtcNow;
                             Modelo.Update();
-                            Modelo.Render();   
+                            Modelo.Render();
+                            
+                            SoundManager.CleanUpTasks();
                         }
                     }
                     else

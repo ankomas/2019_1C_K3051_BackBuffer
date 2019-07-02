@@ -50,7 +50,6 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
-            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(elapsedTime);
             Camera.Update(elapsedTime);
             UpdateGameplay(elapsedTime);
         }

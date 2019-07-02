@@ -36,6 +36,7 @@ using TGC.Core.SceneLoader;
 using TGC.Group.Form;
 using TGC.Group.Model.Resources;
 using TGC.Group.Model.Chunks;
+using Volume = Microsoft.DirectX.DirectSound.Volume;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -68,6 +69,8 @@ namespace TGC.Group.Model.Scenes
 
         private bool gaveOxygenTank = false; //TODO remove
         private bool aimFired;
+
+        private float baseCameraSpeed;
 
         TgcMesh skb;
         private TGCVector3 initialCameraPosition = new TGCVector3(300, -100, 200);
@@ -223,9 +226,11 @@ namespace TGC.Group.Model.Scenes
         }
         private void SetCamera(TgcD3dInput input)
         {
-            Camera = CameraFactory.Create(initialCameraPosition, input);
-            AquaticPhysics.Instance.Add(Camera.RigidBody);
-
+            this.Camera = CameraFactory.Create(this.initialCameraPosition, input);
+            
+            this.baseCameraSpeed = this.Camera.MovementSpeed;
+            
+            AquaticPhysics.Instance.Add(this.Camera.RigidBody);
         }
 
         public override void UpdateGameplay(float elapsedTime)
@@ -251,12 +256,37 @@ namespace TGC.Group.Model.Scenes
                 onGameOverCallback();
             }
 
+            MusicManager.play(this.Camera.Position.Y > 0 ? MusicManager.SurfaceMusic : MusicManager.UnderWaterMusic);
+
             Cheats.ApplyCheats(this.GameState.character);
             
-            GameState.character.Update(Camera);
-
             World.Update(Camera, GameState.character);
-            GameState.character.Attack(World, Input);
+
+            CharacterUpdate(elapsedTime);
+
+            //skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
+            //skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
+            theSkybox.position = Camera.Position;
+            //waterSurface.position = new Microsoft.DirectX.Vector3(Camera.Position.X, 0, Camera.Position.Z);
+            waterSurface.Update(elapsedTime);
+            
+            inventoryScene.Update(elapsedTime);
+            aimFired = false;
+
+            orientationArrow.Update(Camera.Position, InitialChunk.ShipInitialPosition, Camera.LookAt);
+            dialogBox.Update(elapsedTime);
+        }
+        
+        private void CharacterUpdate(float elapsedTime)
+        {
+            this.GameState.character.Update(this.Camera);
+            this.GameState.character.Attack(this.World, Input);
+
+            propulsion(elapsedTime);
+
+            this.GameState.character.UpdateStats(this.Camera.Position.Y < 0
+                ? new Stats(-elapsedTime, 0)
+                : new Stats(elapsedTime * (this.GameState.character.MaxStats.Oxygen / 2.5f), 0));
             
             var item = manageSelectableElement(World.SelectableElement); // Imsportant: get this AFTER updating the world
 
@@ -269,24 +299,31 @@ namespace TGC.Group.Model.Scenes
                     GameState.character.GiveItem(new Gold());
                 }
             }
-
-            //skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
-            //skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
-            theSkybox.position = Camera.Position;
-            //waterSurface.position = new Microsoft.DirectX.Vector3(Camera.Position.X, 0, Camera.Position.Z);
-            waterSurface.Update(elapsedTime);
-
-            GameState.character.UpdateStats(Camera.Position.Y < 0
-                ? new Stats(-elapsedTime, 0)
-                : new Stats(elapsedTime * (GameState.character.MaxStats.Oxygen/2.5f), 0));
-
-            inventoryScene.Update(elapsedTime);
-            aimFired = false;
-
-            orientationArrow.Update(Camera.Position, InitialChunk.ShipInitialPosition, Camera.LookAt);
-            dialogBox.Update(elapsedTime);
         }
+        private float propulsionValue = 1;
+        private void propulsion(float elapsedTime)
+        {
+            if (GameInput._Speed.IsDown(Input) && this.Character.ActualStats.Oxygen > 0)
+            {
+                this.propulsionValue += elapsedTime * 12;
+                this.GameState.character.UpdateStats(new Stats(-elapsedTime * 8, 0));
+            }
+            else
+            {
+                this.propulsionValue -= elapsedTime * 8;
+            }
 
+            var variation = (int)Volume.Min / 6;
+            this.propulsionValue = FastMath.Clamp(this.propulsionValue, 1, 6);
+
+            if (this.propulsionValue <= 1)
+                SoundManager.Stop(SoundManager.MotorSound);
+            else
+                SoundManager.Play(SoundManager.MotorSound, (int)Volume.Min - (int)Math.Ceiling(this.propulsionValue * variation));
+            
+            this.Camera.MovementSpeed = this.baseCameraSpeed * this.propulsionValue;
+        }
+        
         private IItem manageSelectableElement(Element element)
         {
             if (element == null)
@@ -329,6 +366,7 @@ namespace TGC.Group.Model.Scenes
                 }
                 else
                 {
+                    SoundManager.Play(SoundManager.Bubble);
                     World.Remove(element);
                     item = element.item;
                     aimFired = false;   
@@ -456,6 +494,7 @@ namespace TGC.Group.Model.Scenes
 
         public override void Dispose()
         {
+            SoundManager.Stop(SoundManager.MotorSound);
             World.Dispose();
         }
 

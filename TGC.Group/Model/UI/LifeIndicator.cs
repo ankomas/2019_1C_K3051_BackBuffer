@@ -22,9 +22,12 @@ namespace TGC.Group.Model.UI
             var oXPosition = this.MeterX0 + ToInt(Scale(this.MeterSize, 60));
             var oYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 32));
 
-            var o2LevelXPosition = lifeLevel >= 10
+            var o2LevelXPosition = lifeLevel >= 100
                 ? this.MeterX0 + ToInt(Scale(this.MeterSize, 48))
-                : this.MeterX0 + ToInt(Scale(this.MeterSize, 65));
+                : lifeLevel >= 10
+                    ? this.MeterX0 + ToInt(Scale(this.MeterSize, 55))
+                    : this.MeterX0 + ToInt(Scale(this.MeterSize, 65));
+            
             var o2LevelYPosition = this.MeterY0 + ToInt(Scale(this.MeterSize, 74));
 
             this.TextBig.drawText("❤", oXPosition, oYPosition, Color.Bisque);

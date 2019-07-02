@@ -6,16 +6,18 @@ using System.Runtime.CompilerServices;
 using TGC.Group.Model.Scenes;
 using TGC.Group.Form;
 using System.Windows.Forms;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
 using TGC.Group.TGCUtils;
 using TGC.Group.Model.Resources.Sprites;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model
 {
     /// <summary>
     ///     Ejemplo para implementar el TP.
     ///     Inicialmente puede ser renombrado o copiado para hacer m�s ejemplos chicos, en el caso de copiar para que se
-    ///     ejecute el nuevo ejemplo deben cambiar el modelo que instancia GameForm <see cref="Form.GameForm.InitGraphics()" />
+    ///     ejecute el nuevo ejemplo deben cambiar el modelo que instancia GameForm <see cref="GameForm.InitGraphics()" />
     ///     line 97.
     /// </summary>
     public class GameModel : TgcExample
@@ -60,7 +62,8 @@ namespace TGC.Group.Model
         public override void Init()
         {
             //note(fede): Only at this point the Input field has been initialized by the form
-
+            SoundManager.init(this.DirectSound);
+            
             Scene.Input = Input;
 
             startMenu = new StartMenu()
@@ -137,15 +140,8 @@ namespace TGC.Group.Model
 
         private void ResetGame()
         {
-            shipScene = new ShipScene(GameplayScene.InitialGameState)
-                .OnGoToWater((gameState) => {
-                    worldScene.ResetCamera();
-                    SetNextScene(worldScene.WithGameState(gameState));
-                })
-                .OnPause(() => {
-                    PauseScene(shipScene);
-                });
-
+            worldScene?.Dispose();
+            
             worldScene = new WorldScene(GameplayScene.InitialGameState)
                 .OnPause(() => {
                     PauseScene(worldScene);
@@ -155,13 +151,26 @@ namespace TGC.Group.Model
                     SetNextScene(shipScene.WithGameState(gameState));
                 })
                 .OnGameOver(() => {
+                    SoundManager.Play(SoundManager.Death);
                     SetNextScene(gameOverScene);
-                    ResetGame();
                 });
 
+            shipScene = new ShipScene(GameplayScene.InitialGameState)
+                .OnGoToWater((gameState) => {
+                    worldScene.ResetCamera();
+                    SetNextScene(worldScene.WithGameState(gameState));
+                })
+                .OnPause(() => {
+                    PauseScene(shipScene);
+                });
+            
             gameOverScene = new GameOverScene()
                 .WithPreRender(worldScene.Render)
-                .OnGoToStartScreen(() => SetNextScene(startMenu));
+                .OnGoToStartScreen(() =>
+                {
+                    SetNextScene(this.startMenu);
+                    ResetGame();
+                });
         }
 
         private void PauseScene(Scene scene)
