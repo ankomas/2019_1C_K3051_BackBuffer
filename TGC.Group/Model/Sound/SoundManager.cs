@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Microsoft.DirectX.DirectSound;
+using TGC.Core.Mathematica;
 using TGC.Core.Sound;
 using TGC.Group.Model.Chunks;
 
