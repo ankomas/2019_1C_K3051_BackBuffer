@@ -59,7 +59,7 @@ namespace TGC.Group.Model.Scenes
         static OrientationArrow orientationArrow = new OrientationArrow();
         //TgcSkyBox skyBoxUnderwater, skyBoxOutside;
         static FedeSkybox theSkybox = new FedeSkybox("lol2.jpg", 0.0005f);
-        static FedePlane plane = new FedePlane(10000, 10000);
+        static FedeSurface waterSurface = new FedeSurface(10000, 10000);
         CustomSprite waterVision, mask;
 
         Drawer2D drawer = new Drawer2D();
@@ -406,7 +406,7 @@ namespace TGC.Group.Model.Scenes
                 theSkybox.Render();
             }
 
-            plane.Render();
+            waterSurface.Render();
             ShaderRepository.WorldWaterFog.SetValue("cameraPosition", new Vector4(Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1));
             World.Render(Camera, frustum);
 
