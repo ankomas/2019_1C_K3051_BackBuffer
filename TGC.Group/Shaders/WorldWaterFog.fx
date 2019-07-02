@@ -35,14 +35,14 @@ bool eq(float a, float b)
 
 VertexData main_vertex(VertexData input)
 {
-    float4 worldPos = mul(input.Position, matWorldViewProj);
+    float4 projectedPos = mul(input.Position, matWorldViewProj);
+    float4 worldPos = mul(input.Position, matWorld);
     float3 transformedNormal = mul(float4(input.Normal, 0), matWorldViewProj).xyz;
 
-    VertexData output = { worldPos, input.UV, worldPos, transformedNormal };
+    VertexData output = { projectedPos, input.UV, worldPos, transformedNormal };
 
     return output;
 }
-
 
 //VertexData main_vertex(VertexData input)
 //{

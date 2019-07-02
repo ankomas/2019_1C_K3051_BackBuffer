@@ -43,9 +43,6 @@ namespace TGC.Group.Model.Chunks
             this.Elements.AddRange(corals);
 
             segments.Remove(segments[0]);
-
-            Floor.Effect = ShaderRepository.Terrain;
-            Floor.Technique = "Terrain";
         }
         
         private static List<Element> CreateFishes(List<Segment> segments, int divisions)
@@ -72,7 +69,8 @@ namespace TGC.Group.Model.Chunks
         public override void Render()
         {
             //Floor.updateValues();
-            ShaderRepository.Terrain.SetValue("cameraPosition", new TGCVector4(Game.cameraPosition.X, Game.cameraPosition.Y, Game.cameraPosition.Z, 1));
+            Floor.Effect = ShaderRepository.WorldWaterFog;
+            Floor.Technique = "WorldWaterFog";
             Floor.Render();
             base.Render();
         }

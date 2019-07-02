@@ -35,10 +35,11 @@ bool eq(float a, float b)
 
 VertexData main_vertex(VertexData input)
 {
-    float4 worldPos = mul(input.Position, matWorldViewProj);
+    float4 projectedPos = mul(input.Position, matWorldViewProj);
+    float4 worldPos = mul(input.Position, matWorld);
     float3 transformedNormal = mul(float4(input.Normal, 0), matWorldViewProj).xyz;
 
-    VertexData output = { worldPos, input.UV, worldPos, transformedNormal };
+    VertexData output = { projectedPos, input.UV, worldPos, transformedNormal };
 
     return output;
 }
@@ -108,9 +109,10 @@ float4 main_pixel(VertexData input) : COLOR
 //{
 //    float distance = length(cameraPosition.xyz - input.PositionForPixelShader.xyz) / MaxFarness;
 
-//    float k = abs(input.PositionForPixelShader.z) / MaxFarness;
-//    //return tex2D(diffuseMap, input.UV) * distance;
-//    return tex2D(diffuseMap, input.UV) * k;
+//    float k = input.PositionForPixelShader.z;
+//    return tex2D(diffuseMap, input.UV) * distance;
+//    //return tex2D(diffuseMap, input.UV) * k;
+//    //return float4(1, 0, 0, 1) * k;
 //}
 
 
