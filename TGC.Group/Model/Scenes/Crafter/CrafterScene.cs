@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Microsoft.DirectX.Direct3D;
+using System.Drawing;
 using System.Windows.Forms;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
@@ -21,6 +22,7 @@ namespace TGC.Group.Model.Scenes.Crafter
         int PDATransparency;
 
         private Character Character;
+        public Effect shader = ShaderRepository.NoMeQuieroIrSrStark;
 
         public ICrafteable itemHighlighted { get; set; }
 

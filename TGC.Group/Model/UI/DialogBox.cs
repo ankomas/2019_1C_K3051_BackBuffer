@@ -62,7 +62,7 @@ namespace TGC.Group.Model.UI
         {
             int max = 0;
             foreach (Line line in Lines)
-            {
+            {// FIXME line.text was null
                 if (line.text.Length > max) max = line.text.Length;
             }
             return max;

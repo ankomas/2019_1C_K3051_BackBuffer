@@ -71,7 +71,6 @@ namespace TGC.Group.Model.Items
                 elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
                 foreach (var element in elementsToAttack)
                 {
-
                     element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack * 0.5f);
                 }
                 
@@ -111,10 +110,7 @@ namespace TGC.Group.Model.Items
                        .Where(element => element.Mesh != null);
                    foreach (var element in elementsToAttack)
                    {
-                           element.Mesh.Technique = "RenderScene";
-                           element.Mesh.Effect = death;
-                           element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
-
+                        element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
                    }
                    
                 }

@@ -17,13 +17,15 @@ namespace TGC.Group.Model.Elements
         private EscapeFromPosition EscapeMov { get; set; }
         
         public static Effect movement = TGCShaders.Instance.LoadEffect(Game.Default.ShadersDirectory + "FishMovement.fx");
-        
+        public static Effect FishEffect = ShaderRepository.NoMeQuieroIrSrStark;
         public Fish(TgcMesh model, RigidBody rigidBody) : base(model, rigidBody)
         {
             EscapeMov = new EscapeFromPosition(new TGCVector3(1f, 0f, 0f), 0.1f, 30f );
             RandomMov = new RandomMovement(new TGCVector3(1f, 0f, 0f), 0.3f, 10f);
             //Mesh.Technique = "RenderScene";
             //Mesh.Effect = movement;
+            Mesh.Effect = FishEffect;
+            Mesh.Technique = "Fish";
         }
 
         public override void Update(Camera camera)
@@ -74,5 +76,9 @@ namespace TGC.Group.Model.Elements
 
         public override IItem item { get; } = new Items.Fish();
 
+        public override bool HasDefaultShader()
+        {
+            return true;
+        }
     }
 }

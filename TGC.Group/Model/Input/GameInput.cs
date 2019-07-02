@@ -20,7 +20,7 @@ namespace TGC.Group.Model.Input
         public static readonly GameInput _Inventory = new GameInput(new List<Key>{Key.I, Key.Tab});
         public static readonly GameInput _Statistic = new GameInput(new List<Key>{Key.F});
         public static readonly GameInput _Attack =
-            new GameInput(new List<Key>(), new List<MouseButtons>{MouseButtons.BUTTON_RIGHT});
+            new GameInput(new List<Key> {Key.K}, new List<MouseButtons>{MouseButtons.BUTTON_RIGHT});
         
         public static readonly List<object> Up = new List<object> { Key.Up, Key.W };
         public static readonly List<object> Down = new List<object> { Key.Down, Key.S };

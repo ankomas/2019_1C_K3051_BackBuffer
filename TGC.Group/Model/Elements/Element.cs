@@ -15,7 +15,6 @@ namespace TGC.Group.Model.Elements
 {
     public abstract class Element: Collisionable
     {
-
         public TgcMesh Mesh { get; }
         public RigidBody PhysicsBody { get; set; }
         public bool Selectable { get; set; }
@@ -99,6 +98,10 @@ namespace TGC.Group.Model.Elements
             var despl = ((cube.PMax - cube.PMin).X + (cube.PMax - cube.PMin).Z) / 2;
             
             this.PhysicsBody.Translate(new Vector3(-despl, y, -despl));
+        }
+        public virtual bool HasDefaultShader()
+        {
+            return false;
         }
     }
 }

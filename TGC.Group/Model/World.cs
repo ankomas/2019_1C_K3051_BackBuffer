@@ -177,8 +177,11 @@ namespace TGC.Group.Model
             elements.ForEach(element => {
                 if(element.Mesh != null)
                 {
-                    element.Mesh.Effect = ShaderRepository.WorldWaterFog;
-                    element.Mesh.Technique = "WorldWaterFog";
+                    if (!element.HasDefaultShader())
+                    {
+                        element.Mesh.Effect = ShaderRepository.WorldWaterFog;
+                        element.Mesh.Technique = "WorldWaterFog";
+                    }
                 }
                 element.Render();
             });
