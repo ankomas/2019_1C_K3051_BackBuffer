@@ -125,8 +125,8 @@
     <Compile Include="Model\Elements\Ship.cs" />
     <Compile Include="Model\Entities\Shark\Shark.cs" />
     <Compile Include="Model\Entities\Shark\SharkFactory.cs" />
-    <Compile Include="Model\FedePlane.cs" />
     <Compile Include="Model\FedeSkybox.cs" />
+    <Compile Include="Model\FedeSurface.cs" />
     <Compile Include="Model\Input\GameInput.cs" />
     <Compile Include="Model\AquaticPhysics.cs" />
     <Compile Include="Model\Items\Consumables\IConsumable.cs" />

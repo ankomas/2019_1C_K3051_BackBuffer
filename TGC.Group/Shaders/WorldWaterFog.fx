@@ -64,7 +64,7 @@ float4 main_pixel(VertexData input) : COLOR
 {
     lightPosition = cameraPosition + float4(0, 5000, 0, 1);
     float4 pos = input.PositionForPixelShader;
-    float ambient = 0.2;
+    float ambient = 0.5;
     float3 ambientColor = float3(ambient, ambient, ambient);
 
     float3 normal = normalize(input.Normal) * normalDirection;

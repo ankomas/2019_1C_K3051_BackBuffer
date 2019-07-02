@@ -107,6 +107,8 @@ namespace TGC.Group.Model.Scenes
 
             TurnExploreCommandsOn();
 
+            waterSurface.position = new Microsoft.DirectX.Vector3(0, 0, 0);
+
             //this.loadIndicator.Init();
         }
         public void ResetCamera()
@@ -270,6 +272,7 @@ namespace TGC.Group.Model.Scenes
             //skyBoxUnderwater.Center = new TGCVector3(Camera.Position.X, skyBoxUnderwater.Center.Y, Camera.Position.Z);
             //skyBoxOutside.Center = new TGCVector3(Camera.Position.X, skyBoxOutside.Center.Y, Camera.Position.Z);
             theSkybox.position = Camera.Position;
+            waterSurface.position = new Microsoft.DirectX.Vector3(Camera.Position.X, 0, Camera.Position.Z);
 
             GameState.character.UpdateStats(Camera.Position.Y < 0
                 ? new Stats(-elapsedTime, 0)

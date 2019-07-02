@@ -9,7 +9,7 @@ using TGC.Core.Direct3D;
 
 namespace TGC.Group.Model
 {
-    class FedePlane
+    class FedeSurface
     {
         int tessLevelX = 500;
         int tessLevelZ = 500;
@@ -17,7 +17,8 @@ namespace TGC.Group.Model
         float sizeX;
         float sizeZ;
         int quadsNumber;
-        public FedePlane(float sizeX, float sizeZ)
+        public Vector3 position = new Vector3(0, 0, 0);
+        public FedeSurface(float sizeX, float sizeZ)
         {
             this.sizeX = sizeX;
             this.sizeZ = sizeZ;
@@ -39,14 +40,14 @@ namespace TGC.Group.Model
             //vertexBuffer[4] = new CustomVertex.PositionOnly(x2);
             //vertexBuffer[5] = new CustomVertex.PositionOnly(x3);
 
-            for(int i = 0; i < quadsNumber; ++i)
+            for (int i = 0; i < quadsNumber; ++i)
             {
                 SetQuad(i % tessLevelX, i / tessLevelZ);
             }
         }
         public void Render()
         {
-            Matrix world = Matrix.Identity;
+            Matrix world = Matrix.Translation(position);
             Matrix view = D3DDevice.Instance.Device.Transform.View;
             Matrix projection = D3DDevice.Instance.Device.Transform.Projection;
 
@@ -70,10 +71,10 @@ namespace TGC.Group.Model
             Vector3 positionOffset = new Vector3(sizeX / 2f, 0, sizeZ / 2f);
             Vector3 quadOffset = new Vector3(x * fx, 0, z * fz);
 
-            var p0 = quadOffset + new Vector3( 0,  0,  0) - positionOffset;
-            var p1 = quadOffset + new Vector3(fx,  0,  0) - positionOffset;
-            var p2 = quadOffset + new Vector3( 0,  0, fz) - positionOffset;
-            var p3 = quadOffset + new Vector3(fx,  0, fz) - positionOffset;
+            var p0 = quadOffset + new Vector3(0, 0, 0) - positionOffset;
+            var p1 = quadOffset + new Vector3(fx, 0, 0) - positionOffset;
+            var p2 = quadOffset + new Vector3(0, 0, fz) - positionOffset;
+            var p3 = quadOffset + new Vector3(fx, 0, fz) - positionOffset;
 
             int quads = z * tessLevelX + x;
             int prevTriangles = 2 * quads;
