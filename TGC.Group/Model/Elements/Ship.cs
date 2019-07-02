@@ -48,7 +48,7 @@ namespace TGC.Group.Model.Elements
         public override void Dispose(AquaticPhysics physics)
         {
             base.Dispose(physics);
-            this.ship?.DisposeAll();
+            this.ship.Meshes.ForEach(mesh => mesh.D3dMesh?.Dispose());
         }
         
         public override IRenderObject getCollisionVolume() 

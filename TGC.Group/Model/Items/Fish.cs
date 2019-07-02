@@ -6,6 +6,7 @@ using TGC.Group.Model.Items.Type;
 using TGC.Group.Model.Player;
 using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
+using TGC.Group.Model.Utils;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
@@ -27,6 +28,12 @@ namespace TGC.Group.Model.Items
             CustomSprite icon = BitmapRepository.CreateSpriteFromBitmap(BitmapRepository.Fish);
             icon.Scaling = DefaultScale;
             Icon = icon;
+        }
+
+        public override void Use(Character character)
+        {
+            SoundManager.Play(SoundManager.Eat);
+            base.Use(character);
         }
     }
 }

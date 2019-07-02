@@ -11,6 +11,7 @@ using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
+using TGC.Group.Model.Utils;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
@@ -101,6 +102,7 @@ namespace TGC.Group.Model.Items
                 
                 if (!inAttack)
                 { 
+                   SoundManager.Play(SoundManager.Inevitable);
                    inAttack = true;
                    elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
                    elementsToAttack = world.elementsToUpdate

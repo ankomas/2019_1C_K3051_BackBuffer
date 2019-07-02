@@ -4,11 +4,13 @@ using System.Windows.Forms.VisualStyles;
 using BulletSharp;
 using TGC.Core.Input;
 using TGC.Core.SceneLoader;
+using TGC.Group.Form;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Items.Consumables;
 using TGC.Group.Model.Items.Equipment;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Items.Type;
+using TGC.Group.Model.Utils;
 using Element = TGC.Group.Model.Elements.Element;
 
 namespace TGC.Group.Model.Player
@@ -25,6 +27,10 @@ namespace TGC.Group.Model.Player
         public Weapon Weapon { get; set; } 
         
         private Equipment equipment = new Equipment();
+
+        private static readonly float invulnerabilityTime = 2.0f;
+
+        private float lastHitTime;
         
         public Character()
         {
@@ -76,9 +82,19 @@ namespace TGC.Group.Model.Player
             this.Inventory.RemoveItem(item);
         }
 
+        private int manageLife(int damage)
+        {
+            if (this.lastHitTime + invulnerabilityTime > GameModel.GlobalTime) return 0;
+            
+            this.lastHitTime = GameModel.GlobalTime;
+            SoundManager.Play(SoundManager.Hit);
+            return damage;
+        }
         public void Hit(int quantity)
         {
-            this.ActualStats.Update(new Stats(0, -quantity), this.MaxStats);
+            var damage = manageLife(quantity);
+            
+            this.ActualStats.Update(new Stats(0, -damage), this.MaxStats);
         }
 
         public void Consume(IConsumable consumable)

@@ -135,6 +135,8 @@ namespace TGC.Group.Model
             return elements.Where(element => cube.contains(element.getPosition())).ToList();
         }
 
+        private float asd;
+
         public void Update(Camera camera, Character character)
         {
             AquaticPhysics.Instance.DynamicsWorld.StepSimulation(GameModel.GlobalElapsedTime);
@@ -147,7 +149,6 @@ namespace TGC.Group.Model
             
             var allElements = new List<Element>();
                 
-
             elements.AddRange(elementsInCube(this.entities, updateCube));
             //elements.AddRange(elementsInCube(toUpdate.SelectMany(chunk => chunk.Elements).ToList(), updateCube));
             
