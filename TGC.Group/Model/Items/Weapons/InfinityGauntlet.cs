@@ -102,9 +102,11 @@ namespace TGC.Group.Model.Items
                 
                 if (!inAttack)
                 { 
+                   Random rnd = new Random();
                    SoundManager.Play(SoundManager.Inevitable);
                    inAttack = true;
                    elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
+                   world.elementsToUpdate.Sort((e1, e2) =>  rnd.Next(0,2));
                    elementsToAttack = world.elementsToUpdate
                        .Take(world.elementsToUpdate.Count / 2)
                        .Where(element => element.Mesh != null);
