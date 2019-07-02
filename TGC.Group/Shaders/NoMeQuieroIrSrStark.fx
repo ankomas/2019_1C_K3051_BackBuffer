@@ -83,8 +83,8 @@ float4 applyFogAndLight(VertexData input) : COLOR
 
 float4 main_pixel(VertexData Input) : COLOR0
 {
-    //if ((frac(Input.PositionForPixelShader.x * elapsedTime) + 0.3) * elapsedTime > 1 || (frac(Input.PositionForPixelShader.y * elapsedTime) + 0.2) * elapsedTime > 1)
-    //    discard;
+    if ((frac(Input.PositionForPixelShader.x * elapsedTime) + 0.3) * elapsedTime > 1 || (frac(Input.PositionForPixelShader.y * elapsedTime) + 0.2) * elapsedTime > 1)
+        discard;
     return applyFogAndLight(Input);
 }
 
