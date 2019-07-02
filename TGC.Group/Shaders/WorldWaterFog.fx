@@ -37,7 +37,7 @@ VertexData main_vertex(VertexData input)
 {
     float4 projectedPos = mul(input.Position, matWorldViewProj);
     float4 worldPos = mul(input.Position, matWorld);
-    float3 transformedNormal = mul(float4(input.Normal, 0), matWorldViewProj).xyz;
+    float3 transformedNormal = mul(float4(input.Normal, 0), matWorld).xyz;
 
     VertexData output = { projectedPos, input.UV, worldPos, transformedNormal };
 

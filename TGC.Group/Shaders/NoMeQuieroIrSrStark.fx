@@ -17,6 +17,7 @@ struct VertexData
     float4 Position : POSITION;
     float2 UV : TEXCOORD0;
     float4 PositionForPixelShader : TEXCOORD1;
+    float4 WorldPos : TEXCOORD2;
     float3 Normal : NORMAL;
 };
 
@@ -33,10 +34,11 @@ sampler2D diffuseMap = sampler_state
 
 VertexData main_vertex(VertexData input)
 {
-    float4 worldPos = mul(input.Position, matWorldViewProj);
-    float3 transformedNormal = mul(float4(input.Normal, 0), matWorldViewProj).xyz;
+    float4 worldPos = mul(input.Position, matWorld);
+    float4 projectedPos = mul(input.Position, matWorldViewProj);
+    float3 transformedNormal = mul(float4(input.Normal, 0), matWorld).xyz;
 
-    VertexData output = { worldPos, input.UV, worldPos, transformedNormal };
+    VertexData output = { projectedPos, input.UV, projectedPos, worldPos, transformedNormal };
 
     return output;
 }
