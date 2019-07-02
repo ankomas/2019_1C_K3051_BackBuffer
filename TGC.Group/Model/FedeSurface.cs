@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Direct3D;
+using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model
 {
@@ -50,7 +51,7 @@ namespace TGC.Group.Model
         {
             time += elapsedTime;
         }
-        public void Render()
+        public void Render(Vector4 camPos)
         {
             Matrix world = Matrix.Translation(position);
             Matrix view = D3DDevice.Instance.Device.Transform.View;
@@ -62,6 +63,7 @@ namespace TGC.Group.Model
             D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
             ShaderRepository.WaterSurface.SetValue("transform", world * view * projection);
             ShaderRepository.WaterSurface.SetValue("time", time * velocity);
+            ShaderRepository.WaterSurface.SetValue("camPos", camPos);
 
             D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionColored.Format;
             D3DDevice.Instance.Device.DrawUserPrimitives(PrimitiveType.TriangleList, quadsNumber * 2, vertexBuffer);

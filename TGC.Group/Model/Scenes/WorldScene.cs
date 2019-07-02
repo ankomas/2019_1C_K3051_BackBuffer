@@ -276,6 +276,7 @@ namespace TGC.Group.Model.Scenes
 
             orientationArrow.Update(Camera.Position, InitialChunk.ShipInitialPosition, Camera.LookAt);
             dialogBox.Update(elapsedTime);
+            waterSurface.position = new Microsoft.DirectX.Vector3(Camera.Position.X, waterSurface.position.Y, Camera.Position.Z);
         }
         
         private void CharacterUpdate(float elapsedTime)
@@ -451,8 +452,10 @@ namespace TGC.Group.Model.Scenes
                 theSkybox.Render();
             }
 
-            waterSurface.Render();
-            ShaderRepository.WorldWaterFog.SetValue("cameraPosition", new Vector4(Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1));
+            var camPos = new Vector4(Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1);
+            
+            waterSurface.Render(camPos);
+            ShaderRepository.WorldWaterFog.SetValue("cameraPosition", camPos);
             World.Render(Camera, frustum);
 
             if (BoundingBox)

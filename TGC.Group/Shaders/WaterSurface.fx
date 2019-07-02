@@ -9,6 +9,7 @@ struct VertexData
     float Normal : NORMAL;
 };
 
+float4 camPos;
 texture tex;
 sampler2D mapper = sampler_state
 {
@@ -41,7 +42,7 @@ VertexData main_vertex(VertexData input)
 {
     float f = 0.05;
     float amplitude = 10;
-    input.Position.y = (sin(input.Position.x * f - time) + sin(input.Position.z * f - time)) * amplitude;
+    input.Position.y = (sin((camPos.x/3 - input.Position.x) * f - time) + sin((camPos.z/3 - input.Position.z) * f - time)) * amplitude;
 
     float4 worldPos = mul(input.Position, transform);
     VertexData output = { worldPos, worldPos, input.Color, input.Position.y, input.Normal };
