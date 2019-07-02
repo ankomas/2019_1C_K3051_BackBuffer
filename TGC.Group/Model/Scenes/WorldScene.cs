@@ -313,8 +313,9 @@ namespace TGC.Group.Model.Scenes
                 this.propulsionValue -= elapsedTime * 8;
             }
 
-            var variation = (int)Volume.Min / 6;
-            this.propulsionValue = FastMath.Clamp(this.propulsionValue, 1, 6);
+            var maxValue = 6;
+            var variation = (int)Volume.Min / maxValue;
+            this.propulsionValue = FastMath.Clamp(this.propulsionValue, 1, maxValue);
 
             if (this.propulsionValue <= 1)
                 SoundManager.Stop(SoundManager.MotorSound);
@@ -479,10 +480,10 @@ namespace TGC.Group.Model.Scenes
             drawer.EndDrawSprite();
             statsIndicators.Render(GameState.character);
 
-            //this.DrawText.drawText("Camera:", 800, 100, Color.Red);
-            //this.DrawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
-            //this.DrawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
-            //this.DrawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
+            this.DrawText.drawText("Camera:", 800, 100, Color.Red);
+            this.DrawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
+            this.DrawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
+            this.DrawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
 
         }
 

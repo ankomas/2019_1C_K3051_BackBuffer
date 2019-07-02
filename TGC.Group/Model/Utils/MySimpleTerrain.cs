@@ -17,6 +17,7 @@ namespace TGC.Group.Model.UI
         private int totalVertices;
         private VertexBuffer vbTerrain;
         private CustomVertex.PositionTextured[] data;
+        private float yScale;
 
         public MySimpleTerrain()
         {
@@ -37,6 +38,28 @@ namespace TGC.Group.Model.UI
 
         /// <summary>Valor de Y para cada par (X,Z) del Heightmap</summary>
         public int[,] HeightmapData { get; private set; }
+
+
+        public float scaled(int x, int y)
+        {
+            return HeightmapData[x, HeightmapData.GetLength(1)-1-y] * this.yScale;
+        }
+        public float[,] ScaledHeghtmapData
+        {
+            get
+            {
+                float[,] res = new float[HeightmapData.GetLength(0), HeightmapData.GetLength(1)];
+                for (int x = 0; x < HeightmapData.GetLength(0); x++)
+                {
+                    for (int y = 0; y < HeightmapData.GetLength(1); y++)
+                    {
+                        res[x, y] = HeightmapData[x, HeightmapData.GetLength(1)-1-y] * this.yScale;
+                    }
+                }
+
+                return res;
+            }
+        }
 
         /// <summary>
         ///     Indica si la malla esta habilitada para ser renderizada
@@ -117,6 +140,7 @@ namespace TGC.Group.Model.UI
             TGCVector3 center)
         {
             this.Center = center;
+            this.yScale = scaleY;
             
             if ((Resource) this.vbTerrain != (Resource) null && !this.vbTerrain.Disposed)
                 this.vbTerrain.Dispose();
@@ -136,9 +160,8 @@ namespace TGC.Group.Model.UI
             
             this.data = new CustomVertex.PositionTextured[this.totalVertices];
             
-            center.X = (float) ((double) center.X * (double) scaleXZ - (double) length1 / 2.0 * (double) scaleXZ);
-            center.Y *= scaleY;
-            center.Z = (float) ((double) center.Z * (double) scaleXZ - (double) length2 / 2.0 * (double) scaleXZ);
+            //center.X = (float) ((double) center.X * (double) scaleXZ - (double) length1 / 2.0 * (double) scaleXZ);
+            //center.Z = (float) ((double) center.Z * (double) scaleXZ - (double) length2 / 2.0 * (double) scaleXZ);
             
             for (int index2 = 0; (double) index2 < (double) length1 - 1.0; ++index2)
             {

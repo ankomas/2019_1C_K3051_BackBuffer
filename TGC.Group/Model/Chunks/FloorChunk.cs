@@ -54,7 +54,7 @@ namespace TGC.Group.Model.Chunks
         {
             var corals = segment.GenerateElements(divisions / 2, SpawnRate.Of(1, 100), CoralFactory.Instance)
                 .ToList();
-            corals.ForEach(coral => coral.yPosition(floor.HeightmapData));
+            corals.ForEach(coral => coral.yPosition(floor));
             return corals;
         }
         
