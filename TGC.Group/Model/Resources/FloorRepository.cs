@@ -83,12 +83,13 @@ namespace TGC.Group.Model.Resources
 
             var imgSize = bitmap.Height;
             var floor = new MySimpleTerrain();
-                        
-            var scaleXz = Chunk.DefaultSize.X / imgSize + 0.25f * Chunk.DefaultSize.X/1000 * imgSize/64;
+
+            var epsilon = 0.27f;
+            var scaleXz = Chunk.DefaultSize.X / imgSize + epsilon * Chunk.DefaultSize.X/1000 * imgSize/64;
             var xCenter = origin.X + Chunk.DefaultSize.X / 2 + imgSize * 2.0f / scaleXz;
             var zCenter = origin.Z + Chunk.DefaultSize.Z / 2 + imgSize * 2.0f / scaleXz;            
             
-            floor.loadHeightmap(getHeightmap(origin), scaleXz, 1f, new TGCVector3(xCenter / scaleXz, origin.Y, zCenter / scaleXz));
+            floor.loadHeightmap(getHeightmap(origin), scaleXz, 5.5f, origin);
             floor.loadTexture(loadTexture(FloorPath));
 
             return floor;

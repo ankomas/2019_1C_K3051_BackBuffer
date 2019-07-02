@@ -23,9 +23,9 @@ namespace TGC.Group.Model.Utils
         
         public void play(int volume)
         {
-            FastMath.Clamp(volume, (int)Volume.Min, (int)Volume.Max);
+            var clampedVolume = FastMath.Clamp(volume, (int)Volume.Min, (int)Volume.Max);
             
-            this.sound.SoundBuffer.Volume = volume;
+            this.sound.SoundBuffer.Volume = clampedVolume;
             this.sound.play(this.loop);
         }
 
