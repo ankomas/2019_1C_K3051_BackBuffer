@@ -9,6 +9,7 @@ namespace TGC.Group.Model.Utils
     public class SoundManager
     {
         public static readonly string Bubble = Game.Default.MediaDirectory + "\\Sound\\bubble.wav";
+        public static readonly string Bubbles = Game.Default.MediaDirectory + "\\Sound\\bubbles.wav";
         public static readonly string Motor = Game.Default.MediaDirectory + "\\Sound\\motor.wav";
         public static readonly string CrafterOpen = Game.Default.MediaDirectory + "\\Sound\\crafterOpen.wav";
         public static readonly string CrafterClose = Game.Default.MediaDirectory + "\\Sound\\crafterClose.wav";
@@ -18,6 +19,10 @@ namespace TGC.Group.Model.Utils
         public static readonly string Death = Game.Default.MediaDirectory + "\\Sound\\death.wav";
         public static readonly string Inevitable = Game.Default.MediaDirectory + "\\Sound\\inevitable.wav";
         public static readonly string Oxygen = Game.Default.MediaDirectory + "\\Sound\\oxygen.wav";
+        public static readonly string Metal = Game.Default.MediaDirectory + "\\Sound\\metal.wav";
+        public static readonly string Grab = Game.Default.MediaDirectory + "\\Sound\\grab.wav";
+        public static readonly string Coral = Game.Default.MediaDirectory + "\\Sound\\coral.wav";
+        public static readonly string Craft = Game.Default.MediaDirectory + "\\Sound\\craft.wav";
 
         public static TgcDirectSound DirectSound { get; set; }
 

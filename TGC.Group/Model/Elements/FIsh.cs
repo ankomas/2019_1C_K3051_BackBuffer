@@ -5,6 +5,7 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
 using TGC.Group.Model.Items;
 using TGC.Group.Model.Movements;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.Elements
 {
@@ -52,6 +53,7 @@ namespace TGC.Group.Model.Elements
         {
             if (!runningAway)
             {
+                SoundManager.Play(SoundManager.Bubbles);
                 EscapeMov.LookAt = RandomMov.LookAt;
                 runningAway = true;
             }

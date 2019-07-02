@@ -157,6 +157,7 @@ namespace TGC.Group.Model
 
             shipScene = new ShipScene(GameplayScene.InitialGameState)
                 .OnGoToWater((gameState) => {
+                    SoundManager.Play(SoundManager.Metal);
                     worldScene.ResetCamera();
                     SetNextScene(worldScene.WithGameState(gameState));
                 })

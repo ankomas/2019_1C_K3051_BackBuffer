@@ -3,6 +3,7 @@ using TGC.Group.Model.Items.Equipment;
 using TGC.Group.Model.Items.Materials;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Player;
+using TGC.Group.Model.Utils;
 
 namespace TGC.Group.Model.Items
 {
@@ -26,6 +27,8 @@ namespace TGC.Group.Model.Items
             
             character.RemoveIngredients(crafteable.Recipe.Ingredients);
 
+            SoundManager.Play(SoundManager.Craft);
+            
             this.CraftedItem = crafteable;
         }
     }

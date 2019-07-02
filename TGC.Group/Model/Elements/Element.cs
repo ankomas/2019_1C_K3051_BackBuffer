@@ -102,7 +102,7 @@ namespace TGC.Group.Model.Elements
             var cube = asCube();
             var despl = ((cube.PMax - cube.PMin).X + (cube.PMax - cube.PMin).Z) / 2;
             
-            this.PhysicsBody.Translate(new Vector3(-despl, y, -despl));
+            this.PhysicsBody.Translate(new Vector3(-despl, y - 1000, -despl));
         }
         public virtual bool HasDefaultShader()
         {

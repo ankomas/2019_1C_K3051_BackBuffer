@@ -369,7 +369,8 @@ namespace TGC.Group.Model.Scenes
                 }
                 else
                 {
-                    SoundManager.Play(SoundManager.Bubble);
+                    var toPlay = element.GetType() == typeof(Coral) ? SoundManager.Coral : SoundManager.Bubble;
+                    SoundManager.Play(toPlay);
                     World.Remove(element);
                     item = element.item;
                     aimFired = false;   

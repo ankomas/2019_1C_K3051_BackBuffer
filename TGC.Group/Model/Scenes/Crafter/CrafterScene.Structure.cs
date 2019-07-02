@@ -58,6 +58,7 @@ namespace TGC.Group.Model.Scenes.Crafter
                 if (!this.Character.CanCraft(this.itemHighlighted)) return;
                 
                 this.crafter.Craft(this.itemHighlighted, this.Character);
+                SoundManager.Play(SoundManager.Grab);
                 this.Character.GiveItem(this.crafter.CraftedItem);
                 this.crafter.CraftedItem = null;
             };
