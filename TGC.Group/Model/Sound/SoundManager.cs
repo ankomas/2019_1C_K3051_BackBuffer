@@ -15,6 +15,7 @@ namespace TGC.Group.Model.Utils
         public static readonly string Hit = Game.Default.MediaDirectory + "\\Sound\\hit.wav";
         public static readonly string Death = Game.Default.MediaDirectory + "\\Sound\\death.wav";
         public static readonly string Inevitable = Game.Default.MediaDirectory + "\\Sound\\inevitable.wav";
+        public static readonly string Oxygen = Game.Default.MediaDirectory + "\\Sound\\oxygen.wav";
 
         public static TgcDirectSound DirectSound { get; set; }
 
@@ -25,7 +26,7 @@ namespace TGC.Group.Model.Utils
         public static void init(TgcDirectSound directSound)
         {
             DirectSound = directSound;
-            MotorSound = new StaticSound(Motor, DirectSound.DsDevice, true);
+            MotorSound = new StaticSound(Motor, DirectSound.DsDevice, false);
         }
         public static void CleanUpTasks()
         {
