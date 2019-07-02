@@ -25,6 +25,13 @@ float tolerance = 0.3;
 extern uniform float time;
 extern uniform float4 cameraPosition;
 
+float4 minColor(float4 c1, float4 c2)
+{
+    float4 ret = (c1.r < c2.r && c1.g < c2.g && c1.g < c2.g) ? c1: c2;
+
+    return ret;
+}
+
 bool eq(float a, float b)
 {
     return abs(a - b) < tolerance;
@@ -77,10 +84,12 @@ float4 applyFogAndLight(VertexData input) : COLOR
     float3 waterColor = float3(0, 0.7, 1);
     
     float4 depthWaterColor = float4(waterColor * (farness / MaxFarness), 0.5);
-    float4 finalColor = lerp(realColor, depthWaterColor, saturate(0.4 + pow(farness / MaxFarness, 4)));
+    float4 finalColor = lerp(realColor, depthWaterColor, saturate(0.6 + pow(farness / MaxFarness, 2)));
 
     return finalColor;
 }
+
+float4 maxWaterColor = float4(0.1, 0.8, 1, 1);
 
 float4 main_pixel_outside(VertexData input) : COLOR
 {
@@ -88,7 +97,7 @@ float4 main_pixel_outside(VertexData input) : COLOR
 }
 float4 main_pixel_underwater(VertexData input) : COLOR
 {
-    return applyFogAndLight(input) + float4(1, 1, 1, 1) * (input.Y / 200);
+    return minColor(maxWaterColor, applyFogAndLight(input) + float4(1, 1, 1, 1) * (input.Y / 200));
 }
 
 technique Plane

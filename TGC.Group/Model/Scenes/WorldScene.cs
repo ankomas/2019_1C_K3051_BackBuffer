@@ -214,7 +214,7 @@ namespace TGC.Group.Model.Scenes
             //FedeSkybox s1 = new FedeSkybox(Game.Default.MediaDirectory + "lol6.jpg", 0.0005f);
             //FedeSkybox s2 = new FedeSkybox(Game.Default.MediaDirectory + "lol2.jpg", 0.001f);
             //s = s2;
-            theSkybox.size = new Microsoft.DirectX.Vector3(12000, 12000, 12000);
+            theSkybox.size = new Microsoft.DirectX.Vector3(20000, 20000, 20000);
             theSkybox.position = new Microsoft.DirectX.Vector3(0, 0, 0);
         }
 

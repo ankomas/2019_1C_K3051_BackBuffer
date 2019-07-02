@@ -60,7 +60,16 @@ float normalDirection = 1;
 extern uniform float4 cameraPosition;
 float isBelt = 0;
 
-float4 main_pixel(VertexData input) : COLOR
+float4 minColor(float4 c1, float4 c2)
+{
+    float4 ret = (c1.r < c2.r && c1.g < c2.g && c1.g < c2.g) ? c1 : c2;
+
+    return ret;
+}
+
+float4 maxWaterColor = float4(0.1, 0.8, 1, 1);
+
+float4 applyFogAndLight(VertexData input) : COLOR
 {
     lightPosition = cameraPosition + float4(0, 5000, 0, 1);
     float4 pos = input.PositionForPixelShader;
@@ -89,10 +98,15 @@ float4 main_pixel(VertexData input) : COLOR
 
     float3 waterColor = float3(0, 0.7, 1);
     
-    float4 depthWaterColor = float4(waterColor * (farness / MaxFarness), 1);
+    float4 depthWaterColor = float4(waterColor * saturate(farness / MaxFarness), 1);
     float4 finalColor = lerp(realColor, depthWaterColor, saturate(0.4 + farness / MaxFarness));
 
     return finalColor;
+}
+
+float4 main_pixel(VertexData input) : COLOR
+{
+    return minColor(maxWaterColor, applyFogAndLight(input));
 }
 
 technique WorldWaterFog
