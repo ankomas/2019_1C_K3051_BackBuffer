@@ -53,7 +53,7 @@ namespace TGC.Group.Model.Elements
         {
             if (!runningAway)
             {
-                SoundManager.Play(SoundManager.Bubbles);
+                //SoundManager.Play(SoundManager.Bubbles);
                 EscapeMov.LookAt = RandomMov.LookAt;
                 runningAway = true;
             }

@@ -400,7 +400,12 @@ namespace TGC.Group.Model.Scenes
             ClearScreen();
             ShaderRepository.WorldWaterFog.SetValue("cameraPosition", new Vector4(Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1));
             GameState.character.Render();
-            
+            if (GameState.character.Weapon != null && GameState.character.Weapon.Mesh != null)
+            {
+                GameState.character.Weapon.Mesh.Effect = ShaderRepository.WorldWaterFog;
+                GameState.character.Weapon.Mesh.Technique = "WorldWaterFog";
+            }
+
             if (!this.loaded)
             {
                 var oldColor = this.backgroundColor;
@@ -485,10 +490,12 @@ namespace TGC.Group.Model.Scenes
             drawer.EndDrawSprite();
             statsIndicators.Render(GameState.character);
 
+            /*
             this.DrawText.drawText("Camera:", 800, 100, Color.Red);
             this.DrawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
             this.DrawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
             this.DrawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
+            */
 
         }
 

@@ -251,8 +251,8 @@ namespace TGC.Group.Model.Scenes
             craftingScene.Render();
 
 
-            this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
-                300, 300, Color.NavajoWhite);
+            //this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
+            //    300, 300, Color.NavajoWhite);
 
             //this.drawText.drawText("Camera:", 800, 100, Color.Red);
             //this.drawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);

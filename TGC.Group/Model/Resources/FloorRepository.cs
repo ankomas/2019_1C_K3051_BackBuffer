@@ -89,7 +89,7 @@ namespace TGC.Group.Model.Resources
             var xCenter = origin.X + Chunk.DefaultSize.X / 2 + imgSize * 2.0f / scaleXz;
             var zCenter = origin.Z + Chunk.DefaultSize.Z / 2 + imgSize * 2.0f / scaleXz;            
             
-            origin = new TGCVector3(origin.X, origin.Y - 1000, origin.Z);
+            origin = new TGCVector3(origin.X, origin.Y, origin.Z);
             
             floor.loadHeightmap(getHeightmap(origin), scaleXz, 5.5f, origin);
             floor.loadTexture(loadTexture(FloorPath));
