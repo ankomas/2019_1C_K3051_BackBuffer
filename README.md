@@ -18,6 +18,8 @@ TP para TGC, copia de subnautica.
 * Galeano Federico
 * Amarillo Juan
 
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/integrantes.jpg">
+
 ## ScreenShot ##
 <img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc0.png">
 <img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc1.png">
