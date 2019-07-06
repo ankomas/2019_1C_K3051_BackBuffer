@@ -83,6 +83,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectInput.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\..\..\Windows\assembly\GAC\Microsoft.DirectX.DirectSound\1.0.2902.0__31bf3856ad364e35\Microsoft.DirectX.DirectSound.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -125,6 +128,8 @@
     <Compile Include="Model\Elements\Ship.cs" />
     <Compile Include="Model\Entities\Shark\Shark.cs" />
     <Compile Include="Model\Entities\Shark\SharkFactory.cs" />
+    <Compile Include="Model\FedeSkybox.cs" />
+    <Compile Include="Model\FedeSurface.cs" />
     <Compile Include="Model\Input\GameInput.cs" />
     <Compile Include="Model\AquaticPhysics.cs" />
     <Compile Include="Model\Items\Consumables\IConsumable.cs" />
@@ -168,8 +173,14 @@
     <Compile Include="Model\Scenes\WorldScene.cs" />
     <Compile Include="Model\Segment.cs" />
     <Compile Include="Model\Elements\RigidBodyFactories\IRigidBodyFactory.cs" />
+    <Compile Include="Model\Sound\MusicManager.cs" />
+    <Compile Include="Model\Sound\SoundManager.cs" />
+    <Compile Include="Model\Sound\StaticSound.cs" />
+    <Compile Include="Model\ShaderRepository.cs" />
+    <Compile Include="Model\TextureRepository.cs" />
     <Compile Include="Model\Things\Crafter.cs" />
     <Compile Include="Model\Things\Hatch.cs" />
+    <Compile Include="Model\Things\Laser.cs" />
     <Compile Include="Model\Things\LifeBelt.cs" />
     <Compile Include="Model\Things\Seat.cs" />
     <Compile Include="Model\Things\Ship.cs" />
@@ -183,6 +194,7 @@
     <Compile Include="Model\UI\OxygenIndicator.cs" />
     <Compile Include="Model\Utils\Cube.cs" />
     <Compile Include="Model\Scenes\PauseMenu.cs" />
+    <Compile Include="Model\Utils\MySimpleTerrain.cs" />
     <Compile Include="Model\Utils\Screen.cs" />
     <Compile Include="Model\Utils\ShaderRepository.cs" />
     <Compile Include="Model\Utils\SpawnRate.cs" />
@@ -268,16 +280,22 @@
     <Content Include="Media\cajaMadera4.jpg" />
     <Content Include="Media\LogoTGC-TgcScene.xml" />
     <Content Include="res\subnautica-portada.png" />
+    <Content Include="Shaders\DialogBox.fx" />
+    <Content Include="Shaders\FedeSkybox.fx" />
     <Content Include="Shaders\FishMovement.fx" />
     <Content Include="Shaders\Crafter.fx" />
     <Content Include="Shaders\Fede.fx" />
+    <Content Include="Shaders\Laser.fx" />
     <Content Include="Shaders\NoMeQuieroIrSrStark.fx" />
     <Content Include="Shaders\OrientationArrow.fx" />
     <Content Include="Shaders\Oxygen.fx" />
     <Content Include="Shaders\ShipAmbient.fx" />
+    <Content Include="Shaders\Terrain.fx" />
+    <Content Include="Shaders\WaterSurface.fx" />
+    <Content Include="Shaders\WorldWaterFog.fx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\Elements\Effects" />
+    <Folder Include="Model\Elements\Effects\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

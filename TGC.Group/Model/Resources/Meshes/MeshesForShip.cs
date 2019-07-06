@@ -9,7 +9,7 @@ namespace TGC.Group.Model.Resources.Meshes
 {
     class MeshesForShip
     {
-        private static TgcMesh CrafterBodyMesh => new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "crafter-body-TgcScene.xml").Meshes[0];
+        private static TgcMesh CrafterBodyMesh => new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "crafter-body-TgcScene.xml").Meshes[0];  
         private static TgcMesh CrafterFrontCoverMesh => new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "crafter-front-cover-TgcScene.xml").Meshes[0];
         private static TgcMesh CrafterTopCoverMesh => new TgcSceneLoader().loadSceneFromFile(Game.Default.MediaDirectory + "crafter-top-cover-TgcScene.xml").Meshes[0];
 

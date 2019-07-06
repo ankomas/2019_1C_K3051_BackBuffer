@@ -15,6 +15,9 @@ using TGC.Group.Model.Resources.Sprites;
 using TGC.Group.Model.UI;
 using TGC.Group.Model.Utils;
 using TGC.Core.SceneLoader;
+using Microsoft.DirectX.Direct3D;
+using TGC.Core.Direct3D;
+using Microsoft.DirectX;
 
 namespace TGC.Group.Model.Scenes
 {
@@ -45,6 +48,8 @@ namespace TGC.Group.Model.Scenes
         private Things.Crafter physicalCrafter;
 
         List<TgcMesh> crafted3DModel;
+        static Texture perlinNoise = TextureLoader.FromFile(D3DDevice.Instance.Device, Game.Default.MediaDirectory + "perlin-noise.png");
+        Things.Laser laser1 = new Things.Laser(), laser2 = new Things.Laser();
 
         public CraftingScene()
         {
@@ -96,17 +101,36 @@ namespace TGC.Group.Model.Scenes
 
         public override void Update(float elapsedTime)
         {
+            dialogBox.Update(elapsedTime);
             updater(elapsedTime);
         }
         public override void Render(TgcFrustum frustum)
         {
             this.Render();
         }
-
+        float time = 0;
+        float deltaX = 30, deltaY = 130;
         private void MainUpdate(float elapsedTime)
         {
             physicalCrafter.Open(elapsedTime);
             cursor.Position = new TGCVector2(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+
+            if (crafted != null)
+                time += elapsedTime / 3;
+            else time = 0;
+
+            laser1.position.X = physicalCrafter.Center.X + deltaX;
+            laser1.position.Y = physicalCrafter.Center.Y + 80;
+            laser1.position.Z = physicalCrafter.Center.Z + 40;
+
+            laser2.position.X = physicalCrafter.Center.X - deltaX;
+            laser2.position.Y = physicalCrafter.Center.Y + 80;
+            laser2.position.Z = physicalCrafter.Center.Z + 40;
+
+            laser1.delta.X = (float)Math.Abs(Math.Sin(time * 20)) * 30;
+            laser2.delta.X = -(float)Math.Abs(Math.Sin(time * 20)) * 30;
+
+            //deltaY = Math.Max(deltaY - time * 0.3f, 0f);
         }
         private void MainRender()
         {
@@ -116,11 +140,22 @@ namespace TGC.Group.Model.Scenes
             {
                 var item = Items.Crafter.Crafteables.Find(elem => elem == crafted);
 
-                foreach(var mesh in crafted3DModel)
+                ShaderRepository.ShipAmbientShader.SetValue("lightPosition", new float[4] { 655, 1220, 504, 1 });
+                ShaderRepository.ShipAmbientShader.SetValue("perlinNoise", perlinNoise);
+                ShaderRepository.ShipAmbientShader.SetValue("time", time);
+                foreach (var mesh in crafted3DModel)
                 {
+                    mesh.Effect = ShaderRepository.ShipAmbientShader;
+                    ShaderRepository.ShipAmbientShader.SetValue("rotation", Matrix.RotationX(mesh.Rotation.X) * Matrix.RotationY(mesh.Rotation.Y));
+                    mesh.Technique = "CraftedItems";
                     mesh.RotateY(0.025f);
+                    
+                    D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
                     mesh.Render();
                 }
+
+                //laser1.Render();
+                //laser2.Render();
 
                 item.Icon.Scaling = item.DefaultScale * 4;
                 item.Icon.Position = new TGCVector2(
@@ -238,7 +273,7 @@ namespace TGC.Group.Model.Scenes
 
                 var item = Items.Crafter.Crafteables[index];
 
-                if (!this.Character.CanCraft(item)) return;
+                //if (!this.Character.CanCraft(item)) return;
 
                 hoveredItems = hoveredItems.ConvertAll(_ => false);
 
@@ -248,8 +283,7 @@ namespace TGC.Group.Model.Scenes
                 foreach (var mesh in crafted3DModel)
                 {
                     mesh.Scale = new TGCVector3(scale, scale, scale);
-                    mesh.Position = physicalCrafter.Center + new TGCVector3(0, -50, 40);
-                    mesh.RotateZ((float)Math.PI / 8);
+                    mesh.Position = physicalCrafter.Center + new TGCVector3(0, -50, 60);
                 }
 
                 StartCrafting(item);

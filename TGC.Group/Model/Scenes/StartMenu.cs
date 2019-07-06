@@ -1,5 +1,6 @@
 ﻿using Microsoft.DirectX.DirectInput;
 using System.Drawing;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
@@ -9,6 +10,8 @@ using TGC.Group.Model.Utils;
 using TGC.Group.Model.Resources.Sprites;
 using TGC.Core.Terrain;
 using TGC.Core.Camara;
+using TGC.Core.Direct3D;
+using TGC.Core.Sound;
 using TGC.Group.Form;
 using TGC.Group.Model.Input;
 
@@ -21,7 +24,7 @@ namespace TGC.Group.Model.Scenes
     }
 
     class StartMenu : Scene
-    {
+    {        
         public delegate void Callback();
         private Callback onGameStartCallback, onGameExitCallback;
         TgcText2D DrawTextBig, DrawTextSmall;
@@ -36,7 +39,7 @@ namespace TGC.Group.Model.Scenes
         private TGCVector3 viewDirectionStart = new TGCVector3(-1, 0.25f, 0);
 
         private float rotation = 0;
-
+        
         public StartMenu() : base()
         {
             onGameStartCallback = onGameExitCallback = () => {};
@@ -106,10 +109,13 @@ namespace TGC.Group.Model.Scenes
 
         override public void Update(float elapsedTime)
         {
+            MusicManager.play(MusicManager.TitleMusic);
+
             TGCVector3 lookAt  = skyBox.Center + TGCVector3.TransformNormal(viewDirectionStart, TGCMatrix.RotationY(rotation));
             rotation += .0001f;
             Camera.SetCamera(skyBox.Center, lookAt);
         }
+
         override public void Render(TgcFrustum frustum)
         {
             ClearScreen();

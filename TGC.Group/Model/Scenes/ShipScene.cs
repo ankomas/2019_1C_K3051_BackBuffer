@@ -23,11 +23,13 @@ using TGC.Group.TGCUtils;
 using TGC.Group.Model.Scenes.Crafter;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
 using TGC.Group.Model.Things;
+using TGC.Group.Model.Utils;
+using Microsoft.DirectX;
 
 namespace TGC.Group.Model.Scenes
 {
     class ShipScene : GameplayScene
-    {
+    {       
         float rotation = 0;
         private readonly TgcText2D drawText = new TgcText2D();
         TGCVector3 viewDirectionStart = new TGCVector3(-1, 0.25f, 0);
@@ -38,6 +40,7 @@ namespace TGC.Group.Model.Scenes
         private CraftingScene craftingScene;
 
         List<Thing> selectableThings = new List<Thing>();
+        Thing lookedThing = null;
         Things.Hatch hatch;
         Things.Crafter crafter;
         Things.Ship ship;
@@ -79,7 +82,10 @@ namespace TGC.Group.Model.Scenes
             crafter.Scale = new TGCVector3(.5f, .5f, .5f);
             crafter.Position = new TGCVector3(560, 950, -250);
 
-            hatch = new Things.Hatch(() => onGoToWaterCallback(this.GameState));
+            hatch = new Things.Hatch(() => {
+                this.GameState.character.StopUsingShipAmbientShader();
+                onGoToWaterCallback(this.GameState);
+            });
             hatch.Position = new TGCVector3(600, 720, 450);
 
             SetCamera();
@@ -99,6 +105,8 @@ namespace TGC.Group.Model.Scenes
             {
                 onPauseCallback();
             };
+
+            GameState.character.UseShipAmbientShader();
         }
 
         private void TryToInteractWithSelectableThing()
@@ -131,7 +139,6 @@ namespace TGC.Group.Model.Scenes
         private void SetCamera()
         {
             this.Camera = CameraFactory.Create(new TGCVector3(675, 1000, 900), Input);
-
         }
 
         private void OpenInventory()
@@ -165,6 +172,9 @@ namespace TGC.Group.Model.Scenes
 
         public override void UpdateGameplay(float elapsedTime)
         {
+            MusicManager.play(MusicManager.ShipMusic);
+            
+            AquaticPhysics.Instance.DynamicsWorld.StepSimulation(GameModel.GlobalElapsedTime);
             Cheats.ApplyCheats(this.GameState.character);
             this.GameState.character.UpdateStats(new Stats(elapsedTime * this.GameState.character.MaxStats.Oxygen/3, 0));
             inventoryScene.Update(elapsedTime);
@@ -172,33 +182,51 @@ namespace TGC.Group.Model.Scenes
             selectableThings.ForEach(TellIfCameraIsLookingAtThing);
             
             GameState.character.Update(Camera);
+
+            dialogBox.Update(elapsedTime);
+            ShaderRepository.ShipAmbientShader.SetValue("time", elapsedTime);
         }
 
         public override void Render(TgcFrustum tgcFrustum)
         {
             ClearScreen();
 
+            ShaderRepository.ShipAmbientShader.SetValue("cameraPosition", new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+
             GameState.character.Render();
-            ship.TellCameraPosition(new float[4] { Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1 });
+
             ship.Render();
+
+            var lookedThings = selectableThings.Where(t => t.Looked).ToList();
+            Thing newLookedThing = null;
+
+            if (lookedThings.Count() == 0)
+            {
+                lookedThing = null;
+            }
+            else
+            {
+                newLookedThing = lookedThings[0];
+                if (newLookedThing != lookedThing)
+                {
+                    dialogBox.Open();
+                    lookedThing = newLookedThing;
+                }
+                dialogBox.Clear();
+                if (cursor != null)
+                {
+                    newLookedThing.BoundingBox.Render();
+                    dialogBox.AddLineSmall(newLookedThing.name);
+                    dialogBox.AddLineSmall("------------");
+                    dialogBox.AddLineSmall(newLookedThing.actionDescription);
+                    dialogBox.Render();
+                    cursor = hand;
+                }
+            }
 
             foreach (var thing in selectableThings)
             {
-                thing.TellCameraPosition(new float[4]{ Camera.Position.X, Camera.Position.Y, Camera.Position.Z, 1});
                 thing.Render();
-                if (thing.Looked)
-                {
-                    dialogBox.Clear();
-                    if (cursor != null)
-                    {
-                        thing.BoundingBox.Render();
-                        dialogBox.AddLineSmall(thing.name);
-                        dialogBox.AddLineSmall("------------");
-                        dialogBox.AddLineSmall(thing.actionDescription);
-                        dialogBox.Render();
-                        cursor = hand;
-                    }
-                }
             }
 
             lifeBelt.Position = new TGCVector3(285, 1000, 250);
@@ -210,7 +238,7 @@ namespace TGC.Group.Model.Scenes
 
             seat.Render();
 
-            if(cursor != null)
+            if (cursor != null)
             {
                 drawer2D.BeginDrawSprite();
                 drawer2D.DrawSprite(cursor);
@@ -222,7 +250,7 @@ namespace TGC.Group.Model.Scenes
             inventoryScene.Render();
             craftingScene.Render();
 
-            statsIndicators.Render(this.GameState.character);
+
             //this.drawText.drawText("Pause: P\nInventory: TAB\nExit ship: click the hatch in the floor\nCraft: click the crafter, press ESC to exit crafting",
             //    300, 300, Color.NavajoWhite);
 
@@ -230,6 +258,12 @@ namespace TGC.Group.Model.Scenes
             //this.drawText.drawText("X: " + Camera.Position.X, 800, 130, Color.White);
             //this.drawText.drawText("Y: " + Camera.Position.Y, 800, 160, Color.White);
             //this.drawText.drawText("Z: " + Camera.Position.Z, 800, 190, Color.White);
+
+            //crafter.Render();
+            //s.Render();
+
+            statsIndicators.Render(this.GameState.character);
+
         }
         public ShipScene OnGoToWater(TransitionCallback onGoToWaterCallback)
         {
@@ -248,6 +282,7 @@ namespace TGC.Group.Model.Scenes
         }
         private void OpenCrafter()
         {
+            SoundManager.Play(SoundManager.CrafterOpen);
             cursor = null;
             TurnExploreCommandsOff();
             pressed[GameInput.Inventory] = () => {};
@@ -257,6 +292,7 @@ namespace TGC.Group.Model.Scenes
         }
         public void CloseCrafter()
         {
+            SoundManager.Play(SoundManager.CrafterClose);
             cursor = hand;
             pressed[GameInput.GoBack] = () => {};
             TurnExploreCommandsOn();

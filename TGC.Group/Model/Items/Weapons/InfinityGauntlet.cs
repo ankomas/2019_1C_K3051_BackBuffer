@@ -11,6 +11,7 @@ using TGC.Group.Model.Input;
 using TGC.Group.Model.Items.Recipes;
 using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
+using TGC.Group.Model.Utils;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items
@@ -24,7 +25,6 @@ namespace TGC.Group.Model.Items
         
         public static Effect death = 
             TGCShaders.Instance.LoadEffect(Game.Default.ShadersDirectory + "NoMeQuieroIrSrStark.fx");
-
         
         private Random random = new Random();
 
@@ -71,7 +71,6 @@ namespace TGC.Group.Model.Items
                 elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
                 foreach (var element in elementsToAttack)
                 {
-
                     element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack * 0.5f);
                 }
                 
@@ -101,17 +100,17 @@ namespace TGC.Group.Model.Items
                 
                 if (!inAttack)
                 { 
+                   Random rnd = new Random();
+                   SoundManager.Play(SoundManager.Inevitable);
                    inAttack = true;
                    elapsedTimeSinceAttack += GameModel.GlobalElapsedTime;
+                   world.elementsToUpdate.Sort((e1, e2) =>  rnd.Next(0,2));
                    elementsToAttack = world.elementsToUpdate
                        .Take(world.elementsToUpdate.Count / 2)
                        .Where(element => element.Mesh != null);
                    foreach (var element in elementsToAttack)
                    {
-                           element.Mesh.Technique = "RenderScene";
-                           element.Mesh.Effect = death;
-                           element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
-
+                        element.Mesh.Effect.SetValue("elapsedTime", elapsedTimeSinceAttack);
                    }
                    
                 }

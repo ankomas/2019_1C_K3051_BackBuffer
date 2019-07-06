@@ -7,6 +7,7 @@ using TGC.Group.Model.Items.Type;
 using TGC.Group.Model.Player;
 using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
+using TGC.Group.Model.Utils;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items.Materials
@@ -29,6 +30,7 @@ namespace TGC.Group.Model.Items.Materials
         public override void Use(Character character)
         {
             //TODO REFACTOR THIS
+            SoundManager.Play(SoundManager.Drink);
             character.UpdateStats(stats);
             character.RemoveItem(this);
         }

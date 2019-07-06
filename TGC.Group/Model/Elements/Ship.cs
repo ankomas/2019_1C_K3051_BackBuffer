@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using BulletSharp;
 using BulletSharp.Math;
 using TGC.Core.BoundingVolumes;
@@ -44,9 +45,10 @@ namespace TGC.Group.Model.Elements
             }
         }
 
-        public override void Dispose()
+        public override void Dispose(AquaticPhysics physics)
         {
-            this.ship.DisposeAll();
+            base.Dispose(physics);
+            this.ship.Meshes.ForEach(mesh => mesh.D3dMesh?.Dispose());
         }
         
         public override IRenderObject getCollisionVolume() 

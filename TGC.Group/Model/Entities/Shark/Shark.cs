@@ -37,20 +37,17 @@ namespace TGC.Group.Model.Elements
 
             if (VerifyCollision(difference, sharkBody, cameraBody))
             {
-                character.Hit(10);
+                character.Hit(25);
             }
         }
 
 
         private bool VerifyCollision(Vector3 difference, CapsuleShapeX sharkBody, CapsuleShape cameraBody)
         {
-            var epsilon = 30f;
-            return FastMath.Pow2(difference.X) <=
-                FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) * epsilon &&
-                FastMath.Pow2(difference.Y) <=
-                FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) * epsilon&&
-                FastMath.Pow2(difference.Z) <=
-                FastMath.Pow2(sharkBody.Radius - cameraBody.Radius) * epsilon ;
+            var epsilon = this.Mesh.BoundingBox.PMax - this.Mesh.BoundingBox.PMin;
+            return FastMath.Pow2(difference.X) <= FastMath.Pow2(sharkBody.Radius + sharkBody.HalfHeight - cameraBody.Radius) * epsilon.X
+                   && FastMath.Pow2(difference.Y) <= FastMath.Pow2(sharkBody.Radius - (cameraBody.Radius + cameraBody.HalfHeight)) * epsilon.Y
+                   && FastMath.Pow2(difference.Z) <= FastMath.Pow2(sharkBody.Radius - cameraBody.Radius) * epsilon.Z;
         }
 
         private static Point GetCenter()
@@ -72,8 +69,13 @@ namespace TGC.Group.Model.Elements
 
         public override void Dispose()
         {
-            Mesh.Dispose();
-            RigidBody.Dispose();
+            Mesh?.Dispose();
+            //TODO hack
+            if (RigidBody != null)
+            {
+                AquaticPhysics.Instance.Remove(RigidBody);
+                RigidBody.Dispose();
+            }
         }
     }
 }

@@ -13,13 +13,14 @@ namespace TGC.Group.Model.Input
         public static readonly GameInput _Down = new GameInput(new List<Key>{Key.Down, Key.S});
         public static readonly GameInput _Left = new GameInput(new List<Key>{Key.Left, Key.A});
         public static readonly GameInput _Right = new GameInput(new List<Key>{Key.Right, Key.D});
+        public static readonly GameInput _Speed = new GameInput(new List<Key>{Key.LeftShift});
         public static readonly GameInput _Float = new GameInput(new List<Key>{Key.Space});
         public static readonly GameInput _Escape = new GameInput(new List<Key>{Key.Escape});
         public static readonly GameInput _Enter = new GameInput(new List<Key>{Key.Return}, new List<MouseButtons> {MouseButtons.BUTTON_LEFT});
         public static readonly GameInput _Inventory = new GameInput(new List<Key>{Key.I, Key.Tab});
         public static readonly GameInput _Statistic = new GameInput(new List<Key>{Key.F});
         public static readonly GameInput _Attack =
-            new GameInput(new List<Key>(), new List<MouseButtons>{MouseButtons.BUTTON_RIGHT});
+            new GameInput(new List<Key> {Key.K}, new List<MouseButtons>{MouseButtons.BUTTON_RIGHT});
         
         public static readonly List<object> Up = new List<object> { Key.Up, Key.W };
         public static readonly List<object> Down = new List<object> { Key.Down, Key.S };

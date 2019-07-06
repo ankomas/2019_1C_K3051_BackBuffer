@@ -6,6 +6,7 @@ using TGC.Group.Model.Items.Type;
 using TGC.Group.Model.Player;
 using TGC.Group.Model.Resources.Meshes;
 using TGC.Group.Model.Resources.Sprites;
+using TGC.Group.Model.Utils;
 using TGC.Group.TGCUtils;
 
 namespace TGC.Group.Model.Items.Equipment
@@ -29,6 +30,13 @@ namespace TGC.Group.Model.Items.Equipment
             icon.Scaling = DefaultScale;
             Icon = icon;
         }
+
+        public override void Use(Character character)
+        {
+            SoundManager.Play(SoundManager.Oxygen);
+            base.Use(character);
+        }
+
         public override void ApplyEffect(Stats character)
         {
             character.Oxygen += Capacity;

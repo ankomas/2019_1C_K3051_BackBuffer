@@ -15,7 +15,7 @@ namespace TGC.Group.Model.Chunks
         public List<Element> Elements { get; }
 
         public TGCVector3 Origin { get; }
-        protected AquaticPhysics Physics { get; }
+        public AquaticPhysics Physics { get; }
 
         public static readonly Chunk None = new NoneChunk();
 
@@ -62,7 +62,14 @@ namespace TGC.Group.Model.Chunks
 
         public virtual void Render()
         {
-            this.Elements.ForEach(element => element.Render());
+            this.Elements.ForEach(element => {
+                if(element.Mesh != null)
+                {
+                    element.Mesh.Effect = ShaderRepository.WorldWaterFog;
+                    element.Mesh.Technique = "WorldWaterFog";
+                }
+                element.Render();
+            });
         }
 
         public virtual void RenderBoundingBox()
@@ -72,19 +79,15 @@ namespace TGC.Group.Model.Chunks
 
         public virtual void Dispose()
         {
-            this.Elements.ForEach(element => {
-                Physics.Remove(element.PhysicsBody);
-                element.Dispose();
-            });
+            this.Elements.ForEach(element => element.Dispose(Physics));
         }
 
-        public void Remove(Element selectableElement)
+        public void Remove(Element element)
         {
-            if (!this.Elements.Contains(selectableElement)) return;
+            if (!this.Elements.Contains(element)) return;
 
-            Physics.Remove(selectableElement.PhysicsBody);
-            this.Elements.Remove(selectableElement);
-            selectableElement.Dispose();
+            this.Elements.Remove(element);
+            element.Dispose(Physics);
         }
 
         public Cube asCube()
