@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Input;
-
 using static TGC.Core.Input.TgcD3dInput;
 
 namespace TGC.Group.Model.Input

@@ -57,6 +57,7 @@ namespace TGC.Group.Model
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
+            AxisLinesEnable = false;
         }
 
         public override void Init()

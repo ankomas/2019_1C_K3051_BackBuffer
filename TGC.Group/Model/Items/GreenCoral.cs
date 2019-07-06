@@ -11,7 +11,7 @@ namespace TGC.Group.Model.Items
 {
     public class GreenCoral : IItem
     {
-        public override string Name { get; } = "Green coral";
+        public override string Name { get; } = "Coral";
         public override string Description { get; } = "Used for potion crafting";
         public override ItemType type { get; } = ItemType.MATERIAL;
         public override CustomSprite Icon { get; }
