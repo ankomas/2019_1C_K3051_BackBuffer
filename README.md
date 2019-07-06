@@ -27,4 +27,4 @@ TP para TGC, copia de subnautica.
 <img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc5.png">
 
 ## Game Play ##
-[![Watch the video](https://img.youtube.com/vi/qESIu8ozanU/0.jpg)](https://www.youtube.com/playlist?list=PLRM4L32DjvnazuMl8wZlbpEYL5Qh63ulG)
+[![Watch the video](https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc2.png)](https://www.youtube.com/watch?v=9BeJeVAHdvQ)
