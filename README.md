@@ -14,17 +14,21 @@ TP para TGC, copia de subnautica.
 * [TGC.Core](https://www.nuget.org/packages/TGC.Core/) (se baja automáticamente al hacer build por primera vez)
 
 ## Integrantes ##
-Baltar Nicolás
-Galeano Federico
-Amarillo Juan
-<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/integrantes.jpg" height="500"> | <img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/trofeotp.png" height="500">
+* Baltar Nicolás
+* Galeano Federico
+* Amarillo Juan
+
+
+
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/integrantes.jpg" height="400"> <img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/trofeotp.png" height="300">
 
 ## ScreenShot ##
-![screenshot1](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot2](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot3](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot4](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot5](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc0.png">
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc1.png">
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc2.png">
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc3.png">
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc4.png">
+<img src="https://github.com/ankomas/2019_1C_K3051_BackBuffer/blob/master/screenshots/sc5.png">
 
 ## Game Play ##
 [![Watch the video](https://img.youtube.com/vi/qESIu8ozanU/0.jpg)](https://www.youtube.com/playlist?list=PLRM4L32DjvnazuMl8wZlbpEYL5Qh63ulG)
