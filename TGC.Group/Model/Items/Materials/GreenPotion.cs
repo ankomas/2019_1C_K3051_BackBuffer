@@ -19,9 +19,9 @@ namespace TGC.Group.Model.Items.Materials
 
         public new Recipe Recipe => _Recipe;
         public override string Name { get; } = "Green potion";
-        public override string Description { get; } = "Used for purifying metals";
+        public override string Description { get; } = "Heals all damage taken";
 
-        public override ItemType type { get; } = ItemType.MATERIAL;
+        public override ItemType type { get; } = ItemType.CONSUMABLE;
         public override CustomSprite Icon { get; }
         public override List<TgcMesh> Meshes => MeshesForShip.PotionMesh;
         public override TGCVector2 DefaultScale { get; } = new TGCVector2(.15f, .15f);
